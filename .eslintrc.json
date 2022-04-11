@@ -1,0 +1,35 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "airbnb",
+        "prettier"
+    ],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 13,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react", "prettier"
+    ],
+    "rules": {
+        "prettier/prettier": "warn",
+        "no-plusplus": "off",
+        "no-unused-vars": "warn",
+        "react/no-unused-class-component-methods": "warn",
+        "prefer-const": "warn",
+        "class-methods-use-this": "off",
+        "arrow-body-style": "warn",
+        "import/order": "warn",
+        "react/no-unused-state": "warn",
+        "react/no-unused-prop-types": "warn"
+    }
+}
