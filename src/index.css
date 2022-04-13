@@ -9,3 +9,8 @@ body {
   flex-flow: column;
   height: 100%;
 }
+
+.textPanel {
+  mask-image: linear-gradient(black, transparent);
+  mask-mode: alpha;
+}

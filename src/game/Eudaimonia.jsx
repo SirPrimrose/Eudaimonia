@@ -1,5 +1,7 @@
 import { Grid } from '@mui/material';
 import React from 'react';
+import GamePanel from './layout/GamePanel';
+import TextPanel from './layout/TextPanel';
 
 const gameTicksPerSecond = 60;
 
@@ -21,12 +23,12 @@ class Eudaimonia extends React.PureComponent {
 
   render() {
     return (
-      <Grid container spacing={8}>
+      <Grid sx={{ height: '100%' }} container spacing={4}>
         <Grid item xs={2}>
-          <div>Text wall</div>
+          <TextPanel />
         </Grid>
         <Grid item xs={10}>
-          <div>Game window</div>
+          <GamePanel />
         </Grid>
       </Grid>
     );
