@@ -1,6 +1,6 @@
-const phases = {
-  Wander: 'Wander',
-  Preparation: 'Preparation',
+const PHASES = {
+  WANDER: 'Wander',
+  PREP: 'Preparation',
 };
 
-export default phases;
+export default PHASES;

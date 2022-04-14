@@ -14,3 +14,7 @@ body {
   mask-image: linear-gradient(black, transparent);
   mask-mode: alpha;
 }
+
+.eudaimonia {
+  overflow: hidden;
+}

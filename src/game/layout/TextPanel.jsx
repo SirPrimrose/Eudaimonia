@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { getTextLogMessages } from '../../slice/textLogSlice';
 
 class TextPanel extends React.PureComponent {
   getMessageLayout = (messages) =>
-    messages.map((message) => <div key={message}>{message}</div>);
+    messages.map((message) => <div key={message.id}>{message.text}</div>);
 
   render() {
     const { messages } = this.props;
@@ -16,33 +18,20 @@ class TextPanel extends React.PureComponent {
 }
 
 TextPanel.propTypes = {
-  messages: PropTypes.arrayOf(PropTypes.string),
+  messages: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+    })
+  ),
 };
 
 TextPanel.defaultProps = {
-  messages: [
-    'aaaaaaaaa',
-    'bbbbbbb',
-    'cccccccccc',
-    'ddddddddd',
-    'eeeeeee',
-    'fefffffffffff',
-    'gffgggggggg',
-    'hgghhhhhhhhhhhh',
-    'iiiiiiiii',
-    'jjjjjjjj',
-    'jkkkkkkkk',
-    'kklllllll',
-    'mmmmmmmmm',
-    'nnnnnnnn',
-    'nkooooo',
-    'ppppppppp',
-    'qqqqqqq',
-    'rrrrrrrrr',
-    'srssssssss',
-    'tttttttt',
-    'utuuuuuuuuu',
-  ],
+  messages: [],
 };
 
-export default TextPanel;
+const mapStateToProps = (state) => ({
+  messages: getTextLogMessages(state),
+});
+
+export default connect(mapStateToProps)(TextPanel);
