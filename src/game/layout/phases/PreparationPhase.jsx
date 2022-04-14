@@ -4,13 +4,20 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import PHASES from '../../consts';
 import { actions as phaseActions } from '../../../slice/gameSlice';
+import { actions as textLogActions } from '../../../slice/textLogSlice';
 
 class PreparationPhase extends React.PureComponent {
+  beginToWander = () => {
+    const { setPhase, addMessage } = this.props;
+
+    setPhase(PHASES.WANDER);
+    addMessage('You take the first step...');
+  };
+
   render() {
-    const { setPhase } = this.props;
     return (
       <div>
-        <Button onClick={() => setPhase(PHASES.WANDER)}>Depart</Button>
+        <Button onClick={this.beginToWander}>Depart</Button>
       </div>
     );
   }
@@ -18,10 +25,12 @@ class PreparationPhase extends React.PureComponent {
 
 PreparationPhase.propTypes = {
   setPhase: PropTypes.func.isRequired,
+  addMessage: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
   setPhase: phaseActions.setPhase,
+  addMessage: textLogActions.addMessage,
 };
 
 export default connect(null, mapDispatchToProps)(PreparationPhase);
