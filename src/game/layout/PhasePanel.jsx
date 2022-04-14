@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import PHASES from '../consts';
 import PreparationPhase from './phases/PreparationPhase';
 import WanderPhase from './phases/WanderPhase';
+import { getGamePhase } from '../../slice/gameSlice';
 
 const compForPhase = {
   [PHASES.WANDER]: WanderPhase,
@@ -25,4 +27,8 @@ PhasePanel.propTypes = {
   phase: PropTypes.string.isRequired,
 };
 
-export default PhasePanel;
+const mapStateToProps = (state) => ({
+  phase: getGamePhase(state),
+});
+
+export default connect(mapStateToProps)(PhasePanel);

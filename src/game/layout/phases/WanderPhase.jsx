@@ -1,7 +1,7 @@
-/* eslint-disable react/prop-types */
 import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { actions as textLogActions } from '../../../slice/textLogSlice';
 
 class WanderPhase extends React.PureComponent {
@@ -16,6 +16,11 @@ class WanderPhase extends React.PureComponent {
     );
   }
 }
+
+WanderPhase.propTypes = {
+  addMessage: PropTypes.func.isRequired,
+  clearMessages: PropTypes.func.isRequired,
+};
 
 const mapDispatchToProps = {
   addMessage: textLogActions.addMessage,

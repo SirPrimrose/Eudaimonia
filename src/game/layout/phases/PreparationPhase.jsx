@@ -1,10 +1,27 @@
-import { Box, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import PHASES from '../../consts';
+import { actions as phaseActions } from '../../../slice/gameSlice';
 
 class PreparationPhase extends React.PureComponent {
   render() {
-    return <div>Prep phase</div>;
+    const { setPhase } = this.props;
+    return (
+      <div>
+        <Button onClick={() => setPhase(PHASES.WANDER)}>Depart</Button>
+      </div>
+    );
   }
 }
 
-export default PreparationPhase;
+PreparationPhase.propTypes = {
+  setPhase: PropTypes.func.isRequired,
+};
+
+const mapDispatchToProps = {
+  setPhase: phaseActions.setPhase,
+};
+
+export default connect(null, mapDispatchToProps)(PreparationPhase);
