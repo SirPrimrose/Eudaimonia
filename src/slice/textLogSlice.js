@@ -11,7 +11,7 @@ export const textLogSlice = createSlice({
   initialState,
   reducers: {
     addMessage: (state, action) => {
-      state.messages.unshift({ id: uuid(), text: action.payload });
+      state.messages.push({ id: uuid(), text: action.payload });
     },
     clearMessages: (state) => {
       state.messages = initialState.messages;

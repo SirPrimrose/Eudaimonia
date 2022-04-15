@@ -1,13 +1,20 @@
-import { Stack } from '@mui/material';
+import { Grid } from '@mui/material';
 import React from 'react';
 
 class InventoryPanel extends React.PureComponent {
   render() {
     return (
-      <Stack spacing={20}>
-        <div>Local Inv</div>
-        <div>Stored Inv</div>
-      </Stack>
+      <Grid sx={{ height: '100%' }} container direction="column">
+        <Grid item xs={4}>
+          <div>Action Queue</div>
+        </Grid>
+        <Grid item xs={4}>
+          <div>Local Inv</div>
+        </Grid>
+        <Grid item xs={4}>
+          <div>Stored Inv</div>
+        </Grid>
+      </Grid>
     );
   }
 }

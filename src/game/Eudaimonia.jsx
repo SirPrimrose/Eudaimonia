@@ -25,11 +25,11 @@ class Eudaimonia extends React.PureComponent {
     return (
       <Grid
         className="eudaimonia"
-        sx={{ height: '100%' }}
+        sx={{ height: '100vh' }}
         container
         spacing={4}
       >
-        <Grid item xs={2}>
+        <Grid item xs={2} sx={{ height: '100%' }}>
           <TextPanel />
         </Grid>
         <Grid item xs={10}>

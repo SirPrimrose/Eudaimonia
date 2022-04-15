@@ -2,16 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getTextLogMessages } from '../../slice/textLogSlice';
+import './TextPanel.css';
 
 class TextPanel extends React.PureComponent {
   getMessageLayout = (messages) =>
-    messages.map((message) => <div key={message.id}>{message.text}</div>);
+    messages.map((message) => (
+      <div className="message" key={message.id}>
+        {message.text}
+      </div>
+    ));
 
   render() {
     const { messages } = this.props;
     return (
-      <div className="textPanel" style={{ height: '100%' }}>
-        {this.getMessageLayout(messages)}
+      <div className="textPanel">
+        <div className="messageLayout">{this.getMessageLayout(messages)}</div>
       </div>
     );
   }
