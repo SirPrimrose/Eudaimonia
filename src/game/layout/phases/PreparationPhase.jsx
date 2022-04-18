@@ -6,9 +6,21 @@ import PHASES from '../../consts';
 import { actions as phaseActions } from '../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../slice/textLogSlice';
 import ProgressBarWithOverlay from '../../../shared/ProgressBarWithOverlay';
-import { getWanderlust } from '../../../slice/statsSlice';
+import {
+  actions as statsActions,
+  getMaxWanderlust,
+  getWanderlust,
+} from '../../../slice/statsSlice';
+import { getProgressValue } from '../../../shared/util';
 
 class PreparationPhase extends React.PureComponent {
+  beginPacing = () => {
+    const { addWanderlust, addMessage } = this.props;
+
+    addWanderlust(2);
+    addMessage('Follow the steps of your past self');
+  };
+
   beginToWander = () => {
     const { setPhase, addMessage } = this.props;
 
@@ -17,14 +29,22 @@ class PreparationPhase extends React.PureComponent {
   };
 
   render() {
-    const { wanderlust } = this.props;
+    const { wanderlust, maxWanderlust } = this.props;
+    const shouldShowDepart = wanderlust >= maxWanderlust;
 
     return (
       <div>
-        <ProgressBarWithOverlay value={wanderlust}>
+        <ProgressBarWithOverlay
+          value={getProgressValue(wanderlust, maxWanderlust)}
+        >
           Wanderlust
         </ProgressBarWithOverlay>
-        <Button onClick={this.beginToWander}>Depart</Button>
+        <Button onClick={this.beginPacing}>Pace</Button>
+        <Button onClick={this.beginPondering}>Ponder</Button>
+        <Button onClick={this.beginMeditating}>Meditate</Button>
+        {shouldShowDepart && (
+          <Button onClick={this.beginToWander}>Depart</Button>
+        )}
       </div>
     );
   }
@@ -32,17 +52,21 @@ class PreparationPhase extends React.PureComponent {
 
 PreparationPhase.propTypes = {
   wanderlust: PropTypes.number.isRequired,
+  maxWanderlust: PropTypes.number.isRequired,
   setPhase: PropTypes.func.isRequired,
   addMessage: PropTypes.func.isRequired,
+  addWanderlust: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   wanderlust: getWanderlust(state),
+  maxWanderlust: getMaxWanderlust(state),
 });
 
 const mapDispatchToProps = {
   setPhase: phaseActions.setPhase,
   addMessage: textLogActions.addMessage,
+  addWanderlust: statsActions.addWanderlust,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreparationPhase);

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   wanderlust: 0,
-  maxWanderlust: 0,
+  maxWanderlust: 20,
 };
 
 export const statsSlice = createSlice({
