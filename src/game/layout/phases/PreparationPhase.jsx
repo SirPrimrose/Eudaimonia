@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import PHASES from '../../consts';
 import { actions as phaseActions } from '../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../slice/textLogSlice';
+import { actions as jobQueueActions } from '../../../slice/jobQueueSlice';
 import ProgressBarWithOverlay from '../../../shared/ProgressBarWithOverlay';
 import {
   actions as statsActions,
@@ -15,10 +16,9 @@ import { getProgressValue } from '../../../shared/util';
 
 class PreparationPhase extends React.PureComponent {
   beginPacing = () => {
-    const { addWanderlust, addMessage } = this.props;
+    const { addJob } = this.props;
 
-    addWanderlust(2);
-    addMessage('Follow the steps of your past self');
+    addJob({ name: 'Pace' });
   };
 
   beginToWander = () => {
@@ -56,6 +56,7 @@ PreparationPhase.propTypes = {
   setPhase: PropTypes.func.isRequired,
   addMessage: PropTypes.func.isRequired,
   addWanderlust: PropTypes.func.isRequired,
+  addJob: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -67,6 +68,7 @@ const mapDispatchToProps = {
   setPhase: phaseActions.setPhase,
   addMessage: textLogActions.addMessage,
   addWanderlust: statsActions.addWanderlust,
+  addJob: jobQueueActions.addJob,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreparationPhase);
