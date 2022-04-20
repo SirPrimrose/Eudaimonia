@@ -13,12 +13,13 @@ import {
   getWanderlust,
 } from '../../../slice/statsSlice';
 import { getProgressValue } from '../../../shared/util';
+import { createJob, JOB_NAMES } from '../../jobs';
 
 class PreparationPhase extends React.PureComponent {
   beginPacing = () => {
     const { addJob } = this.props;
 
-    addJob({ name: 'Pace' });
+    addJob(createJob({ name: JOB_NAMES.PACE }));
   };
 
   beginToWander = () => {
