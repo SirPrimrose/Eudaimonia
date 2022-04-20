@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import PHASES from '../game/consts';
+import { PHASES } from '../game/consts';
 
 const initialState = {
   phase: PHASES.PREP,

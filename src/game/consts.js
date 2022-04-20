@@ -3,4 +3,9 @@ const PHASES = {
   PREP: 'Preparation',
 };
 
-export default PHASES;
+const SKILLS = {
+  AGILITY: 'Agility',
+  WOODCUTTING: 'Woodcutting',
+};
+
+export { PHASES, SKILLS };

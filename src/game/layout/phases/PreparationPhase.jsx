@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import PHASES from '../../consts';
+import { PHASES } from '../../consts';
 import { actions as phaseActions } from '../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../slice/textLogSlice';
 import { actions as jobQueueActions } from '../../../slice/jobQueueSlice';
@@ -13,13 +13,14 @@ import {
   getWanderlust,
 } from '../../../slice/statsSlice';
 import { getProgressValue } from '../../../shared/util';
-import { createJob, JOB_NAMES } from '../../jobs';
+import { JOB_NAMES } from '../../jobs';
+import { createJob } from '../../jobConstructor';
 
 class PreparationPhase extends React.PureComponent {
   beginPacing = () => {
     const { addJob } = this.props;
 
-    addJob(createJob({ name: JOB_NAMES.PACE }));
+    addJob(createJob(JOB_NAMES.PACE));
   };
 
   beginToWander = () => {
