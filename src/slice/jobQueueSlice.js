@@ -1,13 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import { JOB_BASES } from '../game/jobs';
+import { getProgressValue } from '../shared/util';
 
-/**
- * id: Job id
- * name: Job name
- * action: Action the job refers to
- */
+// Initially loads JOB_BASES into state
 const initialState = {
-  jobs: [],
+  jobs: JOB_BASES,
+  queue: [],
 };
 
 export const jobQueueSlice = createSlice({
@@ -15,15 +14,21 @@ export const jobQueueSlice = createSlice({
   initialState,
   reducers: {
     addJob: (state, action) => {
-      state.jobs.push(action.payload);
+      state.queue.push(action.payload);
     },
     clearJobs: (state) => {
-      state.jobs = initialState.jobs;
+      state.queue = initialState.queue;
     },
   },
 });
 
-export const getJobQueue = (store) => store.jobQueue.jobs;
+export const getJobProgress = (store) => (jobName) =>
+  getProgressValue(
+    store.jobQueue.jobs[jobName].currentXp,
+    store.jobQueue.jobs[jobName].maxXp
+  );
+
+export const getJobQueue = (store) => store.jobQueue.queue;
 
 export const { actions } = jobQueueSlice;
 

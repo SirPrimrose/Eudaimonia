@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { actions as textLogActions } from '../../../slice/textLogSlice';
+import { actions as textLogActions } from '../../../../slice/textLogSlice';
 
 class WanderPhase extends React.PureComponent {
   render() {

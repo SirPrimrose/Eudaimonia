@@ -2,27 +2,20 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PHASES } from '../../consts';
-import { actions as phaseActions } from '../../../slice/gameSlice';
-import { actions as textLogActions } from '../../../slice/textLogSlice';
-import { actions as jobQueueActions } from '../../../slice/jobQueueSlice';
-import ProgressBarWithOverlay from '../../../shared/ProgressBarWithOverlay';
+import { PHASES } from '../../../consts';
+import { actions as phaseActions } from '../../../../slice/gameSlice';
+import { actions as textLogActions } from '../../../../slice/textLogSlice';
+import { actions as jobQueueActions } from '../../../../slice/jobQueueSlice';
+import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
 import {
   actions as statsActions,
   getMaxWanderlust,
   getWanderlust,
-} from '../../../slice/statsSlice';
-import { getProgressValue } from '../../../shared/util';
-import { JOB_NAMES } from '../../jobs';
-import { createJob } from '../../jobConstructor';
+} from '../../../../slice/statsSlice';
+import { getProgressValue } from '../../../../shared/util';
+import PreparationActions from './PreparationActions';
 
 class PreparationPhase extends React.PureComponent {
-  beginPacing = () => {
-    const { addJob } = this.props;
-
-    addJob(createJob(JOB_NAMES.PACE));
-  };
-
   beginToWander = () => {
     const { setPhase, addMessage } = this.props;
 
@@ -41,9 +34,7 @@ class PreparationPhase extends React.PureComponent {
         >
           Wanderlust
         </ProgressBarWithOverlay>
-        <Button onClick={this.beginPacing}>Pace</Button>
-        <Button onClick={this.beginPondering}>Ponder</Button>
-        <Button onClick={this.beginMeditating}>Meditate</Button>
+        <PreparationActions />
         {shouldShowDepart && (
           <Button onClick={this.beginToWander}>Depart</Button>
         )}
