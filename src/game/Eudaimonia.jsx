@@ -1,7 +1,11 @@
 import { Grid } from '@mui/material';
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import GamePanel from './layout/GamePanel';
 import TextPanel from './layout/TextPanel';
+import gameLoopThunk from '../slice/gameLoopThunk';
+import { isGameTicking } from '../slice/gameSlice';
 
 const gameTicksPerSecond = 60;
 
@@ -18,7 +22,8 @@ class Eudaimonia extends React.PureComponent {
   }
 
   gameTick = () => {
-    console.log('Tick');
+    const { ticking, runGameLoop } = this.props;
+    if (!ticking) runGameLoop();
   };
 
   render() {
@@ -35,4 +40,17 @@ class Eudaimonia extends React.PureComponent {
   }
 }
 
-export default Eudaimonia;
+Eudaimonia.propTypes = {
+  ticking: PropTypes.bool.isRequired,
+  runGameLoop: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (store) => ({
+  ticking: isGameTicking(store),
+});
+
+const mapDispatchToProps = {
+  runGameLoop: gameLoopThunk.runGameLoop,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Eudaimonia);

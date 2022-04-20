@@ -3,27 +3,23 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  actions as jobQueueActions,
+  actions as jobActions,
   getJobProgress,
-} from '../../../../slice/jobQueueSlice';
+} from '../../../../slice/jobSlice';
 import { JOB_NAMES } from '../../../jobs';
 import { createJobQueueEntry } from '../../../jobConstructor';
 
 const availableJobs = [JOB_NAMES.PACE, JOB_NAMES.WANDER];
 class PreparationActions extends React.PureComponent {
-  beginPacing = () => {
-    const { addJob } = this.props;
-
-    addJob(createJobQueueEntry(JOB_NAMES.PACE));
-  };
-
   renderAvailableJobs = () => {
-    const { getProgress } = this.props;
+    const { getProgress, addJobToQueue } = this.props;
 
-    return availableJobs.map((job) => (
+    return availableJobs.map((jobName) => (
       <>
-        <Button onClick={this.beginPacing}>{job}</Button>
-        <LinearProgress variant="determinate" value={getProgress(job)} />
+        <Button onClick={() => addJobToQueue(createJobQueueEntry(jobName))}>
+          {jobName}
+        </Button>
+        <LinearProgress variant="determinate" value={getProgress(jobName)} />
       </>
     ));
   };
@@ -35,7 +31,7 @@ class PreparationActions extends React.PureComponent {
 
 PreparationActions.propTypes = {
   getProgress: PropTypes.func.isRequired,
-  addJob: PropTypes.func.isRequired,
+  addJobToQueue: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -43,7 +39,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  addJob: jobQueueActions.addJob,
+  addJobToQueue: jobActions.addJobToQueue,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreparationActions);

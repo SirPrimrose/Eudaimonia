@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Typography } from '@mui/material';
-import { getJobQueue } from '../../slice/jobQueueSlice';
+import { getJobQueue } from '../../slice/jobSlice';
 
 class ActionQueuePanel extends React.PureComponent {
   getJobLayout = (jobs) =>
