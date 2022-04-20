@@ -9,6 +9,7 @@ import {
 import { JOB_NAMES } from '../../../jobs';
 import { createJobQueueEntry } from '../../../jobConstructor';
 
+const availableJobs = [JOB_NAMES.PACE, JOB_NAMES.WANDER];
 class PreparationActions extends React.PureComponent {
   beginPacing = () => {
     const { addJob } = this.props;
@@ -16,20 +17,19 @@ class PreparationActions extends React.PureComponent {
     addJob(createJobQueueEntry(JOB_NAMES.PACE));
   };
 
-  render() {
+  renderAvailableJobs = () => {
     const { getProgress } = this.props;
 
-    return (
-      <Stack className="prepActions">
-        <Button onClick={this.beginPacing}>{JOB_NAMES.PACE}</Button>
-        <LinearProgress
-          variant="determinate"
-          value={getProgress(JOB_NAMES.PACE)}
-        />
-        <Button onClick={this.beginPondering}>Ponder</Button>
-        <Button onClick={this.beginMeditating}>Meditate</Button>
-      </Stack>
-    );
+    return availableJobs.map((job) => (
+      <>
+        <Button onClick={this.beginPacing}>{job}</Button>
+        <LinearProgress variant="determinate" value={getProgress(job)} />
+      </>
+    ));
+  };
+
+  render() {
+    return <Stack className="prepActions">{this.renderAvailableJobs()}</Stack>;
   }
 }
 

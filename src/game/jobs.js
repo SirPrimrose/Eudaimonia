@@ -2,6 +2,7 @@ import { SKILLS } from './consts';
 
 const JOB_NAMES = {
   PACE: 'Pace',
+  WANDER: 'Wander',
 };
 
 const JOB_BASES = {
@@ -9,6 +10,11 @@ const JOB_BASES = {
     skill: SKILLS.AGILITY,
     currentXp: 0,
     maxXp: 20,
+  },
+  [JOB_NAMES.WANDER]: {
+    skill: SKILLS.AGILITY,
+    currentXp: 0,
+    maxXp: 50,
   },
 };
 
