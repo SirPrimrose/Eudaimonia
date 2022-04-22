@@ -1,19 +1,20 @@
-import { createAsyncThunk, current } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as textLogActions } from './textLogSlice';
-import { actions as jobActions, getFirstJobInQueue } from './jobSlice';
-import { createJobQueueEntry } from '../game/jobConstructor';
-import { JOB_NAMES } from '../game/jobs';
+import {
+  actions as jobActions,
+  getFirstJobInQueue,
+  shouldRemoveFirstJobFromQueue,
+  shouldTickJobQueue,
+} from './jobSlice';
 
-const runGameLoop = createAsyncThunk(
-  'gameLoop',
-  async (payload, { dispatch, getState }) => {
-    console.log('Starting tick');
-
+const tickJobQueue = (dispatch, getState) => {
+  // Set full value of tick in state
+  dispatch(jobActions.resetQueueTick());
+  while (shouldTickJobQueue(getState())) {
     // Tick current job
-    const currentJob = getFirstJobInQueue(getState());
-    console.log(currentJob);
+    let currentJob = getFirstJobInQueue(getState());
     if (currentJob) {
-      dispatch(jobActions.addXpToJob({ xp: 1, name: currentJob.name }));
+      dispatch(jobActions.tickXpToJob({ xp: 3, name: currentJob.name }));
       dispatch(
         textLogActions.addMessage(
           `${currentJob.name} now has ${
@@ -21,7 +22,19 @@ const runGameLoop = createAsyncThunk(
           } xp`
         )
       );
+      // Check for job completion to trigger inventory completion actions
+      currentJob = getFirstJobInQueue(getState());
+      if (shouldRemoveFirstJobFromQueue(getState())) {
+        dispatch(jobActions.removeJobFromQueueById(currentJob.id));
+      }
     }
+  }
+};
+
+const runGameLoop = createAsyncThunk(
+  'gameLoop',
+  async (payload, { dispatch, getState }) => {
+    tickJobQueue(dispatch, getState);
 
     // simulate intense calculations
     await new Promise((resolve) =>

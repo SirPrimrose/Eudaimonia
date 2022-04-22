@@ -10,11 +10,15 @@ const JOB_BASES = {
     skill: SKILLS.AGILITY,
     currentXp: 0,
     maxXp: 20,
+    currentValue: 0,
+    maxValue: 10,
   },
   [JOB_NAMES.WANDER]: {
     skill: SKILLS.AGILITY,
     currentXp: 0,
     maxXp: 50,
+    currentValue: 0,
+    maxValue: 10,
   },
 };
 

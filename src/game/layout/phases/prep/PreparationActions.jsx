@@ -15,12 +15,12 @@ class PreparationActions extends React.PureComponent {
     const { getProgress, addJobToQueue } = this.props;
 
     return availableJobs.map((jobName) => (
-      <>
+      <div key={jobName}>
         <Button onClick={() => addJobToQueue(createJobQueueEntry(jobName))}>
           {jobName}
         </Button>
         <LinearProgress variant="determinate" value={getProgress(jobName)} />
-      </>
+      </div>
     ));
   };
 
