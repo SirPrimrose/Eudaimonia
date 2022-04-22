@@ -1,3 +1,5 @@
+const GAME_LOOP_THUNK = 'gameLoop';
+
 const PHASES = {
   WANDER: 'Wander',
   PREP: 'Preparation',
@@ -8,4 +10,4 @@ const SKILLS = {
   WOODCUTTING: 'Woodcutting',
 };
 
-export { PHASES, SKILLS };
+export { PHASES, SKILLS, GAME_LOOP_THUNK };

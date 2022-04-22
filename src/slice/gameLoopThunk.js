@@ -7,6 +7,8 @@ import {
   shouldRemoveFirstJobFromQueue,
   shouldTickJobQueue,
 } from './jobSlice';
+import { GAME_LOOP_THUNK } from '../shared/consts';
+import { actions as gameActions, isGamePaused } from './gameSlice';
 
 const tickJobQueue = (dispatch, getState) => {
   // Set full value of tick in state
@@ -32,12 +34,20 @@ const tickJobQueue = (dispatch, getState) => {
   }
 };
 
-const runGameLoop = createAsyncThunk(
-  'gameLoop',
-  async (payload, { dispatch, getState }) => {
-    dispatch(statsActions.addWanderlust(1));
+const shouldGamePause = (getState) => !getFirstJobInQueue(getState());
 
-    tickJobQueue(dispatch, getState);
+const runGameLoop = createAsyncThunk(
+  GAME_LOOP_THUNK,
+  async (payload, { dispatch, getState }) => {
+    if (!isGamePaused(getState())) {
+      if (shouldGamePause(getState)) {
+        dispatch(gameActions.setPaused(true));
+      } else {
+        dispatch(statsActions.addWanderlust(1));
+
+        tickJobQueue(dispatch, getState);
+      }
+    }
 
     // simulate intense calculations
     await new Promise((resolve) =>

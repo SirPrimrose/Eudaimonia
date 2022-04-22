@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PHASES } from '../../../consts';
+import { PHASES } from '../../../../shared/consts';
 import { actions as phaseActions } from '../../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../../slice/textLogSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
