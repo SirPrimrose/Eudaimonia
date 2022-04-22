@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Typography } from '@mui/material';
-import { getJobQueue } from '../../slice/jobSlice';
+import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
+import { actions as jobActions, getJobQueue } from '../../slice/jobSlice';
 import { actions as gameActions, isGamePaused } from '../../slice/gameSlice';
 
 class ActionQueuePanel extends React.PureComponent {
@@ -12,19 +14,43 @@ class ActionQueuePanel extends React.PureComponent {
     togglePaused();
   };
 
-  getJobLayout = (jobs) =>
-    jobs.map((job, index) => (
-      <Typography className="job" key={job.id}>
-        {`${index + 1}. ${job.name}`}
-      </Typography>
-    ));
+  handleCancelJob = (jobId) => () => {
+    const { removeJobFromQueueById } = this.props;
+
+    removeJobFromQueueById(jobId);
+  };
+
+  getJobLayout = (jobs) => (
+    <Stack className="jobLayout">
+      {jobs.map((job, index) => (
+        <Grid
+          container
+          key={job.id}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Grid item xs={2}>
+            <Typography className="job">{`${index + 1}.`}</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <Typography className="job">{`${job.name}`}</Typography>
+          </Grid>
+          <Grid item xs="auto">
+            <IconButton onClick={this.handleCancelJob(job.id)}>
+              <FontAwesomeIcon icon={faXmarkCircle} />
+            </IconButton>
+          </Grid>
+        </Grid>
+      ))}
+    </Stack>
+  );
 
   render() {
     const { jobs, isPaused } = this.props;
     return (
       <div className="actionQueue">
         <Typography className="title">Action Queue</Typography>
-        <div className="jobLayout">{this.getJobLayout(jobs)}</div>
+        {this.getJobLayout(jobs)}
         <Button onClick={this.handlePause}>
           {isPaused ? 'Play' : 'Pause'}
         </Button>
@@ -42,6 +68,7 @@ ActionQueuePanel.propTypes = {
   ).isRequired,
   isPaused: PropTypes.bool.isRequired,
   togglePaused: PropTypes.func.isRequired,
+  removeJobFromQueueById: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -51,6 +78,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   togglePaused: gameActions.togglePaused,
+  removeJobFromQueueById: jobActions.removeJobFromQueueById,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionQueuePanel);

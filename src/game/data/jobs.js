@@ -1,4 +1,4 @@
-import { SKILLS } from '../shared/consts';
+import { SKILLS } from '../../shared/consts';
 
 const JOB_NAMES = {
   PACE: 'Pace',

@@ -2,12 +2,14 @@ import { Grid } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { KEY_P } from 'keycode-js';
 import GamePanel from './layout/GamePanel';
 import TextPanel from './layout/TextPanel';
 import gameLoopThunk from '../slice/gameLoopThunk';
-import { isGameTicking } from '../slice/gameSlice';
+import { actions as gameActions, isGameTicking } from '../slice/gameSlice';
 
 const gameTicksPerSecond = 60;
+const pauseKey = KEY_P;
 
 class Eudaimonia extends React.PureComponent {
   componentDidMount() {
@@ -15,15 +17,25 @@ class Eudaimonia extends React.PureComponent {
       () => this.gameTick(),
       1000 / gameTicksPerSecond
     );
+    document.addEventListener('keydown', this.handleKeyDown);
   }
 
   componentWillUnmount() {
     clearInterval(this.intervalID);
+    document.removeEventListener('keydown', this.handleKeyDown);
   }
 
   gameTick = () => {
     const { ticking, runGameLoop } = this.props;
     if (!ticking) runGameLoop();
+  };
+
+  handleKeyDown = (event) => {
+    if (event.keyCode === pauseKey) {
+      const { togglePaused } = this.props;
+
+      togglePaused();
+    }
   };
 
   render() {
@@ -42,6 +54,7 @@ class Eudaimonia extends React.PureComponent {
 
 Eudaimonia.propTypes = {
   ticking: PropTypes.bool.isRequired,
+  togglePaused: PropTypes.func.isRequired,
   runGameLoop: PropTypes.func.isRequired,
 };
 
@@ -50,6 +63,7 @@ const mapStateToProps = (store) => ({
 });
 
 const mapDispatchToProps = {
+  togglePaused: gameActions.togglePaused,
   runGameLoop: gameLoopThunk.runGameLoop,
 };
 

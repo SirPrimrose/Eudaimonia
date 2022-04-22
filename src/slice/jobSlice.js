@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { JOB_BASES } from '../game/jobs';
+import { JOB_BASES } from '../game/data/jobs';
 import { getProgressValue } from '../shared/util';
 
 // Initially loads JOB_BASES into state

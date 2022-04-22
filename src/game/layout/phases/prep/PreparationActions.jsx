@@ -7,8 +7,8 @@ import {
   getJobProgress,
 } from '../../../../slice/jobSlice';
 import { actions as gameActions } from '../../../../slice/gameSlice';
-import { JOB_NAMES } from '../../../jobs';
-import { createJobQueueEntry } from '../../../jobConstructor';
+import { createJobQueueEntry } from '../../../data/jobConstructor';
+import { JOB_NAMES } from '../../../data/jobs';
 
 const availableJobs = [JOB_NAMES.PACE, JOB_NAMES.WANDER];
 class PreparationActions extends React.PureComponent {
