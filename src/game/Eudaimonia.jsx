@@ -32,7 +32,7 @@ class Eudaimonia extends React.PureComponent {
         <Grid item xs={2} sx={{ height: '100%' }}>
           <TextPanel />
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={10} sx={{ height: '100%' }}>
           <GamePanel />
         </Grid>
       </Grid>
