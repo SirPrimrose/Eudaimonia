@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getTextLogMessages } from '../../slice/textLogSlice';
-import './TextPanel.css';
 
 class TextPanel extends React.PureComponent {
   getMessageLayout = (messages) =>

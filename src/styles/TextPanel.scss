@@ -1,0 +1,16 @@
+.textPanel {
+  height: 100%;
+  mask-image: linear-gradient(black, transparent);
+  mask-mode: alpha;
+  overflow: hidden;
+
+  .messageLayout {
+    display: flex;
+    flex-direction: column-reverse;
+    height: fit-content;
+  }
+
+  .message {
+    margin-bottom: 6px;
+  }
+}
