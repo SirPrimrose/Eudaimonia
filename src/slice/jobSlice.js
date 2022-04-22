@@ -20,16 +20,19 @@ export const jobSlice = createSlice({
     tickXpToJob: (state, action) => {
       const { xp, name } = action.payload;
       const job = state.jobs[name];
-      const xpToAdd = Math.min(
-        job.maxXp - job.currentXp,
-        Math.floor(xp * state.tickRemaining)
-      );
-      if (xpToAdd > 0) {
-        state.tickRemaining -= xpToAdd / xp;
-      } else {
-        state.tickRemaining = 0;
+      const canAddXp = job.currentXp < job.maxXp;
+      if (canAddXp) {
+        const xpToAdd = Math.min(
+          job.maxXp - job.currentXp,
+          Math.floor(xp * state.tickRemaining)
+        );
+        if (xpToAdd > 0) {
+          state.tickRemaining -= xpToAdd / xp;
+        } else {
+          state.tickRemaining = 0;
+        }
+        job.currentXp += xpToAdd;
       }
-      job.currentXp += xpToAdd;
     },
     addJobToQueue: (state, action) => {
       state.queue.push(action.payload);

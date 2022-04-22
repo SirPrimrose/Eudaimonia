@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as textLogActions } from './textLogSlice';
+import { actions as statsActions } from './statsSlice';
 import {
   actions as jobActions,
   getFirstJobInQueue,
@@ -34,6 +35,8 @@ const tickJobQueue = (dispatch, getState) => {
 const runGameLoop = createAsyncThunk(
   'gameLoop',
   async (payload, { dispatch, getState }) => {
+    dispatch(statsActions.addWanderlust(1));
+
     tickJobQueue(dispatch, getState);
 
     // simulate intense calculations
