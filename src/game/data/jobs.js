@@ -1,20 +1,28 @@
-import { SKILLS } from '../../shared/consts';
+import { SKILL_NAMES } from './skills';
 
 const JOB_NAMES = {
   PACE: 'Pace',
   WANDER: 'Wander',
+  COLLECT: 'Collect',
 };
 
 const JOB_BASES = {
   [JOB_NAMES.PACE]: {
-    skill: SKILLS.AGILITY,
+    skill: SKILL_NAMES.AGILITY,
     currentXp: 0,
     maxXp: 20,
     currentValue: 0,
     maxValue: 10,
   },
   [JOB_NAMES.WANDER]: {
-    skill: SKILLS.AGILITY,
+    skill: SKILL_NAMES.AGILITY,
+    currentXp: 0,
+    maxXp: 50,
+    currentValue: 0,
+    maxValue: 10,
+  },
+  [JOB_NAMES.COLLECT]: {
+    skill: SKILL_NAMES.AGILITY,
     currentXp: 0,
     maxXp: 50,
     currentValue: 0,

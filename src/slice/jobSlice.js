@@ -8,6 +8,7 @@ const initialState = {
   tickRemaining: 1,
   jobs: JOB_BASES,
   queue: [],
+  xpAdded: 0,
 };
 
 export const jobSlice = createSlice({
@@ -32,6 +33,9 @@ export const jobSlice = createSlice({
           state.tickRemaining = 0;
         }
         job.currentXp += xpToAdd;
+        state.xpAdded = xpToAdd;
+      } else {
+        state.xpAdded = 0;
       }
     },
     addJobToQueue: (state, action) => {
@@ -53,7 +57,19 @@ export const getJobProgress = (store) => (jobName) =>
     store.jobs.jobs[jobName].maxXp
   );
 
-export const getFirstJobInQueue = (store) => store.jobs.queue.find(() => true);
+export const getFirstJobInQueue = (store) => {
+  const firstJobRaw = store.jobs.queue.find(() => true);
+  if (firstJobRaw) {
+    const firstJobData = store.jobs.jobs[firstJobRaw.name];
+    return {
+      ...firstJobRaw,
+      ...firstJobData,
+    };
+  }
+  return null;
+};
+
+export const getXpAdded = (store) => store.jobs.xpAdded;
 
 export const shouldRemoveFirstJobFromQueue = (store) => {
   const firstJob = getFirstJobInQueue(store);

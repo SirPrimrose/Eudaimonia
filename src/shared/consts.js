@@ -5,9 +5,4 @@ const PHASES = {
   PREP: 'Preparation',
 };
 
-const SKILLS = {
-  AGILITY: 'Agility',
-  WOODCUTTING: 'Woodcutting',
-};
-
-export { PHASES, SKILLS, GAME_LOOP_THUNK };
+export { PHASES, GAME_LOOP_THUNK };

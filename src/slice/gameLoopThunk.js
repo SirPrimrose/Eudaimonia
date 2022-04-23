@@ -1,9 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as textLogActions } from './textLogSlice';
 import { actions as statsActions } from './statsSlice';
+import { actions as skillActions } from './skillSlice';
 import {
   actions as jobActions,
   getFirstJobInQueue,
+  getXpAdded,
   shouldRemoveFirstJobFromQueue,
   shouldTickJobQueue,
 } from './jobSlice';
@@ -18,9 +20,13 @@ const tickJobQueue = (dispatch, getState) => {
     let currentJob = getFirstJobInQueue(getState());
     if (currentJob) {
       dispatch(jobActions.tickXpToJob({ xp: 3, name: currentJob.name }));
+      const xpAdded = getXpAdded(getState());
+      dispatch(
+        skillActions.addXpToSkill({ xp: xpAdded, name: currentJob.skill })
+      );
       dispatch(
         textLogActions.addMessage(
-          `${currentJob.name} now has ${
+          `${currentJob.name} gained ${xpAdded} xp and now has ${
             getState().jobs.jobs[currentJob.name].currentXp
           } xp`
         )

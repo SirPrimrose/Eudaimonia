@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
+// TODO: Convert to inventory slice
 const initialState = {
   wanderlust: 0,
   maxWanderlust: 20,
