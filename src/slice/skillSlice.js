@@ -1,9 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { SKILL_BASES } from '../game/data/skills';
+import {
+  SKILL_DATA,
+  xpReqForCurrentLevel,
+  xpReqForPermLevel,
+} from '../game/data/skills';
 
 const initialState = {
-  skills: SKILL_BASES,
+  skills: SKILL_DATA,
 };
 
 export const skillSlice = createSlice({
@@ -12,12 +16,25 @@ export const skillSlice = createSlice({
   reducers: {
     addXpToSkill: (state, action) => {
       const { xp, name } = action.payload;
+      // Floor xp to a integer
+      const xpInt = Math.floor(xp);
       const skill = state.skills[name];
-      skill.currentXp += xp;
-      // Check if xp high enough to gain level
-      while (skill.currentXp >= 100) {
-        skill.currentXp -= 100;
+
+      // Gain xp
+      skill.currentXp += xpInt;
+      skill.permXp += xpInt;
+
+      // Check for level ups
+      while (skill.currentXp >= skill.currentLevelXpReq) {
+        skill.currentXp -= skill.currentLevelXpReq;
         skill.currentLevel += 1;
+        skill.currentLevelXpReq = xpReqForCurrentLevel(skill.currentLevel);
+      }
+
+      while (skill.permXp >= skill.permLevelXpReq) {
+        skill.permXp -= skill.permLevelXpReq;
+        skill.permLevel += 1;
+        skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
       }
     },
     resetSkillCurrentLevels: (state) => {
@@ -25,6 +42,7 @@ export const skillSlice = createSlice({
         ...skill,
         currentLevel: 0,
         currentXp: 0,
+        currentLevelXpReq: xpReqForCurrentLevel(0),
       }));
     },
   },
