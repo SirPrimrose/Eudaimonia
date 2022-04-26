@@ -22,6 +22,8 @@ export const jobSlice = createSlice({
       const { xp, name } = action.payload;
       const job = state.jobs[name];
       const canAddXp = job.currentXp < job.maxXp;
+
+      // TODO: Rewrite loop to catch edge cases sooner and allow partial xp (tick remaining is not enough for xp, etc.)
       if (canAddXp) {
         const xpToAdd = Math.min(
           job.maxXp - job.currentXp,

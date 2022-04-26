@@ -9,7 +9,7 @@ import {
   shouldRemoveFirstJobFromQueue,
   shouldTickJobQueue,
 } from './jobSlice';
-import { GAME_LOOP_THUNK } from '../shared/consts';
+import { GAME_LOOP_THUNK, GAME_TICK_TIME } from '../shared/consts';
 import { actions as gameActions, isGamePaused } from './gameSlice';
 import { STAT_NAMES } from '../game/data/stats';
 
@@ -55,14 +55,16 @@ const runGameLoop = createAsyncThunk(
         );
 
         tickJobQueue(dispatch, getState);
+
+        dispatch(gameActions.addGameTime(GAME_TICK_TIME));
       }
     }
 
     // simulate intense calculations
-    await new Promise((resolve) =>
+    /* await new Promise((resolve) =>
       // eslint-disable-next-line no-promise-executor-return
       setTimeout(resolve, Math.random() * 1000 + 1000)
-    );
+    ); */
   }
 );
 

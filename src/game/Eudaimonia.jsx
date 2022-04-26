@@ -7,16 +7,13 @@ import GamePanel from './layout/GamePanel';
 import TextPanel from './layout/TextPanel';
 import gameLoopThunk from '../slice/gameLoopThunk';
 import { actions as gameActions, isGameTicking } from '../slice/gameSlice';
+import { GAME_TICK_TIME } from '../shared/consts';
 
-const gameTicksPerSecond = 60;
 const pauseKey = KEY_P;
 
 class Eudaimonia extends React.PureComponent {
   componentDidMount() {
-    this.intervalID = setInterval(
-      () => this.gameTick(),
-      1000 / gameTicksPerSecond
-    );
+    this.intervalID = setInterval(() => this.gameTick(), GAME_TICK_TIME);
     document.addEventListener('keydown', this.handleKeyDown);
   }
 

@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { GAME_LOOP_THUNK, PHASES } from '../shared/consts';
 
 const initialState = {
+  gameTime: 0,
   phase: PHASES.PREP,
   isTicking: false,
   isPaused: false,
@@ -20,6 +21,9 @@ export const gameSlice = createSlice({
     },
     togglePaused: (state) => {
       state.isPaused = !state.isPaused;
+    },
+    addGameTime: (state, { payload }) => {
+      state.gameTime += payload;
     },
   },
   extraReducers: (builder) => {
@@ -39,6 +43,7 @@ export const gameSlice = createSlice({
 export const isGamePaused = (store) => store.game.isPaused;
 export const isGameTicking = (store) => store.game.isTicking;
 export const getGamePhase = (store) => store.game.phase;
+export const getGameTime = (store) => store.game.gameTime;
 
 export const { actions } = gameSlice;
 

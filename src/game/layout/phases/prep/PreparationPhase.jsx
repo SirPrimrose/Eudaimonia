@@ -3,7 +3,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { PHASES } from '../../../../shared/consts';
-import { actions as phaseActions } from '../../../../slice/gameSlice';
+import {
+  actions as phaseActions,
+  getGameTime,
+} from '../../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../../slice/textLogSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
 import { getStatByName } from '../../../../slice/statsSlice';
@@ -20,7 +23,7 @@ class PreparationPhase extends React.PureComponent {
   };
 
   render() {
-    const { wanderlust, maxWanderlust } = this.props;
+    const { gameTime, wanderlust, maxWanderlust } = this.props;
     const shouldShowDepart = wanderlust >= maxWanderlust;
 
     return (
@@ -28,7 +31,7 @@ class PreparationPhase extends React.PureComponent {
         <ProgressBarWithOverlay
           value={getProgressValue(wanderlust, maxWanderlust)}
         >
-          Wanderlust
+          {`Wanderlust | ${Math.floor(gameTime)}`}
         </ProgressBarWithOverlay>
         <PreparationActions />
         {shouldShowDepart && (
@@ -40,6 +43,7 @@ class PreparationPhase extends React.PureComponent {
 }
 
 PreparationPhase.propTypes = {
+  gameTime: PropTypes.number.isRequired,
   wanderlust: PropTypes.number.isRequired,
   maxWanderlust: PropTypes.number.isRequired,
   setPhase: PropTypes.func.isRequired,
@@ -49,6 +53,7 @@ PreparationPhase.propTypes = {
 const mapStateToProps = (state) => {
   const prepTime = getStatByName(state)(STAT_NAMES.PREP_TIME);
   return {
+    gameTime: getGameTime(state),
     wanderlust: prepTime.currentValue,
     maxWanderlust: prepTime.maxValue,
   };
