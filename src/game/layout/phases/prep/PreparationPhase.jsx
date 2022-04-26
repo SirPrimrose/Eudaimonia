@@ -6,9 +6,10 @@ import { PHASES } from '../../../../shared/consts';
 import { actions as phaseActions } from '../../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../../slice/textLogSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
-import { getMaxWanderlust, getWanderlust } from '../../../../slice/statsSlice';
+import { getStatByName } from '../../../../slice/statsSlice';
 import { getProgressValue } from '../../../../shared/util';
 import PreparationActions from './PreparationActions';
+import { STAT_NAMES } from '../../../data/stats';
 
 class PreparationPhase extends React.PureComponent {
   beginToWander = () => {
@@ -45,10 +46,13 @@ PreparationPhase.propTypes = {
   addMessage: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  wanderlust: getWanderlust(state),
-  maxWanderlust: getMaxWanderlust(state),
-});
+const mapStateToProps = (state) => {
+  const prepTime = getStatByName(state)(STAT_NAMES.PREP_TIME);
+  return {
+    wanderlust: prepTime.currentValue,
+    maxWanderlust: prepTime.maxValue,
+  };
+};
 
 const mapDispatchToProps = {
   setPhase: phaseActions.setPhase,

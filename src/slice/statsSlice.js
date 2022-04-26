@@ -1,30 +1,37 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import { STAT_DATA } from '../game/data/stats';
 
-// TODO: Convert to inventory slice
 const initialState = {
-  wanderlust: 0,
-  maxWanderlust: 20,
+  stats: STAT_DATA,
 };
 
 export const statsSlice = createSlice({
   name: 'stats',
   initialState,
   reducers: {
-    addWanderlust: (state, { payload }) => {
-      state.wanderlust = Math.min(
-        state.maxWanderlust,
-        state.wanderlust + payload
-      );
+    addStat: (state, { payload }) => {
+      const { name, value } = payload;
+      const stat = state.stats[name];
+
+      stat.currentValue = Math.min(stat.maxValue, stat.currentValue + value);
     },
-    resetWanderlust: (state) => {
-      state.wanderlust = initialState.wanderlust;
+    setStat: (state, { payload }) => {
+      const { name, newValue } = payload;
+
+      state.stats[name].currentValue = newValue;
+    },
+    decayStat: (state, { payload }) => {
+      const { name, currentTime, decayTime } = payload;
+
+      // TODO: Implement stat decay based on time interval
+      state.stats[name].currentValue -= 1;
     },
   },
 });
 
-export const getWanderlust = (store) => store.stats.wanderlust;
-export const getMaxWanderlust = (store) => store.stats.maxWanderlust;
+export const getStatByName = (store) => (statName) =>
+  store.stats.stats[statName];
 
 export const { actions } = statsSlice;
 

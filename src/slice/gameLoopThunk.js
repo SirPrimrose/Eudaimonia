@@ -11,6 +11,7 @@ import {
 } from './jobSlice';
 import { GAME_LOOP_THUNK } from '../shared/consts';
 import { actions as gameActions, isGamePaused } from './gameSlice';
+import { STAT_NAMES } from '../game/data/stats';
 
 const tickJobQueue = (dispatch, getState) => {
   // Set full value of tick in state
@@ -49,7 +50,9 @@ const runGameLoop = createAsyncThunk(
       if (shouldGamePause(getState)) {
         dispatch(gameActions.setPaused(true));
       } else {
-        dispatch(statsActions.addWanderlust(1));
+        dispatch(
+          statsActions.addStat({ name: STAT_NAMES.PREP_TIME, value: 1 })
+        );
 
         tickJobQueue(dispatch, getState);
       }
