@@ -5,6 +5,7 @@ import { actions as skillActions } from './skillSlice';
 import {
   actions as jobActions,
   getFirstJobInQueue,
+  getTickRemaining,
   getXpAdded,
   shouldRemoveFirstJobFromQueue,
   shouldTickJobQueue,
@@ -20,7 +21,7 @@ const tickJobQueue = (dispatch, getState) => {
     // Tick current job
     let currentJob = getFirstJobInQueue(getState());
     if (currentJob) {
-      dispatch(jobActions.tickXpToJob({ xp: 0.01, name: currentJob.name }));
+      dispatch(jobActions.tickXpToJob({ xp: 0.35, name: currentJob.name }));
       const xpAdded = getXpAdded(getState());
       dispatch(
         skillActions.addXpToSkill({ xp: xpAdded, name: currentJob.skill })
@@ -39,6 +40,7 @@ const tickJobQueue = (dispatch, getState) => {
       }
     }
   }
+  return getTickRemaining(getState());
 };
 
 const shouldGamePause = (getState) => !getFirstJobInQueue(getState());
@@ -50,18 +52,18 @@ const runGameLoop = createAsyncThunk(
       if (shouldGamePause(getState)) {
         dispatch(gameActions.setPaused(true));
       } else {
-        tickJobQueue(dispatch, getState);
+        const tickRem = tickJobQueue(dispatch, getState);
+        const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
-        // TODO: Add game time and decay based on time spent doing jobs
         dispatch(
           statsActions.decayStat({
             name: STAT_NAMES.PREP_TIME,
             currentTimeMs: getGameTime(getState()),
-            decayTimeMs: GAME_TICK_TIME,
+            decayTimeMs: jobTime,
           })
         );
 
-        dispatch(gameActions.addGameTime(GAME_TICK_TIME));
+        dispatch(gameActions.addGameTime(jobTime));
       }
     }
 
