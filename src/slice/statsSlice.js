@@ -22,10 +22,16 @@ export const statsSlice = createSlice({
       state.stats[name].currentValue = newValue;
     },
     decayStat: (state, { payload }) => {
-      const { name, currentTime, decayTime } = payload;
+      const { name, currentTimeMs, decayTimeMs } = payload;
+      const stat = state.stats[name];
+      const { baseDecayRate, decayModifier } = stat;
 
-      // TODO: Implement stat decay based on time interval
-      state.stats[name].currentValue -= 1;
+      // Decay rate grows exponentially with time
+      const decayRate =
+        baseDecayRate * decayModifier ** (currentTimeMs / 60000);
+      const decay = decayRate * (decayTimeMs / 1000);
+
+      stat.currentValue = Math.min(stat.maxValue, stat.currentValue - decay);
     },
   },
 });

@@ -10,7 +10,7 @@ import {
   shouldTickJobQueue,
 } from './jobSlice';
 import { GAME_LOOP_THUNK, GAME_TICK_TIME } from '../shared/consts';
-import { actions as gameActions, isGamePaused } from './gameSlice';
+import { actions as gameActions, getGameTime, isGamePaused } from './gameSlice';
 import { STAT_NAMES } from '../game/data/stats';
 
 const tickJobQueue = (dispatch, getState) => {
@@ -50,11 +50,16 @@ const runGameLoop = createAsyncThunk(
       if (shouldGamePause(getState)) {
         dispatch(gameActions.setPaused(true));
       } else {
-        dispatch(
-          statsActions.addStat({ name: STAT_NAMES.PREP_TIME, value: 1 })
-        );
-
         tickJobQueue(dispatch, getState);
+
+        // TODO: Add game time and decay based on time spent doing jobs
+        dispatch(
+          statsActions.decayStat({
+            name: STAT_NAMES.PREP_TIME,
+            currentTimeMs: getGameTime(getState()),
+            decayTimeMs: GAME_TICK_TIME,
+          })
+        );
 
         dispatch(gameActions.addGameTime(GAME_TICK_TIME));
       }
