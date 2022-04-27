@@ -16,13 +16,11 @@ export const skillSlice = createSlice({
   reducers: {
     addXpToSkill: (state, action) => {
       const { xp, name } = action.payload;
-      // Floor xp to a integer
-      const xpInt = Math.floor(xp);
       const skill = state.skills[name];
 
       // Gain xp
-      skill.currentXp += xpInt;
-      skill.permXp += xpInt;
+      skill.currentXp += xp;
+      skill.permXp += xp;
 
       // Check for level ups
       while (skill.currentXp >= skill.currentLevelXpReq) {

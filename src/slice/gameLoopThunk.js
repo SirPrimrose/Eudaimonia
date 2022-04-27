@@ -20,7 +20,7 @@ const tickJobQueue = (dispatch, getState) => {
     // Tick current job
     let currentJob = getFirstJobInQueue(getState());
     if (currentJob) {
-      dispatch(jobActions.tickXpToJob({ xp: 3, name: currentJob.name }));
+      dispatch(jobActions.tickXpToJob({ xp: 0.01, name: currentJob.name }));
       const xpAdded = getXpAdded(getState());
       dispatch(
         skillActions.addXpToSkill({ xp: xpAdded, name: currentJob.skill })

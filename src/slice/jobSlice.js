@@ -21,21 +21,23 @@ export const jobSlice = createSlice({
     tickXpToJob: (state, action) => {
       const { xp, name } = action.payload;
       const job = state.jobs[name];
-      const canAddXp = job.currentXp < job.maxXp;
 
-      // TODO: Rewrite loop to catch edge cases sooner and allow partial xp (tick remaining is not enough for xp, etc.)
-      if (canAddXp) {
-        const xpToAdd = Math.min(
-          job.maxXp - job.currentXp,
-          Math.floor(xp * state.tickRemaining)
-        );
-        if (xpToAdd > 0) {
+      const remainingXp = job.maxXp - job.currentXp;
+      const tickXp = state.tickRemaining * xp;
+
+      if (remainingXp > 0) {
+        if (job.currentXp + tickXp > job.maxXp) {
+          // Only add needed xp
+          const xpToAdd = job.maxXp - job.currentXp;
+          job.currentXp = job.maxXp;
+          state.xpAdded = xpToAdd;
           state.tickRemaining -= xpToAdd / xp;
         } else {
+          // Add full xp amount
+          job.currentXp += tickXp;
+          state.xpAdded = tickXp;
           state.tickRemaining = 0;
         }
-        job.currentXp += xpToAdd;
-        state.xpAdded = xpToAdd;
       } else {
         state.xpAdded = 0;
       }
