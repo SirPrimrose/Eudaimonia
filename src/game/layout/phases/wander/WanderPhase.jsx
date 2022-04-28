@@ -3,15 +3,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { actions as textLogActions } from '../../../../slice/textLogSlice';
+import JobActions from '../JobActions';
+import { JOB_NAMES } from '../../../data/jobs';
+
+// TODO: These jobs should come from redux as "wanderPhaseJobs"
+const jobs = [JOB_NAMES.CUT_WOOD, JOB_NAMES.CATCH_FISH];
 
 class WanderPhase extends React.PureComponent {
   render() {
     const { addMessage, clearMessages } = this.props;
+
     return (
       <div>
         <Button onClick={() => addMessage('Hello')}>Say hello</Button>
         <Button onClick={() => addMessage('Goodbye')}>Say goodbye</Button>
         <Button onClick={() => clearMessages()}>Clear messages</Button>
+        <JobActions availableJobs={jobs} />
       </div>
     );
   }

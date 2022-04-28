@@ -6,6 +6,8 @@ const SKILL_NAMES = {
   AGILITY: 'Agility',
   FARMING: 'Farming',
   COMBAT: 'Combat',
+  WOODCUTTING: 'Woodcutting',
+  FISHING: 'Fishing',
 };
 
 // Add unique fields to each skill
@@ -13,6 +15,8 @@ const SKILL_BASES = {
   [SKILL_NAMES.AGILITY]: {},
   [SKILL_NAMES.FARMING]: {},
   [SKILL_NAMES.COMBAT]: {},
+  [SKILL_NAMES.WOODCUTTING]: {},
+  [SKILL_NAMES.FISHING]: {},
 };
 
 const SKILL_DATA = Object.keys(SKILL_BASES).reduce(

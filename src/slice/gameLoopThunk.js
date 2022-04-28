@@ -15,13 +15,13 @@ import { actions as gameActions, getGameTime, isGamePaused } from './gameSlice';
 import { STAT_NAMES } from '../game/data/stats';
 
 const tickJobQueue = (dispatch, getState) => {
-  // Set full value of tick in state
   dispatch(jobActions.resetQueueTick());
+
   while (shouldTickJobQueue(getState())) {
-    // Tick current job
-    let currentJob = getFirstJobInQueue(getState());
+    const currentJob = getFirstJobInQueue(getState());
+
     if (currentJob) {
-      dispatch(jobActions.tickXpToJob({ xp: 0.35, name: currentJob.name }));
+      dispatch(jobActions.tickXpToJob({ xp: 0.01, name: currentJob.name }));
       const xpAdded = getXpAdded(getState());
       dispatch(
         skillActions.addXpToSkill({ xp: xpAdded, name: currentJob.skill })
@@ -33,8 +33,8 @@ const tickJobQueue = (dispatch, getState) => {
           } xp`
         )
       );
-      // Check for job completion to trigger inventory completion actions
-      currentJob = getFirstJobInQueue(getState());
+
+      // If job is complete, perform "completionEvents" according to job
       if (shouldRemoveFirstJobFromQueue(getState())) {
         dispatch(jobActions.removeJobFromQueueById(currentJob.id));
       }

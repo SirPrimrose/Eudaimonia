@@ -4,6 +4,7 @@ import statsReducer from './slice/statsSlice';
 import textLogReducer from './slice/textLogSlice';
 import jobReducer from './slice/jobSlice';
 import skillReducer from './slice/skillSlice';
+import inventoryReducer from './slice/inventorySlice';
 
 export default configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export default configureStore({
     skill: skillReducer,
     textLog: textLogReducer,
     jobs: jobReducer,
+    inventory: inventoryReducer,
   },
 });

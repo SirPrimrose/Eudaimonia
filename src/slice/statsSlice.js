@@ -31,6 +31,7 @@ export const statsSlice = createSlice({
         baseDecayRate * decayModifier ** (currentTimeMs / 60000);
       const decay = decayRate * (decayTimeMs / 1000);
 
+      stat.currentDecayRate = -decayRate;
       stat.currentValue = Math.min(stat.maxValue, stat.currentValue - decay);
     },
   },

@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import { JOB_NAMES } from '../game/data/jobs';
 import { GAME_LOOP_THUNK, PHASES } from '../shared/consts';
 
 const initialState = {
@@ -7,6 +8,8 @@ const initialState = {
   phase: PHASES.PREP,
   isTicking: false,
   isPaused: false,
+  prepPhaseJobs: [JOB_NAMES.PACE, JOB_NAMES.WANDER],
+  wanderPhaseJobs: [],
 };
 
 export const gameSlice = createSlice({
@@ -44,6 +47,8 @@ export const isGamePaused = (store) => store.game.isPaused;
 export const isGameTicking = (store) => store.game.isTicking;
 export const getGamePhase = (store) => store.game.phase;
 export const getGameTime = (store) => store.game.gameTime;
+export const getPrepPhaseJobs = (store) => store.game.prepPhaseJobs;
+export const getWanderPhaseJobs = (store) => store.game.wanderPhaseJobs;
 
 export const { actions } = gameSlice;
 
