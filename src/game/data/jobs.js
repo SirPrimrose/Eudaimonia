@@ -14,6 +14,8 @@ const JOB_NAMES = {
   COLLECT: 'Collect',
   CUT_WOOD: 'Cut Wood',
   CATCH_FISH: 'Catch Fish',
+  SEARCH_CLEARING: 'Search Clearing',
+  LEAVE_CLEARING: 'Leave Clearing',
 };
 
 const JOB_BASES = {
@@ -38,7 +40,7 @@ const JOB_BASES = {
   [JOB_NAMES.SEARCH_CLEARING]: {
     skill: SKILL_NAMES.AGILITY,
     currentXp: 0,
-    maxXp: 15,
+    maxXp: 5,
     completionEvents: [
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
@@ -49,7 +51,7 @@ const JOB_BASES = {
   [JOB_NAMES.LEAVE_CLEARING]: {
     skill: SKILL_NAMES.AGILITY,
     currentXp: 0,
-    maxXp: 15,
+    maxXp: 5,
     completionEvents: [
       {
         type: COMPLETION_TYPE.LOCK_JOB,
@@ -81,4 +83,4 @@ const JOB_BASES = {
   },
 };
 
-export { JOB_NAMES, JOB_BASES };
+export { COMPLETION_TYPE, JOB_NAMES, JOB_BASES };

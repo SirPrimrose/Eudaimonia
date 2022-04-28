@@ -7,12 +7,28 @@ import {
   getFirstJobInQueue,
   getTickRemaining,
   getXpAdded,
-  shouldRemoveFirstJobFromQueue,
+  isJobComplete,
   shouldTickJobQueue,
 } from './jobSlice';
 import { GAME_LOOP_THUNK, GAME_TICK_TIME } from '../shared/consts';
 import { actions as gameActions, getGameTime, isGamePaused } from './gameSlice';
 import { STAT_NAMES } from '../game/data/stats';
+import { COMPLETION_TYPE } from '../game/data/jobs';
+
+const performJobCompletionEvent = (dispatch, getState, event) => {
+  switch (event.type) {
+    case COMPLETION_TYPE.UNLOCK_JOB:
+      dispatch(gameActions.addToCurrentJobs(event.value));
+      break;
+    case COMPLETION_TYPE.LOCK_JOB:
+      dispatch(gameActions.removeFromCurrentJobs(event.value));
+      break;
+    default:
+      // eslint-disable-next-line no-console
+      console.error('No default case for event');
+      break;
+  }
+};
 
 const tickJobQueue = (dispatch, getState) => {
   dispatch(jobActions.resetQueueTick());
@@ -35,7 +51,11 @@ const tickJobQueue = (dispatch, getState) => {
       );
 
       // If job is complete, perform "completionEvents" according to job
-      if (shouldRemoveFirstJobFromQueue(getState())) {
+      if (isJobComplete(getState())(currentJob.name)) {
+        // Loop through completion events
+        currentJob.completionEvents.forEach((event) => {
+          performJobCompletionEvent(dispatch, getState, event);
+        });
         dispatch(jobActions.removeJobFromQueueById(currentJob.id));
       }
     }

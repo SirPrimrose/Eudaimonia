@@ -8,8 +8,7 @@ const initialState = {
   phase: PHASES.PREP,
   isTicking: false,
   isPaused: false,
-  prepPhaseJobs: [JOB_NAMES.PACE, JOB_NAMES.WANDER],
-  wanderPhaseJobs: [],
+  currentJobs: [JOB_NAMES.SEARCH_CLEARING, JOB_NAMES.LEAVE_CLEARING],
 };
 
 export const gameSlice = createSlice({
@@ -27,6 +26,12 @@ export const gameSlice = createSlice({
     },
     addGameTime: (state, { payload }) => {
       state.gameTime += payload;
+    },
+    addToCurrentJobs: (state, { payload }) => {
+      if (!state.currentJobs.includes(payload)) state.currentJobs.push(payload);
+    },
+    removeFromCurrentJobs: (state, { payload }) => {
+      state.currentJobs = state.currentJobs.filter((j) => j !== payload);
     },
   },
   extraReducers: (builder) => {
@@ -47,8 +52,7 @@ export const isGamePaused = (store) => store.game.isPaused;
 export const isGameTicking = (store) => store.game.isTicking;
 export const getGamePhase = (store) => store.game.phase;
 export const getGameTime = (store) => store.game.gameTime;
-export const getPrepPhaseJobs = (store) => store.game.prepPhaseJobs;
-export const getWanderPhaseJobs = (store) => store.game.wanderPhaseJobs;
+export const getCurrentJobs = (store) => store.game.currentJobs;
 
 export const { actions } = gameSlice;
 

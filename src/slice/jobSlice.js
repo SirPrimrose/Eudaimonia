@@ -75,9 +75,8 @@ export const getFirstJobInQueue = (store) => {
 
 export const getXpAdded = (store) => store.jobs.xpAdded;
 
-export const shouldRemoveFirstJobFromQueue = (store) => {
-  const firstJob = getFirstJobInQueue(store);
-  const jobData = store.jobs.jobs[firstJob.name];
+export const isJobComplete = (store) => (jobName) => {
+  const jobData = store.jobs.jobs[jobName];
   return jobData.currentXp >= jobData.maxXp;
 };
 

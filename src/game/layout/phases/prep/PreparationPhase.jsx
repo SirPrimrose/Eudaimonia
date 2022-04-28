@@ -6,7 +6,7 @@ import { PHASES } from '../../../../shared/consts';
 import {
   actions as phaseActions,
   getGameTime,
-  getPrepPhaseJobs,
+  getCurrentJobs,
 } from '../../../../slice/gameSlice';
 import { actions as textLogActions } from '../../../../slice/textLogSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
@@ -27,7 +27,7 @@ class PreparationPhase extends React.PureComponent {
   render() {
     const {
       gameTime,
-      prepPhaseJobs,
+      currentJobs,
       wanderlust,
       maxWanderlust,
       currentWanderlustDecay,
@@ -43,7 +43,7 @@ class PreparationPhase extends React.PureComponent {
             gameTime
           )} | ${+currentWanderlustDecay.toFixed(2)} WL/s`}
         </ProgressBarWithOverlay>
-        <JobActions availableJobs={prepPhaseJobs} />
+        <JobActions availableJobs={currentJobs} />
         <Button onClick={this.beginToWander}>Depart</Button>
       </div>
     );
@@ -51,7 +51,7 @@ class PreparationPhase extends React.PureComponent {
 }
 
 PreparationPhase.propTypes = {
-  prepPhaseJobs: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  currentJobs: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   gameTime: PropTypes.number.isRequired,
   wanderlust: PropTypes.number.isRequired,
   maxWanderlust: PropTypes.number.isRequired,
@@ -63,7 +63,7 @@ PreparationPhase.propTypes = {
 const mapStateToProps = (state) => {
   const prepTime = getStatByName(state)(STAT_NAMES.PREP_TIME);
   return {
-    prepPhaseJobs: getPrepPhaseJobs(state),
+    currentJobs: getCurrentJobs(state),
     gameTime: getGameTime(state),
     wanderlust: prepTime.currentValue,
     maxWanderlust: prepTime.maxValue,
