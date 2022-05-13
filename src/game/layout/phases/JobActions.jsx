@@ -15,6 +15,7 @@ class JobActions extends React.PureComponent {
   };
 
   renderAvailableJobs = () => {
+    // TODO: Render jobs by job category (1 column each category, except exploration and progression combined into 1 column)
     const { availableJobs, getProgress } = this.props;
 
     return availableJobs.map((jobName) => (

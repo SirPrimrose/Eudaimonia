@@ -46,10 +46,10 @@ export const skillSlice = createSlice({
   },
 });
 
-export const getSkills = (store) => store.skills.skills;
+export const getSkills = (store) => store.skill.skills;
 
 export const getSkillByName = (store) => (skillName) =>
-  store.skills.skills[skillName];
+  store.skill.skills[skillName];
 
 export const { actions } = skillSlice;
 

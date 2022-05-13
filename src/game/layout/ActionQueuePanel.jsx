@@ -25,7 +25,7 @@ class ActionQueuePanel extends React.PureComponent {
       {jobs.map((job, index) => (
         <Grid
           container
-          key={job.id}
+          key={job.queueId}
           alignItems="center"
           justifyContent="space-between"
         >
@@ -36,7 +36,7 @@ class ActionQueuePanel extends React.PureComponent {
             <Typography className="job">{`${job.name}`}</Typography>
           </Grid>
           <Grid item xs="auto">
-            <IconButton onClick={this.handleCancelJob(job.id)}>
+            <IconButton onClick={this.handleCancelJob(job.queueId)}>
               <FontAwesomeIcon icon={faXmarkCircle} />
             </IconButton>
           </Grid>
@@ -62,7 +62,7 @@ class ActionQueuePanel extends React.PureComponent {
 ActionQueuePanel.propTypes = {
   jobs: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      queueId: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
     })
   ).isRequired,

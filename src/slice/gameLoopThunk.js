@@ -14,14 +14,26 @@ import { GAME_LOOP_THUNK, GAME_TICK_TIME } from '../shared/consts';
 import { actions as gameActions, getGameTime, isGamePaused } from './gameSlice';
 import { STAT_NAMES } from '../game/data/stats';
 import { COMPLETION_TYPE } from '../game/data/jobs';
+import { actions as exploreGroupActions } from './exploreGroupSlice';
 
-const performJobCompletionEvent = (dispatch, getState, event) => {
+const performJobCompletionEvent = (dispatch, getState, job, event) => {
   switch (event.type) {
     case COMPLETION_TYPE.UNLOCK_JOB:
       dispatch(gameActions.addToCurrentJobs(event.value));
       break;
     case COMPLETION_TYPE.LOCK_JOB:
       dispatch(gameActions.removeFromCurrentJobs(event.value));
+      break;
+    case COMPLETION_TYPE.HIDE_SELF:
+      dispatch(gameActions.removeFromCurrentJobs(job.name));
+      break;
+    case COMPLETION_TYPE.EXPLORE_AREA:
+      dispatch(
+        exploreGroupActions.addProgressToExploreGroup({
+          name: event.value,
+          exploreAmount: event.exploreAmount,
+        })
+      );
       break;
     default:
       // eslint-disable-next-line no-console
@@ -37,6 +49,10 @@ const tickJobQueue = (dispatch, getState) => {
     const currentJob = getFirstJobInQueue(getState());
 
     if (currentJob) {
+      // TODO: Add conditional check for requirements before ticking job
+      // 1. Is job in current list of jobs that can be done
+      // 2. Do I have the item requirements for the job (requires inventory set up); includes if the player already has the maximum of the given items
+      // 3. Am I already max exploration for this (if explore area type)
       dispatch(jobActions.tickXpToJob({ xp: 0.01, name: currentJob.name }));
       const xpAdded = getXpAdded(getState());
       dispatch(
@@ -52,11 +68,14 @@ const tickJobQueue = (dispatch, getState) => {
 
       // If job is complete, perform "completionEvents" according to job
       if (isJobComplete(getState())(currentJob.name)) {
-        // Loop through completion events
         currentJob.completionEvents.forEach((event) => {
-          performJobCompletionEvent(dispatch, getState, event);
+          performJobCompletionEvent(dispatch, getState, currentJob, event);
         });
-        dispatch(jobActions.removeJobFromQueueById(currentJob.id));
+        dispatch(jobActions.resetJobXp(currentJob.name));
+        // TODO: Remove this "removeJob" action once requirements are implemented
+        if (true) {
+          dispatch(jobActions.removeJobFromQueueById(currentJob.queueId));
+        }
       }
     }
   }

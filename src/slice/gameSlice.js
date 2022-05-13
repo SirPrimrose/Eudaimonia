@@ -8,7 +8,7 @@ const initialState = {
   phase: PHASES.PREP,
   isTicking: false,
   isPaused: false,
-  currentJobs: [JOB_NAMES.SEARCH_CLEARING, JOB_NAMES.LEAVE_CLEARING],
+  currentJobs: [JOB_NAMES.SEARCH_CLEARING],
 };
 
 export const gameSlice = createSlice({

@@ -6,7 +6,7 @@ import { getTextLogMessages } from '../../slice/textLogSlice';
 class TextPanel extends React.PureComponent {
   getMessageLayout = (messages) =>
     messages.map((message) => (
-      <div className="message" key={message.id}>
+      <div className="message" key={message.listId}>
         {message.text}
       </div>
     ));
@@ -24,7 +24,7 @@ class TextPanel extends React.PureComponent {
 TextPanel.propTypes = {
   messages: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      listId: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
     })
   ),

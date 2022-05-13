@@ -5,6 +5,7 @@ import textLogReducer from './slice/textLogSlice';
 import jobReducer from './slice/jobSlice';
 import skillReducer from './slice/skillSlice';
 import inventoryReducer from './slice/inventorySlice';
+import exploreGroupReducer from './slice/exploreGroupSlice';
 
 export default configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export default configureStore({
     textLog: textLogReducer,
     jobs: jobReducer,
     inventory: inventoryReducer,
+    exploreGroup: exploreGroupReducer,
   },
 });

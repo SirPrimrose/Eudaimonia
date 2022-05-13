@@ -42,12 +42,15 @@ export const jobSlice = createSlice({
         state.xpAdded = 0;
       }
     },
+    resetJobXp: (state, { payload: jobName }) => {
+      const job = state.jobs[jobName];
+      job.currentXp = 0;
+    },
     addJobToQueue: (state, action) => {
       state.queue.push(action.payload);
     },
-    removeJobFromQueueById: (state, action) => {
-      const jobId = action.payload;
-      state.queue = state.queue.filter((j) => j.id !== jobId);
+    removeJobFromQueueById: (state, { payload: queueId }) => {
+      state.queue = state.queue.filter((j) => j.queueId !== queueId);
     },
     clearJobsInQueue: (state) => {
       state.queue = initialState.queue;
