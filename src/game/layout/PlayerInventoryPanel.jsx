@@ -8,7 +8,7 @@ import PlayerItem from './components/PlayerItem';
 class PlayerInventoryPanel extends React.PureComponent {
   getInventoryLayout = (inventory) => (
     <div className="panelGrid">
-      <Stack>
+      <Stack mx={1}>
         {Object.entries(inventory).map(([itemName, item]) => (
           <PlayerItem
             key={itemName}

@@ -32,7 +32,7 @@ class PlayerItem extends React.PureComponent {
       this.props;
 
     return (
-      <Grid container mb={1} alignItems="center">
+      <Grid container pb={1} alignItems="center">
         <Grid item xs={7}>
           <Typography noWrap>{`${itemName}`}</Typography>
         </Grid>
@@ -51,12 +51,14 @@ class PlayerItem extends React.PureComponent {
             <div />
           )}
         </Grid>
-        <Grid item xs={12}>
-          <LinearProgress
-            variant="determinate"
-            value={getProgressValue(currentAmount, maxAmount)}
-          />
-        </Grid>
+        {healType && (
+          <Grid item xs={12}>
+            <LinearProgress
+              variant="determinate"
+              value={getProgressValue(currentAmount, maxAmount)}
+            />
+          </Grid>
+        )}
       </Grid>
     );
   }
