@@ -1,3 +1,13 @@
 @use 'index';
-@use 'ActionQueuePanel';
 @use 'TextPanel';
+
+.panelOutline {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .panelGrid {
+    flex: 1;
+    overflow: auto;
+  }
+}

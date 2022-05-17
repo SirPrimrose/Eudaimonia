@@ -28,8 +28,10 @@ export const inventorySlice = createSlice({
   },
 });
 
+export const getInventory = (store) => store.inventory.items;
+
 export const getItemByName = (store) => (itemName) =>
-  store.inventory.items[itemName];
+  getInventory(store)[itemName];
 
 export const { actions } = inventorySlice;
 

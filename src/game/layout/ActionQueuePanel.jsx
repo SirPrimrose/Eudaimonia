@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Button, Grid, IconButton, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { actions as jobActions, getJobQueue } from '../../slice/jobSlice';
@@ -21,34 +21,31 @@ class ActionQueuePanel extends React.PureComponent {
   };
 
   getJobLayout = (jobs) => (
-    <Stack className="jobLayout">
-      {jobs.map((job, index) => (
-        <Grid
-          container
-          key={job.queueId}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Grid item xs={2}>
-            <Typography className="job">{`${index + 1}.`}</Typography>
-          </Grid>
-          <Grid item xs={8}>
-            <Typography className="job">{`${job.name}`}</Typography>
-          </Grid>
-          <Grid item xs="auto">
-            <IconButton onClick={this.handleCancelJob(job.queueId)}>
-              <FontAwesomeIcon icon={faXmarkCircle} />
-            </IconButton>
-          </Grid>
-        </Grid>
-      ))}
-    </Stack>
+    <div className="panelGrid">
+      <Grid container alignItems="center" justifyContent="space-between">
+        {jobs.map((job, index) => (
+          <Fragment key={job.queueId}>
+            <Grid item xs={2}>
+              <Typography>{`${index + 1}.`}</Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>{`${job.name}`}</Typography>
+            </Grid>
+            <Grid item xs="auto">
+              <IconButton onClick={this.handleCancelJob(job.queueId)}>
+                <FontAwesomeIcon icon={faXmarkCircle} />
+              </IconButton>
+            </Grid>
+          </Fragment>
+        ))}
+      </Grid>
+    </div>
   );
 
   render() {
     const { jobs, isPaused } = this.props;
     return (
-      <div className="actionQueue">
+      <div className="panelOutline">
         <Typography className="title">Action Queue</Typography>
         {this.getJobLayout(jobs)}
         <Button onClick={this.handlePause}>

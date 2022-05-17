@@ -1,6 +1,8 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import ActionQueuePanel from './ActionQueuePanel';
+import PlayerInventoryPanel from './PlayerInventoryPanel';
+import WorldInventoryPanel from './WorldInventoryPanel';
 
 class InventoryPanel extends React.PureComponent {
   render() {
@@ -10,10 +12,10 @@ class InventoryPanel extends React.PureComponent {
           <ActionQueuePanel />
         </Grid>
         <Grid item xs={4} sx={{ overflow: 'hidden' }}>
-          <div>Local Inv</div>
+          <PlayerInventoryPanel />
         </Grid>
         <Grid item xs={4} sx={{ overflow: 'hidden' }}>
-          <div>Stored Inv</div>
+          <WorldInventoryPanel />
         </Grid>
       </Grid>
     );
