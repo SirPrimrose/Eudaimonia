@@ -1,3 +1,5 @@
+import { STAT_NAMES } from './stats';
+
 const ITEM_NAMES = {
   WOOD: 'Wood',
   FISH: 'Fish',
@@ -11,6 +13,8 @@ const ITEM_BASES = {
   [ITEM_NAMES.FISH]: {
     currentAmount: 0,
     maxAmount: 10,
+    healType: STAT_NAMES.HEALTH,
+    healAmount: 25,
   },
 };
 

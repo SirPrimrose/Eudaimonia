@@ -46,7 +46,9 @@ class ActionQueuePanel extends React.PureComponent {
     const { jobs, isPaused } = this.props;
     return (
       <div className="panelOutline">
-        <Typography className="title">Action Queue</Typography>
+        <Typography variant="h6" align="center" className="title">
+          Action Queue
+        </Typography>
         {this.getJobLayout(jobs)}
         <Button onClick={this.handlePause}>
           {isPaused ? 'Play' : 'Pause'}

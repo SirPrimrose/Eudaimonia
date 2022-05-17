@@ -2,20 +2,26 @@ import { Grid } from '@mui/material';
 import React from 'react';
 import ActionQueuePanel from './ActionQueuePanel';
 import PlayerInventoryPanel from './PlayerInventoryPanel';
-import WorldInventoryPanel from './WorldInventoryPanel';
+import WorldResourcePanel from './WorldResourcePanel';
 
 class InventoryPanel extends React.PureComponent {
   render() {
     return (
-      <Grid sx={{ height: '100%' }} container direction="column">
-        <Grid item xs={4} sx={{ overflow: 'hidden' }}>
+      <Grid
+        borderLeft={1}
+        borderRight={1}
+        sx={{ height: '100%' }}
+        container
+        direction="column"
+      >
+        <Grid borderBottom={1} item xs={4} sx={{ overflow: 'hidden' }}>
           <ActionQueuePanel />
         </Grid>
-        <Grid item xs={4} sx={{ overflow: 'hidden' }}>
+        <Grid borderBottom={1} item xs={4} sx={{ overflow: 'hidden' }}>
           <PlayerInventoryPanel />
         </Grid>
         <Grid item xs={4} sx={{ overflow: 'hidden' }}>
-          <WorldInventoryPanel />
+          <WorldResourcePanel />
         </Grid>
       </Grid>
     );

@@ -6,7 +6,7 @@ import ProgressBarWithOverlay from '../../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../../shared/util';
 import { getWorldResources } from '../../slice/exploreGroupSlice';
 
-class WorldInventoryPanel extends React.PureComponent {
+class WorldResourcePanel extends React.PureComponent {
   renderGridItemContent = (worldResourceName, worldResource) => (
     <Tooltip
       title={`Gain ${1} ${worldResourceName} every ${
@@ -51,14 +51,16 @@ class WorldInventoryPanel extends React.PureComponent {
 
     return (
       <div className="panelOutline">
-        <Typography className="title">World</Typography>
+        <Typography variant="h6" align="center" className="title">
+          World
+        </Typography>
         {this.getWorldResourceLayout(worldResources)}
       </div>
     );
   }
 }
 
-WorldInventoryPanel.propTypes = {
+WorldResourcePanel.propTypes = {
   worldResources: PropTypes.objectOf(
     PropTypes.shape({
       potencyPerUnlock: PropTypes.number.isRequired,
@@ -74,4 +76,4 @@ const mapStateToProps = (state) => ({
   worldResources: getWorldResources(state),
 });
 
-export default connect(mapStateToProps)(WorldInventoryPanel);
+export default connect(mapStateToProps)(WorldResourcePanel);
