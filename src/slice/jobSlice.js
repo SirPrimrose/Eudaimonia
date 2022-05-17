@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { JOB_BASES } from '../game/data/jobs';
+import { JOB_DATA } from '../game/data/jobs';
 import { getProgressValue } from '../shared/util';
 
 // Initially loads JOB_BASES into state
 const initialState = {
   tickRemaining: 1,
-  jobs: JOB_BASES,
+  jobs: JOB_DATA,
   queue: [],
   xpAdded: 0,
 };

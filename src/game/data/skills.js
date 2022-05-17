@@ -19,11 +19,12 @@ const SKILL_BASES = {
   [SKILL_NAMES.FISHING]: {},
 };
 
-const SKILL_DATA = Object.keys(SKILL_BASES).reduce(
-  (result, key) => ({
+const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
+  (result, [key, value]) => ({
     ...result,
     [key]: {
-      ...SKILL_BASES[key],
+      ...value,
+      name: key,
       currentLevel: 0,
       currentXp: 0,
       currentLevelXpReq: xpReqForCurrentLevel(0),

@@ -21,11 +21,12 @@ const STAT_BASES = {
   [STAT_NAMES.MAGIC]: { baseDecayRate: 1, decayModifier: 0, maxValue: 100 },
 };
 
-const STAT_DATA = Object.keys(STAT_BASES).reduce(
-  (result, key) => ({
+const STAT_DATA = Object.entries(STAT_BASES).reduce(
+  (result, [key, value]) => ({
     ...result,
     [key]: {
-      ...STAT_BASES[key],
+      ...value,
+      name: key,
       currentDecayRate: 0,
       currentValue: 0,
     },

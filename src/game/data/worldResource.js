@@ -13,11 +13,12 @@ const WORLD_RESOURCE_BASES = {
   },
 };
 
-const WORLD_RESOURCE_DATA = Object.keys(WORLD_RESOURCE_BASES).reduce(
-  (result, key) => ({
+const WORLD_RESOURCE_DATA = Object.entries(WORLD_RESOURCE_BASES).reduce(
+  (result, [key, value]) => ({
     ...result,
     [key]: {
-      ...WORLD_RESOURCE_BASES[key],
+      ...value,
+      name: key,
       currentResource: 0, // current resource available in current life
       maxPotency: 0, // total "checks" until max resources, calculated from explore group potency
       checkedPotency: 0, // how many checks have been finished

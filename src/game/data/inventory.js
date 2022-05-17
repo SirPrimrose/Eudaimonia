@@ -14,4 +14,18 @@ const ITEM_BASES = {
   },
 };
 
-export { ITEM_NAMES, ITEM_BASES };
+const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
+  (result, [key, value]) => ({
+    ...result,
+    [key]: {
+      ...value,
+      name: key,
+      currentExploration: 0,
+      permExploration: 0, // unscaled value of exploration, see scaled exploration for comparable values
+      permExplorationScaled: 0,
+    },
+  }),
+  {}
+);
+
+export { ITEM_NAMES, ITEM_DATA };

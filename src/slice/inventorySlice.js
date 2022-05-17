@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { ITEM_BASES } from '../game/data/inventory';
+import { ITEM_DATA } from '../game/data/inventory';
 
 const initialState = {
-  items: ITEM_BASES,
+  items: ITEM_DATA,
 };
 
 export const inventorySlice = createSlice({

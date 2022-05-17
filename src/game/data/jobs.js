@@ -32,28 +32,24 @@ const JOB_BASES = {
   [JOB_NAMES.PACE]: {
     skill: SKILL_NAMES.AGILITY,
     category: JOB_CATEGORY.ACTION,
-    currentXp: 0,
     maxXp: 20,
     completionEvents: [],
   },
   [JOB_NAMES.WANDER]: {
     skill: SKILL_NAMES.AGILITY,
     category: JOB_CATEGORY.ACTION,
-    currentXp: 0,
     maxXp: 50,
     completionEvents: [],
   },
   [JOB_NAMES.COLLECT]: {
     skill: SKILL_NAMES.AGILITY,
     category: JOB_CATEGORY.ACTION,
-    currentXp: 0,
     maxXp: 50,
     completionEvents: [],
   },
   [JOB_NAMES.SEARCH_CLEARING]: {
     skill: SKILL_NAMES.AGILITY,
     category: JOB_CATEGORY.PROGRESSION,
-    currentXp: 0,
     maxXp: 5,
     completionEvents: [
       {
@@ -76,7 +72,6 @@ const JOB_BASES = {
   [JOB_NAMES.LEAVE_CLEARING]: {
     skill: SKILL_NAMES.AGILITY,
     category: JOB_CATEGORY.PROGRESSION,
-    currentXp: 0,
     maxXp: 5,
     completionEvents: [
       {
@@ -95,7 +90,6 @@ const JOB_BASES = {
   [JOB_NAMES.CUT_WOOD]: {
     skill: SKILL_NAMES.WOODCUTTING,
     category: JOB_CATEGORY.ACTION,
-    currentXp: 0,
     maxXp: 10,
     completionEvents: [
       {
@@ -107,7 +101,6 @@ const JOB_BASES = {
   [JOB_NAMES.STUDY_POND]: {
     skill: SKILL_NAMES.FISHING,
     category: JOB_CATEGORY.EXPLORATION,
-    currentXp: 0,
     maxXp: 5,
     completionEvents: [
       {
@@ -120,7 +113,6 @@ const JOB_BASES = {
   [JOB_NAMES.CATCH_FISH]: {
     skill: SKILL_NAMES.FISHING,
     category: JOB_CATEGORY.ACTION,
-    currentXp: 0,
     maxXp: 3,
     completionEvents: [
       {
@@ -131,4 +123,16 @@ const JOB_BASES = {
   },
 };
 
-export { COMPLETION_TYPE, JOB_NAMES, JOB_BASES };
+const JOB_DATA = Object.entries(JOB_BASES).reduce(
+  (result, [key, value]) => ({
+    ...result,
+    [key]: {
+      ...value,
+      name: key,
+      currentXp: 0,
+    },
+  }),
+  {}
+);
+
+export { COMPLETION_TYPE, JOB_NAMES, JOB_DATA };

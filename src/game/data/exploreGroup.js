@@ -10,11 +10,12 @@ const EXPLORE_BASES = {
   },
 };
 
-const EXPLORE_DATA = Object.keys(EXPLORE_BASES).reduce(
-  (result, key) => ({
+const EXPLORE_DATA = Object.entries(EXPLORE_BASES).reduce(
+  (result, [key, value]) => ({
     ...result,
     [key]: {
-      ...EXPLORE_BASES[key],
+      ...value,
+      name: key,
       currentExploration: 0,
       permExploration: 0, // unscaled value of exploration, see scaled exploration for comparable values
       permExplorationScaled: 0,
