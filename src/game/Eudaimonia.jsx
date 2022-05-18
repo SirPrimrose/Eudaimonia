@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Grid, LinearProgress, Stack } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -8,6 +8,8 @@ import TextPanel from './layout/TextPanel';
 import gameLoopThunk from '../slice/gameLoopThunk';
 import { actions as gameActions, isGameTicking } from '../slice/gameSlice';
 import { GAME_TICK_TIME } from '../shared/consts';
+import PlayerPanel from './layout/PlayerPanel';
+import InfoPanel from './layout/InfoPanel';
 
 const pauseKey = KEY_P;
 
@@ -36,15 +38,26 @@ class Eudaimonia extends React.PureComponent {
   };
 
   render() {
+    // TODO: Show active stat bars (HP, Wanderlust, etc.) above all three main panels
     return (
-      <Grid className="eudaimonia" container>
-        <Grid item xs={2} sx={{ height: '100%' }}>
-          <TextPanel />
+      <Stack className="eudaimonia">
+        <LinearProgress
+          variant="determinate"
+          value={50}
+          sx={{ minHeight: 20 }}
+        />
+        <Grid container sx={{ height: '100%' }}>
+          <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
+            <PlayerPanel />
+          </Grid>
+          <Grid item xs={6} md={7} lg={8} sx={{ height: '100%' }}>
+            <GamePanel />
+          </Grid>
+          <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
+            <InfoPanel />
+          </Grid>
         </Grid>
-        <Grid item xs={10} sx={{ height: '100%' }}>
-          <GamePanel />
-        </Grid>
-      </Grid>
+      </Stack>
     );
   }
 }

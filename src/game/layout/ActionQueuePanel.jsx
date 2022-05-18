@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Grid, IconButton, Typography } from '@mui/material';
@@ -22,13 +22,13 @@ class ActionQueuePanel extends React.PureComponent {
 
   getJobLayout = (jobs) => (
     <div className="panelGrid">
-      <Grid container alignItems="center" justifyContent="space-between">
+      <Grid container overflow="hidden">
         {jobs.map((job, index) => (
-          <Fragment key={job.queueId}>
-            <Grid item xs={2}>
+          <Grid container item xs={12} key={job.queueId} alignItems="center">
+            <Grid item xs={1.5}>
               <Typography>{`${index + 1}.`}</Typography>
             </Grid>
-            <Grid item xs={8}>
+            <Grid item xs>
               <Typography>{`${job.name}`}</Typography>
             </Grid>
             <Grid item xs="auto">
@@ -36,7 +36,7 @@ class ActionQueuePanel extends React.PureComponent {
                 <FontAwesomeIcon icon={faXmarkCircle} />
               </IconButton>
             </Grid>
-          </Fragment>
+          </Grid>
         ))}
       </Grid>
     </div>
