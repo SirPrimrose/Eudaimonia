@@ -36,13 +36,6 @@ class PreparationPhase extends React.PureComponent {
 
     return (
       <div>
-        <ProgressBarWithOverlay
-          value={getProgressValue(wanderlust, maxWanderlust)}
-        >
-          {`Wanderlust | ${Math.floor(
-            gameTime
-          )} | ${+currentWanderlustDecay.toFixed(2)} WL/s`}
-        </ProgressBarWithOverlay>
         <JobActions availableJobs={currentJobs} />
         <Button onClick={this.beginToWander}>Depart</Button>
       </div>

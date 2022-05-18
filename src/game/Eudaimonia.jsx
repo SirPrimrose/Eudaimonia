@@ -1,4 +1,10 @@
-import { Grid, LinearProgress, Stack } from '@mui/material';
+import {
+  Container,
+  Grid,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -10,6 +16,8 @@ import { actions as gameActions, isGameTicking } from '../slice/gameSlice';
 import { GAME_TICK_TIME } from '../shared/consts';
 import PlayerPanel from './layout/PlayerPanel';
 import InfoPanel from './layout/InfoPanel';
+import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
+import { getProgressValue } from '../shared/util';
 
 const pauseKey = KEY_P;
 
@@ -37,16 +45,31 @@ class Eudaimonia extends React.PureComponent {
     }
   };
 
+  // TODO: Convert game time to clock format hh:mm:ss or mm:ss
+  renderHeader = (gameTime) => (
+    <Typography align="center">{Math.floor(gameTime)}ms</Typography>
+  );
+
+  // TODO: Show all active stat bars (HP, Wanderlust, etc.)
+  renderActiveStatusBars = (
+    wanderlust,
+    maxWanderlust,
+    currentWanderlustDecay
+  ) => (
+    <ProgressBarWithOverlay
+      value={getProgressValue(wanderlust, maxWanderlust)}
+      sx={{ minHeight: 20 }}
+    >
+      {`Wanderlust | ${+currentWanderlustDecay.toFixed(2)} WL/s`}
+    </ProgressBarWithOverlay>
+  );
+
   render() {
-    // TODO: Show active stat bars (HP, Wanderlust, etc.) above all three main panels
     return (
       <Stack className="eudaimonia">
-        <LinearProgress
-          variant="determinate"
-          value={50}
-          sx={{ minHeight: 20 }}
-        />
-        <Grid container sx={{ height: '100%' }}>
+        {this.renderHeader(1234)}
+        {this.renderActiveStatusBars(100, 200, 0.456)}
+        <Grid container sx={{ flexGrow: 1, overflow: 'hidden' }}>
           <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
             <PlayerPanel />
           </Grid>

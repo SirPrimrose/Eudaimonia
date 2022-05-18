@@ -1,22 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Container, Stack, Typography } from '@mui/material';
 import { getTextLogMessages } from '../../slice/textLogSlice';
 
 class TextPanel extends React.PureComponent {
   getMessageLayout = (messages) =>
     messages.map((message) => (
-      <div className="message" key={message.listId}>
+      <Typography
+        variant="body2"
+        className="message"
+        key={message.listId}
+        pb={1}
+      >
         {message.text}
-      </div>
+      </Typography>
     ));
 
   render() {
     const { messages } = this.props;
     return (
-      <div className="textPanel">
-        <div className="messageLayout">{this.getMessageLayout(messages)}</div>
-      </div>
+      <Container className="textPanel" disableGutters sx={{ p: 1 }}>
+        <Stack direction="column-reverse">
+          {this.getMessageLayout(messages)}
+        </Stack>
+      </Container>
     );
   }
 }

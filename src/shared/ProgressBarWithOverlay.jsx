@@ -7,7 +7,7 @@ class ProgressBarWithOverlay extends React.PureComponent {
     const { value, sx, children } = this.props;
 
     return (
-      <div style={{ flexGrow: 1 }}>
+      <div>
         <Grid container spacing={1} justify="space-between">
           <Grid item xs={12} style={{ position: 'relative' }}>
             <div
