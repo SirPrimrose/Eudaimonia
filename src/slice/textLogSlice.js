@@ -12,6 +12,10 @@ export const textLogSlice = createSlice({
   reducers: {
     addMessage: (state, action) => {
       state.messages.push({ listId: uuid(), text: action.payload });
+
+      if (state.messages.length >= 25) {
+        state.messages.shift();
+      }
     },
     clearMessages: (state) => {
       state.messages = initialState.messages;

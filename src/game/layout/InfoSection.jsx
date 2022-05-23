@@ -3,7 +3,7 @@ import React from 'react';
 import ActionQueuePanel from './ActionQueuePanel';
 import TextPanel from './TextPanel';
 
-class InfoPanel extends React.PureComponent {
+class InfoSection extends React.PureComponent {
   render() {
     return (
       <Grid
@@ -24,4 +24,4 @@ class InfoPanel extends React.PureComponent {
   }
 }
 
-export default InfoPanel;
+export default InfoSection;

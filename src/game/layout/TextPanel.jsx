@@ -21,6 +21,9 @@ class TextPanel extends React.PureComponent {
     const { messages } = this.props;
     return (
       <Container className="textPanel" disableGutters sx={{ p: 1 }}>
+        <Typography variant="h6" align="center" className="title">
+          Action Log
+        </Typography>
         <Stack direction="column-reverse">
           {this.getMessageLayout(messages)}
         </Stack>

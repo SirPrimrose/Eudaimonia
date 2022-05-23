@@ -1,9 +1,10 @@
 import { Grid } from '@mui/material';
 import React from 'react';
 import PlayerInventoryPanel from './PlayerInventoryPanel';
+import SkillPanel from './SkillPanel';
 import TextPanel from './TextPanel';
 
-class PlayerPanel extends React.PureComponent {
+class PlayerSection extends React.PureComponent {
   render() {
     return (
       <Grid
@@ -19,7 +20,7 @@ class PlayerPanel extends React.PureComponent {
           xs={4}
           sx={{ height: '100%', overflow: 'hidden' }}
         >
-          <TextPanel />
+          <SkillPanel />
         </Grid>
         <Grid
           borderBottom={1}
@@ -34,4 +35,4 @@ class PlayerPanel extends React.PureComponent {
   }
 }
 
-export default PlayerPanel;
+export default PlayerSection;

@@ -10,6 +10,8 @@ const initialState = {
   skills: SKILL_DATA,
 };
 
+// TODO (Long-term): Add a perm xp banking system where perm xp is not kept after rebirth unless you finish the action
+// TODO: Add calculation for xp scaling
 export const skillSlice = createSlice({
   name: 'skills',
   initialState,
@@ -34,6 +36,9 @@ export const skillSlice = createSlice({
         skill.permLevel += 1;
         skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
       }
+
+      skill.xpScaling =
+        1 * 1.01 ** skill.permLevel * 1.05 ** skill.currentLevel;
     },
     resetSkillCurrentLevels: (state) => {
       state.skills.map((skill) => ({

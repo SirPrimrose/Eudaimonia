@@ -31,6 +31,7 @@ const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
       permLevel: 0,
       permXp: 0,
       permLevelXpReq: xpReqForPermLevel(0),
+      xpScaling: 1,
     },
   }),
   {}

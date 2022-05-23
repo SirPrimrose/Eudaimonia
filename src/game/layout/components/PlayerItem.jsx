@@ -74,9 +74,7 @@ class PlayerItem extends React.PureComponent {
             </Grid>
             <Grid item xs={1}>
               {healType && (
-                <Typography variant="body2">
-                  {this.getIconForHealType(healType)}
-                </Typography>
+                <Typography>{this.getIconForHealType(healType)}</Typography>
               )}
             </Grid>
           </Grid>

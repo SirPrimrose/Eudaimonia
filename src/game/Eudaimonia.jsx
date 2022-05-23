@@ -9,13 +9,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { KEY_P } from 'keycode-js';
-import GamePanel from './layout/GamePanel';
+import GameSection from './layout/GameSection';
 import TextPanel from './layout/TextPanel';
 import gameLoopThunk from '../slice/gameLoopThunk';
 import { actions as gameActions, isGameTicking } from '../slice/gameSlice';
 import { GAME_TICK_TIME } from '../shared/consts';
-import PlayerPanel from './layout/PlayerPanel';
-import InfoPanel from './layout/InfoPanel';
+import PlayerSection from './layout/PlayerSection';
+import InfoSection from './layout/InfoSection';
 import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../shared/util';
 
@@ -71,13 +71,13 @@ class Eudaimonia extends React.PureComponent {
         {this.renderActiveStatusBars(100, 200, 0.456)}
         <Grid container sx={{ flexGrow: 1, overflow: 'hidden' }}>
           <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
-            <PlayerPanel />
+            <PlayerSection />
           </Grid>
           <Grid item xs={6} md={7} lg={8} sx={{ height: '100%' }}>
-            <GamePanel />
+            <GameSection />
           </Grid>
           <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
-            <InfoPanel />
+            <InfoSection />
           </Grid>
         </Grid>
       </Stack>
