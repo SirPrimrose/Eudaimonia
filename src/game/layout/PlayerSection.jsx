@@ -2,7 +2,6 @@ import { Grid } from '@mui/material';
 import React from 'react';
 import PlayerInventoryPanel from './PlayerInventoryPanel';
 import SkillPanel from './SkillPanel';
-import TextPanel from './TextPanel';
 
 class PlayerSection extends React.PureComponent {
   render() {

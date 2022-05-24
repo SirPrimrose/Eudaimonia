@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { actions as textLogActions } from './textLogSlice';
 import { actions as statsActions } from './statsSlice';
-import { actions as skillActions } from './skillSlice';
+import { actions as skillActions, getSkillByName } from './skillSlice';
 import {
   actions as jobActions,
   getFirstJobInQueue,
@@ -42,6 +42,12 @@ const performJobCompletionEvent = (dispatch, getState, job, event) => {
   }
 };
 
+const getXpForTick = (getState, skillName) => {
+  const baseXpPerTick = GAME_TICK_TIME / 1000;
+  const skillObj = getSkillByName(getState())(skillName);
+  return baseXpPerTick * skillObj.xpScaling;
+};
+
 const tickJobQueue = (dispatch, getState) => {
   dispatch(jobActions.resetQueueTick());
 
@@ -53,7 +59,12 @@ const tickJobQueue = (dispatch, getState) => {
       // 1. Is job in current list of jobs that can be done
       // 2. Do I have the item requirements for the job (requires inventory set up); includes if the player already has the maximum of the given items
       // 3. Am I already max exploration for this (if explore area type)
-      dispatch(jobActions.tickXpToJob({ xp: 0.01, name: currentJob.name }));
+      dispatch(
+        jobActions.tickXpToJob({
+          xp: getXpForTick(getState, currentJob.skill),
+          name: currentJob.name,
+        })
+      );
       const xpAdded = getXpAdded(getState());
       dispatch(
         skillActions.addXpToSkill({ xp: xpAdded, name: currentJob.skill })

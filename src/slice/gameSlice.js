@@ -5,7 +5,7 @@ import { GAME_LOOP_THUNK, PHASES } from '../shared/consts';
 
 const initialState = {
   gameTime: 0,
-  phase: PHASES.PREP,
+  phase: PHASES.WANDER,
   isTicking: false,
   isPaused: false,
   currentJobs: [JOB_NAMES.SEARCH_CLEARING],
@@ -42,7 +42,7 @@ export const gameSlice = createSlice({
       state.isTicking = false;
     });
     builder.addCase(`${GAME_LOOP_THUNK}/rejected`, (state, { error }) => {
-      console.log('Rejected');
+      // eslint-disable-next-line no-console
       console.error(error.stack);
     });
   },

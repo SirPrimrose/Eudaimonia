@@ -7,15 +7,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faHeart,
-  faPersonRunning,
-  faPlay,
-  faTriangleCircleSquare,
-} from '@fortawesome/free-solid-svg-icons';
 import { getProgressValue } from '../../../shared/util';
-import { STAT_NAMES } from '../../data/stats';
+import { getIconForSkillType } from '../../data/Icons';
 
 class PlayerSkill extends React.PureComponent {
   getTooltipValue = (skillName, currentLevel, permLevel) => (
@@ -24,8 +17,6 @@ class PlayerSkill extends React.PureComponent {
       <Typography variant="body2">{`Current: ${currentLevel} Perm: ${permLevel}`}</Typography>
     </Stack>
   );
-
-  getIconForSkillType = () => <FontAwesomeIcon icon={faPersonRunning} />;
 
   render() {
     const {
@@ -47,20 +38,22 @@ class PlayerSkill extends React.PureComponent {
           title={this.getTooltipValue(skillName, currentLevel, permLevel)}
           disableInteractive
         >
-          <Stack>
+          <Stack spacing={0.25}>
             <Typography noWrap align="center" variant="subtitle2">
-              {this.getIconForSkillType(skillName)}
+              {getIconForSkillType(skillName)}
               {`⨯${xpScaling.toFixed(2)}`}
             </Typography>
 
             <LinearProgress
               variant="determinate"
               value={getProgressValue(currentXp, currentLevelXpReq)}
+              color="primary"
             />
 
             <LinearProgress
               variant="determinate"
               value={getProgressValue(permXp, permLevelXpReq)}
+              color="secondary"
             />
           </Stack>
         </Tooltip>

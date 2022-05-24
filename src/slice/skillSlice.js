@@ -10,7 +10,7 @@ const initialState = {
   skills: SKILL_DATA,
 };
 
-// TODO (Long-term): Add a perm xp banking system where perm xp is not kept after rebirth unless you finish the action
+// TODO: When selecting a "choice" action, locks off the other choice once progress is started
 // TODO: Add calculation for xp scaling
 export const skillSlice = createSlice({
   name: 'skills',
@@ -51,10 +51,16 @@ export const skillSlice = createSlice({
   },
 });
 
-export const getSkills = (store) => store.skill.skills;
+export const getSkills = (store) => Object.values(store.skill.skills);
 
 export const getSkillByName = (store) => (skillName) =>
   store.skill.skills[skillName];
+
+export const getSkillsWithLevels = (store) =>
+  getSkills(store).filter(
+    (skill) =>
+      skill.permLevel > 0 || skill.currentLevel > 0 || skill.currentXp > 0
+  );
 
 export const { actions } = skillSlice;
 

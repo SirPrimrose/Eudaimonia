@@ -7,14 +7,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faHeart,
-  faPlay,
-  faTriangleCircleSquare,
-} from '@fortawesome/free-solid-svg-icons';
 import { getProgressValue } from '../../../shared/util';
-import { STAT_NAMES } from '../../data/stats';
+import { getIconForHealType } from '../../data/Icons';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healPerSecond, flavorText) => {
@@ -23,28 +17,12 @@ class PlayerItem extends React.PureComponent {
         <Stack alignItems="center">
           <Typography variant="body2">{flavorText}</Typography>
           <Typography variant="body2">
-            Heals {healPerSecond} {this.getIconForHealType(healType)} per second
+            Heals {healPerSecond} {getIconForHealType(healType)} per second
           </Typography>
         </Stack>
       );
     }
     return <Typography variant="body2">{flavorText}</Typography>;
-  };
-
-  getIconForHealType = (healType) => {
-    switch (healType) {
-      case STAT_NAMES.HEALTH:
-        return <FontAwesomeIcon icon={faHeart} />;
-      case STAT_NAMES.MAGIC:
-        return (
-          <FontAwesomeIcon
-            icon={faPlay}
-            style={{ transform: 'rotate(-90deg)' }}
-          />
-        );
-      default:
-        return <FontAwesomeIcon icon={faTriangleCircleSquare} />;
-    }
   };
 
   render() {
@@ -63,10 +41,10 @@ class PlayerItem extends React.PureComponent {
           disableInteractive
         >
           <Grid item container xs={12} alignItems="center">
-            <Grid item xs={8}>
+            <Grid item xs="auto">
               <Typography noWrap>{`${itemName}`}</Typography>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs>
               <Typography
                 textAlign="right"
                 pr={1}
@@ -74,7 +52,7 @@ class PlayerItem extends React.PureComponent {
             </Grid>
             <Grid item xs={1}>
               {healType && (
-                <Typography>{this.getIconForHealType(healType)}</Typography>
+                <Typography>{getIconForHealType(healType)}</Typography>
               )}
             </Grid>
           </Grid>

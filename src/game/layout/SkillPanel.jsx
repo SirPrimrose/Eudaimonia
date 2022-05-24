@@ -1,32 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Stack, Typography } from '@mui/material';
-import { getInventory } from '../../slice/inventorySlice';
-import PlayerItem from './components/PlayerItem';
-import { getSkills } from '../../slice/skillSlice';
+import { Grid, Typography } from '@mui/material';
+import { getSkillsWithLevels } from '../../slice/skillSlice';
 import PlayerSkill from './components/PlayerSkill';
 
 class SkillPanel extends React.PureComponent {
-  getSkillLayout = (skills) => (
-    <div className="panelGrid">
-      <Grid container columns={8} p={1} spacing={1}>
-        {Object.entries(skills).map(([skillName, skill]) => (
-          <PlayerSkill
-            key={skillName}
-            skillName={skillName}
-            currentLevel={skill.currentLevel}
-            currentXp={skill.currentXp}
-            currentLevelXpReq={skill.currentLevelXpReq}
-            permLevel={skill.permLevel}
-            permXp={skill.permXp}
-            permLevelXpReq={skill.permLevelXpReq}
-            xpScaling={skill.xpScaling}
-          />
-        ))}
-      </Grid>
-    </div>
-  );
+  getSkillLayout = (skills) => {
+    const numOfColumns = (Math.floor(skills.length / 6) + 1) * 4;
+
+    return (
+      <div className="panelGrid">
+        <Grid container columns={numOfColumns} p={1} spacing={1}>
+          {skills.map((skill) => (
+            <PlayerSkill
+              key={skill.name}
+              skillName={skill.name}
+              currentLevel={skill.currentLevel}
+              currentXp={skill.currentXp}
+              currentLevelXpReq={skill.currentLevelXpReq}
+              permLevel={skill.permLevel}
+              permXp={skill.permXp}
+              permLevelXpReq={skill.permLevelXpReq}
+              xpScaling={skill.xpScaling}
+            />
+          ))}
+        </Grid>
+      </div>
+    );
+  };
 
   render() {
     const { skills } = this.props;
@@ -42,7 +44,7 @@ class SkillPanel extends React.PureComponent {
 }
 
 SkillPanel.propTypes = {
-  skills: PropTypes.objectOf(
+  skills: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       currentLevel: PropTypes.number.isRequired,
@@ -56,7 +58,7 @@ SkillPanel.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  skills: getSkills(state),
+  skills: getSkillsWithLevels(state),
 });
 
 export default connect(mapStateToProps)(SkillPanel);
