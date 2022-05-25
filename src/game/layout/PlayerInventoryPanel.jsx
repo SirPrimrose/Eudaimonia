@@ -10,14 +10,7 @@ class PlayerInventoryPanel extends React.PureComponent {
     <div className="panelGrid">
       <Stack mx={1}>
         {Object.entries(inventory).map(([itemName, item]) => (
-          <PlayerItem
-            key={itemName}
-            itemName={itemName}
-            currentAmount={item.currentAmount}
-            maxAmount={item.maxAmount}
-            healType={item.healType}
-            healPerSecond={item.healAmount / 5}
-          />
+          <PlayerItem key={itemName} item={item} />
         ))}
       </Stack>
     </div>

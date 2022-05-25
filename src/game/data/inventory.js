@@ -9,12 +9,16 @@ const ITEM_BASES = {
   [ITEM_NAMES.WOOD]: {
     currentAmount: 0,
     maxAmount: 20,
+    healType: STAT_NAMES.NONE,
+    healAmount: 0,
+    description: 'Basic Wood',
   },
   [ITEM_NAMES.FISH]: {
     currentAmount: 0,
     maxAmount: 10,
     healType: STAT_NAMES.HEALTH,
     healAmount: 25,
+    description: 'Smelly',
   },
 };
 

@@ -1,4 +1,5 @@
 const STAT_NAMES = {
+  NONE: 'None',
   PREP_TIME: 'Wanderlust',
   WANDER_TIME: 'Perserverence',
   HEALTH: 'Health',
@@ -39,7 +40,7 @@ const STAT_DATA = Object.entries(STAT_BASES).reduce(
     [key]: {
       ...value,
       name: key,
-      currentDecayRate: 0,
+      currentDecayRate: -value.baseDecayRate,
       currentValue: 0,
       isActive: true,
     },

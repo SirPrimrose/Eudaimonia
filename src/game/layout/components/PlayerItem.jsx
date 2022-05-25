@@ -11,38 +11,43 @@ import { getProgressValue } from '../../../shared/util';
 import { getIconForStatType } from './Icons';
 
 class PlayerItem extends React.PureComponent {
-  getTooltipValue = (healType, healPerSecond, flavorText) => {
+  getTooltipValue = (healType, healAmount, description) => {
     if (healType) {
       return (
         <Stack alignItems="center">
-          <Typography variant="body2">{flavorText}</Typography>
+          <Typography variant="body2">{description}</Typography>
           <Typography variant="body2">
-            Heals {healPerSecond} {getIconForStatType(healType)} per second
+            Restores {healAmount / 5} {getIconForStatType(healType)} per second
           </Typography>
         </Stack>
       );
     }
-    return <Typography variant="body2">{flavorText}</Typography>;
+    return <Typography variant="body2">{description}</Typography>;
   };
 
   render() {
-    const { itemName, currentAmount, maxAmount, healType, healPerSecond } =
-      this.props;
+    const {
+      item: {
+        name,
+        currentAmount,
+        maxAmount,
+        healType,
+        healAmount,
+        description,
+      },
+    } = this.props;
     // TODO: Add currentCooldown and maxCooldown properties to tooltip display
 
+    // TODO: Make the linear progress into a circular progress that masks the icon used for healing
     return (
       <Grid container pb={1}>
         <Tooltip
-          title={this.getTooltipValue(
-            healType,
-            healPerSecond,
-            'Used in basic constructions.'
-          )}
+          title={this.getTooltipValue(healType, healAmount, description)}
           disableInteractive
         >
           <Grid item container xs={12} alignItems="center">
             <Grid item xs="auto">
-              <Typography noWrap>{`${itemName}`}</Typography>
+              <Typography noWrap>{`${name}`}</Typography>
             </Grid>
             <Grid item xs>
               <Typography
@@ -73,16 +78,14 @@ class PlayerItem extends React.PureComponent {
 }
 
 PlayerItem.propTypes = {
-  itemName: PropTypes.string.isRequired,
-  currentAmount: PropTypes.number.isRequired,
-  maxAmount: PropTypes.number.isRequired,
-  healType: PropTypes.string,
-  healPerSecond: PropTypes.number,
-};
-
-PlayerItem.defaultProps = {
-  healType: undefined,
-  healPerSecond: 0,
+  item: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    currentAmount: PropTypes.number.isRequired,
+    maxAmount: PropTypes.number.isRequired,
+    description: PropTypes.string.isRequired,
+    healType: PropTypes.string.isRequired,
+    healAmount: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 export default PlayerItem;

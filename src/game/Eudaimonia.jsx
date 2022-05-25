@@ -24,6 +24,7 @@ import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../shared/util';
 import { getActiveStats } from '../slice/statsSlice';
 import { getIconForStatType } from './layout/components/Icons';
+import { toClockTime, toGameNumber } from '../shared/format';
 
 const pauseKey = KEY_P;
 
@@ -51,15 +52,15 @@ class Eudaimonia extends React.PureComponent {
     }
   };
 
-  // TODO: Convert game time to clock format hh:mm:ss or mm:ss
   renderHeader = (gameTime) => (
-    <Typography align="center">{Math.floor(gameTime)}ms</Typography>
+    <Typography align="center">{toClockTime(gameTime)}</Typography>
   );
 
   renderActiveStatusBars = (stats) => (
     <Stack borderBottom={1}>
       {stats.map((stat) => (
         <ProgressBarWithOverlay
+          key={stat.name}
           value={getProgressValue(stat.currentValue, stat.maxValue)}
         >
           <Stack
@@ -69,11 +70,13 @@ class Eudaimonia extends React.PureComponent {
             spacing={4}
           >
             <Typography>
-              {`${+stat.currentValue.toFixed(2)}/${+stat.maxValue.toFixed(2)} `}
+              {`${toGameNumber(stat.currentValue)}/${toGameNumber(
+                stat.maxValue
+              )} `}
               {getIconForStatType(stat.name)}
             </Typography>
             <Typography>
-              {`${+stat.currentDecayRate.toFixed(2)} ${stat.shortName}/s`}
+              {`${toGameNumber(stat.currentDecayRate)} ${stat.shortName}/s`}
             </Typography>
           </Stack>
         </ProgressBarWithOverlay>
