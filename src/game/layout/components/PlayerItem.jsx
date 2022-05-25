@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
-import { getIconForHealType } from '../../data/Icons';
+import { getIconForHealType } from './Icons';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healPerSecond, flavorText) => {

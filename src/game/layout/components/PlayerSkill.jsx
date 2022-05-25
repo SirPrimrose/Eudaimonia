@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
-import { getIconForSkillType } from '../../data/Icons';
+import { getIconForSkillType } from './Icons';
 
 class PlayerSkill extends React.PureComponent {
   getTooltipValue = (skillName, currentLevel, permLevel) => (
