@@ -30,8 +30,8 @@ const getIconForSkillType = (skillName) => {
   }
 };
 
-const getIconForHealType = (healType) => {
-  switch (healType) {
+const getIconForStatType = (statName) => {
+  switch (statName) {
     case STAT_NAMES.HEALTH:
       return <FontAwesomeIcon icon={faHeart} />;
     case STAT_NAMES.MAGIC:
@@ -41,4 +41,4 @@ const getIconForHealType = (healType) => {
   }
 };
 
-export { getIconForSkillType, getIconForHealType };
+export { getIconForSkillType, getIconForStatType };

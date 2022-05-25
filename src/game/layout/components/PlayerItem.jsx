@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
-import { getIconForHealType } from './Icons';
+import { getIconForStatType } from './Icons';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healPerSecond, flavorText) => {
@@ -17,7 +17,7 @@ class PlayerItem extends React.PureComponent {
         <Stack alignItems="center">
           <Typography variant="body2">{flavorText}</Typography>
           <Typography variant="body2">
-            Heals {healPerSecond} {getIconForHealType(healType)} per second
+            Heals {healPerSecond} {getIconForStatType(healType)} per second
           </Typography>
         </Stack>
       );
@@ -52,7 +52,7 @@ class PlayerItem extends React.PureComponent {
             </Grid>
             <Grid item xs={1}>
               {healType && (
-                <Typography>{getIconForHealType(healType)}</Typography>
+                <Typography>{getIconForStatType(healType)}</Typography>
               )}
             </Grid>
           </Grid>

@@ -23,6 +23,7 @@ import InfoSection from './layout/InfoSection';
 import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../shared/util';
 import { getActiveStats } from '../slice/statsSlice';
+import { getIconForStatType } from './layout/components/Icons';
 
 const pauseKey = KEY_P;
 
@@ -56,17 +57,25 @@ class Eudaimonia extends React.PureComponent {
   );
 
   renderActiveStatusBars = (stats) => (
-    <Stack>
+    <Stack borderBottom={1}>
       {stats.map((stat) => (
         <ProgressBarWithOverlay
           value={getProgressValue(stat.currentValue, stat.maxValue)}
-          sx={{ minHeight: 20 }}
         >
-          {`${stat.name} | (${+stat.currentValue.toFixed(
-            2
-          )}/${+stat.maxValue.toFixed(2)}) | ${+stat.currentDecayRate.toFixed(
-            2
-          )} ${stat.shortName}/s`}
+          <Stack
+            borderTop={1}
+            justifyContent="center"
+            direction="row"
+            spacing={4}
+          >
+            <Typography>
+              {`${+stat.currentValue.toFixed(2)}/${+stat.maxValue.toFixed(2)} `}
+              {getIconForStatType(stat.name)}
+            </Typography>
+            <Typography>
+              {`${+stat.currentDecayRate.toFixed(2)} ${stat.shortName}/s`}
+            </Typography>
+          </Stack>
         </ProgressBarWithOverlay>
       ))}
     </Stack>

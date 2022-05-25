@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, LinearProgress, Typography } from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 import PropTypes from 'prop-types';
 
 class ProgressBarWithOverlay extends React.PureComponent {
@@ -20,22 +20,23 @@ class ProgressBarWithOverlay extends React.PureComponent {
                 justifyContent: 'center',
               }}
             >
-              <Typography
+              <div
                 style={{
                   paddingTop: '8px',
                   paddingLeft: '8px',
+                  width: '100%',
+                  textAlign: 'center',
+                  /* TODO: Fix clipping from interfering with icons
                   background:
                     'linear-gradient(to right, white var(--p,50%), black 0)',
                   backgroundPositionX: '4px',
-                  width: '100%',
-                  textAlign: 'center',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
-                  '--p': `${value}%`,
+                  '--p': `${value}%`, */
                 }}
               >
                 {children}
-              </Typography>
+              </div>
             </div>
             <LinearProgress
               className="pb-fast-transition"
