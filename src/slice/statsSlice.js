@@ -37,8 +37,13 @@ export const statsSlice = createSlice({
   },
 });
 
+export const getStats = (store) => Object.values(store.stats.stats);
+
 export const getStatByName = (store) => (statName) =>
   store.stats.stats[statName];
+
+export const getActiveStats = (store) =>
+  getStats(store).filter((stat) => stat.isActive);
 
 export const { actions } = statsSlice;
 
