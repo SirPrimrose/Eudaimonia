@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Typography } from '@mui/material';
-import { getSkillsWithLevels } from '../../slice/skillSlice';
+import { getSkillsWithLevels } from '../../slice/gameSlice';
 import PlayerSkill from './components/PlayerSkill';
 
 class SkillPanel extends React.PureComponent {

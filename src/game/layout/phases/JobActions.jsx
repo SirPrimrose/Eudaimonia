@@ -2,8 +2,10 @@ import { Button, LinearProgress, Stack } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { actions as jobActions, getJobProgress } from '../../../slice/jobSlice';
-import { actions as gameActions } from '../../../slice/gameSlice';
+import {
+  actions as gameActions,
+  getJobProgress,
+} from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
 
 class JobActions extends React.PureComponent {
@@ -45,7 +47,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  addJobToQueue: jobActions.addJobToQueue,
+  addJobToQueue: gameActions.addJobToQueue,
   setPaused: gameActions.setPaused,
 };
 

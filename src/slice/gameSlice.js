@@ -1,20 +1,22 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
-import { JOB_NAMES } from '../game/data/jobs';
-import { GAME_LOOP_THUNK, PHASES } from '../shared/consts';
-
-const initialState = {
-  gameTime: 0,
-  phase: PHASES.WANDER,
-  isTicking: false,
-  isPaused: false,
-  currentJobs: [JOB_NAMES.SEARCH_CLEARING],
-};
+import { v4 as uuid } from 'uuid';
+import { getProgressValue } from '../shared/util';
+import { xpReqForCurrentLevel } from '../game/data/skills';
+import runGameLogicLoop, { initialState } from './gameLogic';
 
 export const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
+    // GAME
+    runGameLoop: (state) => {
+      state.isTicking = true;
+
+      runGameLogicLoop(state, 1);
+
+      state.isTicking = false;
+    },
     setPhase: (state, action) => {
       state.phase = action.payload;
     },
@@ -24,35 +26,115 @@ export const gameSlice = createSlice({
     togglePaused: (state) => {
       state.isPaused = !state.isPaused;
     },
-    addGameTime: (state, { payload }) => {
-      state.gameTime += payload;
+    // INVENTORY
+    addItem: (state, { payload }) => {
+      const { name, amount } = payload;
+      const item = state.items[name];
+
+      item.currentAmount = Math.min(
+        item.maxAmount,
+        item.currentAmount + amount
+      );
     },
-    addToCurrentJobs: (state, { payload }) => {
-      if (!state.currentJobs.includes(payload)) state.currentJobs.push(payload);
+    removeItem: (state, { payload }) => {
+      const { name, amount } = payload;
+      const item = state.items[name];
+
+      item.currentAmount = Math.max(0, item.currentAmount - amount);
     },
-    removeFromCurrentJobs: (state, { payload }) => {
-      state.currentJobs = state.currentJobs.filter((j) => j !== payload);
+    // WORLD
+    // JOBS
+    removeJobFromQueueById: (state, { payload: queueId }) => {
+      state.queue = state.queue.filter((j) => j.queueId !== queueId);
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(`${GAME_LOOP_THUNK}/pending`, (state) => {
-      state.isTicking = true;
-    });
-    builder.addCase(`${GAME_LOOP_THUNK}/fulfilled`, (state) => {
-      state.isTicking = false;
-    });
-    builder.addCase(`${GAME_LOOP_THUNK}/rejected`, (state, { error }) => {
-      // eslint-disable-next-line no-console
-      console.error(error.stack);
-    });
+    addJobToQueue: (state, action) => {
+      state.queue.push(action.payload);
+    },
+    clearJobsInQueue: (state) => {
+      state.queue = initialState.queue;
+    },
+    // SKILLS
+    resetSkillCurrentLevels: (state) => {
+      state.skills.map((skill) => ({
+        ...skill,
+        currentLevel: 0,
+        currentXp: 0,
+        currentLevelXpReq: xpReqForCurrentLevel(0),
+      }));
+    },
+    // STATS
+    addStat: (state, { payload }) => {
+      const { name, value } = payload;
+      const stat = state.stats[name];
+
+      stat.currentValue = Math.min(stat.maxValue, stat.currentValue + value);
+    },
+    setStat: (state, { payload }) => {
+      const { name, newValue } = payload;
+
+      state.stats[name].currentValue = newValue;
+    },
+    // TEXT LOG
+    addMessage: (state, action) => {
+      state.messages.push({ listId: uuid(), text: action.payload });
+
+      if (state.messages.length >= 25) {
+        state.messages.shift();
+      }
+    },
+    clearMessages: (state) => {
+      state.messages = initialState.messages;
+    },
   },
 });
 
+// GAME
 export const isGamePaused = (store) => store.game.isPaused;
 export const isGameTicking = (store) => store.game.isTicking;
 export const getGamePhase = (store) => store.game.phase;
 export const getGameTime = (store) => store.game.gameTime;
 export const getCurrentJobs = (store) => store.game.currentJobs;
+
+// INVENTORY
+export const getInventory = (store) => store.game.items;
+export const getItemByName = (store) => (itemName) =>
+  getInventory(store)[itemName];
+
+// WORLD
+export const getExploreGroups = (store) => store.game.exploreGroups;
+export const getExploreGroupByName = (store) => (groupName) =>
+  getExploreGroups(store)[groupName];
+export const getWorldResources = (store) => store.game.worldResources;
+
+// JOBS
+export const getJobProgress = (store) => (jobName) =>
+  getProgressValue(
+    store.game.jobs[jobName].currentXp,
+    store.game.jobs[jobName].maxXp
+  );
+export const getXpAdded = (store) => store.game.xpAdded;
+export const getJobQueue = (store) => store.game.queue;
+export const getTickRemaining = (store) => store.game.tickRemaining;
+
+// SKILLS
+export const getSkills = (store) => Object.values(store.game.skills);
+export const getSkillByName = (store) => (skillName) =>
+  store.game.skills[skillName];
+export const getSkillsWithLevels = (store) =>
+  getSkills(store).filter(
+    (skill) =>
+      skill.permLevel > 0 || skill.currentLevel > 0 || skill.currentXp > 0
+  );
+
+// STATS
+export const getStats = (store) => Object.values(store.game.stats);
+export const getStatByName = (store) => (statName) =>
+  store.game.stats[statName];
+export const getActiveStats = (store) =>
+  getStats(store).filter((stat) => stat.isActive);
+
+// TEXT LOG
+export const getTextLogMessages = (store) => store.game.messages;
 
 export const { actions } = gameSlice;
 

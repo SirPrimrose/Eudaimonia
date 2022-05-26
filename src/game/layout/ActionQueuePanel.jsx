@@ -4,8 +4,11 @@ import { connect } from 'react-redux';
 import { Button, Grid, IconButton, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
-import { actions as jobActions, getJobQueue } from '../../slice/jobSlice';
-import { actions as gameActions, isGamePaused } from '../../slice/gameSlice';
+import {
+  actions as gameActions,
+  getJobQueue,
+  isGamePaused,
+} from '../../slice/gameSlice';
 
 class ActionQueuePanel extends React.PureComponent {
   handlePause = () => {
@@ -77,7 +80,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   togglePaused: gameActions.togglePaused,
-  removeJobFromQueueById: jobActions.removeJobFromQueueById,
+  removeJobFromQueueById: gameActions.removeJobFromQueueById,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionQueuePanel);

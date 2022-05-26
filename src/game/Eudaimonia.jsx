@@ -11,18 +11,17 @@ import PropTypes from 'prop-types';
 import { KEY_P } from 'keycode-js';
 import GameSection from './layout/GameSection';
 import TextPanel from './layout/TextPanel';
-import gameLoopThunk from '../slice/gameLoopThunk';
 import {
   actions as gameActions,
   getGameTime,
   isGameTicking,
+  getActiveStats,
 } from '../slice/gameSlice';
 import { GAME_TICK_TIME } from '../shared/consts';
 import PlayerSection from './layout/PlayerSection';
 import InfoSection from './layout/InfoSection';
 import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../shared/util';
-import { getActiveStats } from '../slice/statsSlice';
 import { getIconForStatType } from './layout/components/Icons';
 import { toClockTime, toGameNumber } from '../shared/format';
 
@@ -132,7 +131,7 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchToProps = {
   togglePaused: gameActions.togglePaused,
-  runGameLoop: gameLoopThunk.runGameLoop,
+  runGameLoop: gameActions.runGameLoop,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Eudaimonia);

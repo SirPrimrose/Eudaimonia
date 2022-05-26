@@ -4,13 +4,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { PHASES } from '../../../../shared/consts';
 import {
-  actions as phaseActions,
+  actions as gameActions,
   getGameTime,
   getCurrentJobs,
+  getStatByName,
 } from '../../../../slice/gameSlice';
-import { actions as textLogActions } from '../../../../slice/textLogSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
-import { getStatByName } from '../../../../slice/statsSlice';
 import { getProgressValue } from '../../../../shared/util';
 import { STAT_NAMES } from '../../../data/stats';
 import JobActions from '../JobActions';
@@ -65,8 +64,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setPhase: phaseActions.setPhase,
-  addMessage: textLogActions.addMessage,
+  setPhase: gameActions.setPhase,
+  addMessage: gameActions.addMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreparationPhase);

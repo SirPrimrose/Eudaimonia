@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { actions as textLogActions } from '../../../../slice/textLogSlice';
+import { actions as gameActions } from '../../../../slice/gameSlice';
 import JobActions from '../JobActions';
 import { JOB_NAMES } from '../../../data/jobs';
 
@@ -30,8 +30,8 @@ WanderPhase.propTypes = {
 };
 
 const mapDispatchToProps = {
-  addMessage: textLogActions.addMessage,
-  clearMessages: textLogActions.clearMessages,
+  addMessage: gameActions.addMessage,
+  clearMessages: gameActions.clearMessages,
 };
 
 export default connect(null, mapDispatchToProps)(WanderPhase);
