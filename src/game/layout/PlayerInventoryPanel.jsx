@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Stack, Typography } from '@mui/material';
-import { getActiveInventory, getInventory } from '../../slice/gameSlice';
+import { Stack, Typography } from '@mui/material';
+import { getActiveInventory } from '../../slice/gameSlice';
 import PlayerItem from './components/PlayerItem';
 
 class PlayerInventoryPanel extends React.PureComponent {

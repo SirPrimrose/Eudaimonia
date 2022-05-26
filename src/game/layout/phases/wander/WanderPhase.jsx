@@ -11,6 +11,11 @@ const jobs = [JOB_NAMES.CUT_WOOD, JOB_NAMES.CATCH_FISH];
 
 class WanderPhase extends React.PureComponent {
   render() {
+    // TODO: Match design template...
+    // TODO: Three columns of jobs, "Harvest", "Build", "Recon" (containing "Explore" and "Progress" jobs)
+    // "Harvest" column also conatins "Reserves" panel
+    // "Recon" column also contains "World Knowledge" panel
+    // "Build" column also contains "Monuments" panel
     const { addMessage, clearMessages } = this.props;
 
     return (

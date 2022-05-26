@@ -284,6 +284,10 @@ const tickJobQueue = (state, tickMult) => {
 };
 
 const runGameLogicLoop = (state, tickMult) => {
+  // TODO: Attempt to load a game if it exists in save state
+
+  // TODO: If game is not started, run game startup script
+
   if (!state.isPaused) {
     if (state.queue.length === 0) {
       state.isPaused = true;
@@ -296,6 +300,8 @@ const runGameLogicLoop = (state, tickMult) => {
       addGameTime(state, jobTime);
     }
   }
+
+  // TODO: Attempt to save game every n ticks
 };
 
 export default runGameLogicLoop;

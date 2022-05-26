@@ -24,6 +24,11 @@ class PreparationPhase extends React.PureComponent {
   };
 
   render() {
+    // TODO: Update layout to match design...
+    // TODO: Side menu showing different prep phase locations
+    // TODO: "Campfire" for spending Soul on permanent upgrades
+    // TODO: "Town" for getting quests
+    // TODO: "Monuments" for spending items gained from travelling
     const {
       gameTime,
       currentJobs,
