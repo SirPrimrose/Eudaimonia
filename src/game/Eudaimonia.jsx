@@ -1,16 +1,9 @@
-import {
-  Container,
-  Grid,
-  LinearProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { KEY_P } from 'keycode-js';
 import GameSection from './layout/GameSection';
-import TextPanel from './layout/TextPanel';
 import {
   actions as gameActions,
   getGameTime,
