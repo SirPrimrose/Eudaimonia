@@ -48,7 +48,12 @@ class PreparationPhase extends React.PureComponent {
 }
 
 PreparationPhase.propTypes = {
-  currentJobs: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  currentJobs: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      category: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   gameTime: PropTypes.number.isRequired,
   wanderlust: PropTypes.number.isRequired,
   maxWanderlust: PropTypes.number.isRequired,

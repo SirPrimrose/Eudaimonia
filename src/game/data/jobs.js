@@ -135,4 +135,4 @@ const JOB_DATA = Object.entries(JOB_BASES).reduce(
   {}
 );
 
-export { COMPLETION_TYPE, JOB_NAMES, JOB_DATA };
+export { COMPLETION_TYPE, JOB_CATEGORY, JOB_NAMES, JOB_DATA };

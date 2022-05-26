@@ -1,7 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
 import { STAT_DATA, STAT_NAMES } from '../game/data/stats';
-import { COMPLETION_TYPE, JOB_DATA, JOB_NAMES } from '../game/data/jobs';
+import {
+  COMPLETION_TYPE,
+  JOB_CATEGORY,
+  JOB_DATA,
+  JOB_NAMES,
+} from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, PHASES } from '../shared/consts';
 import { ITEM_DATA } from '../game/data/inventory';
@@ -19,7 +24,12 @@ export const initialState = {
   phase: PHASES.WANDER,
   isTicking: false,
   isPaused: false,
-  currentJobs: [JOB_NAMES.SEARCH_CLEARING],
+  currentJobs: {
+    [JOB_CATEGORY.ACTION]: [],
+    [JOB_CATEGORY.CRAFT]: [],
+    [JOB_CATEGORY.EXPLORATION]: [],
+    [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
+  },
   // INVENTORY
   items: ITEM_DATA,
   // WORLD
@@ -44,11 +54,17 @@ const addGameTime = (state, time) => {
 };
 
 const addToCurrentJobs = (state, jobName) => {
-  if (!state.currentJobs.includes(jobName)) state.currentJobs.push(jobName);
+  const job = state.jobs[jobName];
+  if (!state.currentJobs[job.category]) state.currentJobs[job.category] = [];
+  if (!state.currentJobs[job.category].includes(jobName))
+    state.currentJobs[job.category].push(jobName);
 };
 
 const removeFromCurrentJobs = (state, jobName) => {
-  state.currentJobs = state.currentJobs.filter((j) => j !== jobName);
+  const job = state.jobs[jobName];
+  state.currentJobs[job.category] = state.currentJobs[job.category].filter(
+    (j) => j !== jobName
+  );
 };
 
 const shouldTickJobQueue = (state) =>

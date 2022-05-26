@@ -1,10 +1,4 @@
-import {
-  Button,
-  ButtonBase,
-  LinearProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, LinearProgress, Stack } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -23,7 +17,6 @@ class JobActions extends React.PureComponent {
   };
 
   renderAvailableJobs = () => {
-    // TODO: Render jobs by job category (1 column each category, except exploration and progression combined into 1 column)
     const { availableJobs, getProgress } = this.props;
 
     return availableJobs.map((jobName) => (
@@ -49,7 +42,7 @@ class JobActions extends React.PureComponent {
   };
 
   render() {
-    return <Stack className="prepActions">{this.renderAvailableJobs()}</Stack>;
+    return <Stack>{this.renderAvailableJobs()}</Stack>;
   }
 }
 

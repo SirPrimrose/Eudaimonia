@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Grid, Tooltip, Typography } from '@mui/material';
 import ProgressBarWithOverlay from '../../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../../shared/util';
-import { getWorldResources } from '../../slice/exploreGroupSlice';
+import { getWorldResources } from '../../slice/gameSlice';
 
 class WorldResourcePanel extends React.PureComponent {
   renderGridItemContent = (worldResourceName, worldResource) => (
@@ -32,7 +32,12 @@ class WorldResourcePanel extends React.PureComponent {
 
   getWorldResourceLayout = (worldResources) => (
     <div className="panelGrid">
-      <Grid container alignItems="center" justifyContent="space-between">
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="space-between"
+        rowSpacing={1}
+      >
         {Object.entries(worldResources).map(
           ([worldResourceName, worldResource]) => (
             <Fragment key={worldResourceName}>
