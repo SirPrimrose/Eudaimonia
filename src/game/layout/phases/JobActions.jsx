@@ -1,4 +1,10 @@
-import { Button, LinearProgress, Stack } from '@mui/material';
+import {
+  Button,
+  ButtonBase,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -21,10 +27,24 @@ class JobActions extends React.PureComponent {
     const { availableJobs, getProgress } = this.props;
 
     return availableJobs.map((jobName) => (
-      <div key={jobName}>
+      <Stack
+        key={jobName}
+        style={{
+          position: 'relative',
+        }}
+      >
         <Button onClick={this.handleClickJob(jobName)}>{jobName}</Button>
-        <LinearProgress variant="determinate" value={getProgress(jobName)} />
-      </div>
+        <LinearProgress
+          variant="determinate"
+          value={getProgress(jobName)}
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            bottom: 0,
+            zIndex: -1,
+          }}
+        />
+      </Stack>
     ));
   };
 
