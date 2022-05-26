@@ -337,7 +337,6 @@ const tickGame = (state) => {
 };
 
 const runGameLogicLoop = (state, tickMult) => {
-  // TODO: Attempt to load a game if it exists in save state
   if (!state.isStarted) {
     startupGame(state);
   }
@@ -351,8 +350,6 @@ const runGameLogicLoop = (state, tickMult) => {
     tickGame(state);
     gameTicksRem -= currentTickTime;
   }
-
-  // TODO: Attempt to save game every n ticks
 };
 
 export default runGameLogicLoop;

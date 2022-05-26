@@ -26,6 +26,7 @@ export const gameSlice = createSlice({
     togglePaused: (state) => {
       state.isPaused = !state.isPaused;
     },
+    resetGame: () => initialState,
     // INVENTORY
     // WORLD
     // JOBS

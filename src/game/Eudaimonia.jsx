@@ -1,4 +1,4 @@
-import { Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -77,10 +77,11 @@ class Eudaimonia extends React.PureComponent {
   );
 
   render() {
-    const { gameTime, activeStats } = this.props;
+    const { gameTime, activeStats, resetGame } = this.props;
 
     return (
       <Stack className="eudaimonia">
+        <Button onClick={() => resetGame()}>Hard Reset</Button>
         {this.renderHeader(gameTime)}
         {this.renderActiveStatusBars(activeStats)}
         <Grid container sx={{ flexGrow: 1, overflow: 'hidden' }}>
@@ -114,6 +115,7 @@ Eudaimonia.propTypes = {
   ).isRequired,
   togglePaused: PropTypes.func.isRequired,
   runGameLoop: PropTypes.func.isRequired,
+  resetGame: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (store) => ({
@@ -125,6 +127,7 @@ const mapStateToProps = (store) => ({
 const mapDispatchToProps = {
   togglePaused: gameActions.togglePaused,
   runGameLoop: gameActions.runGameLoop,
+  resetGame: gameActions.resetGame,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Eudaimonia);
