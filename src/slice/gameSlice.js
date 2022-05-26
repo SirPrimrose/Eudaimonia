@@ -27,21 +27,6 @@ export const gameSlice = createSlice({
       state.isPaused = !state.isPaused;
     },
     // INVENTORY
-    addItem: (state, { payload }) => {
-      const { name, amount } = payload;
-      const item = state.items[name];
-
-      item.currentAmount = Math.min(
-        item.maxAmount,
-        item.currentAmount + amount
-      );
-    },
-    removeItem: (state, { payload }) => {
-      const { name, amount } = payload;
-      const item = state.items[name];
-
-      item.currentAmount = Math.max(0, item.currentAmount - amount);
-    },
     // WORLD
     // JOBS
     removeJobFromQueueById: (state, { payload: queueId }) => {
@@ -96,9 +81,11 @@ export const getGameTime = (store) => store.game.gameTime;
 export const getCurrentJobs = (store) => store.game.currentJobs;
 
 // INVENTORY
-export const getInventory = (store) => store.game.items;
+export const getInventory = (store) => Object.values(store.game.items);
 export const getItemByName = (store) => (itemName) =>
   getInventory(store)[itemName];
+export const getActiveInventory = (store) =>
+  getInventory(store).filter((i) => i.active);
 
 // WORLD
 export const getExploreGroups = (store) => store.game.exploreGroups;

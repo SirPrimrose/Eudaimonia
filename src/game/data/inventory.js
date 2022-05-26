@@ -31,6 +31,9 @@ const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
       currentExploration: 0,
       permExploration: 0, // unscaled value of exploration, see scaled exploration for comparable values
       permExplorationScaled: 0,
+      currentCooldown: 0,
+      maxCooldown: 5,
+      active: false,
     },
   }),
   {}

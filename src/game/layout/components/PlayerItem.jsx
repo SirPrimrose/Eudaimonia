@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
 import { getIconForStatType } from './Icons';
+import { STAT_NAMES } from '../../data/stats';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healAmount, description) => {
@@ -34,9 +35,10 @@ class PlayerItem extends React.PureComponent {
         healType,
         healAmount,
         description,
+        currentCooldown,
+        maxCooldown,
       },
     } = this.props;
-    // TODO: Add currentCooldown and maxCooldown properties to tooltip display
 
     // TODO: Make the linear progress into a circular progress that masks the icon used for healing
     return (
@@ -56,14 +58,17 @@ class PlayerItem extends React.PureComponent {
               >{`${currentAmount} / ${maxAmount}`}</Typography>
             </Grid>
             <Grid item xs={1}>
-              {healType && (
+              {healType !== STAT_NAMES.NONE && (
                 <Typography>{getIconForStatType(healType)}</Typography>
               )}
             </Grid>
           </Grid>
         </Tooltip>
-        {healType && (
-          <Tooltip title="0.3s/4.6s Cooldown" disableInteractive>
+        {healType !== STAT_NAMES.NONE && (
+          <Tooltip
+            title={`${currentCooldown}s/${maxCooldown}s Cooldown`}
+            disableInteractive
+          >
             <Grid item xs={12}>
               <LinearProgress
                 variant="determinate"
@@ -85,6 +90,8 @@ PlayerItem.propTypes = {
     description: PropTypes.string.isRequired,
     healType: PropTypes.string.isRequired,
     healAmount: PropTypes.number.isRequired,
+    currentCooldown: PropTypes.number.isRequired,
+    maxCooldown: PropTypes.number.isRequired,
   }).isRequired,
 };
 

@@ -66,6 +66,20 @@ const getFirstJobInQueue = (state) => {
   return null;
 };
 
+// INVENTORY
+const addItem = (state, name, amount) => {
+  const item = state.items[name];
+
+  item.currentAmount = Math.min(item.maxAmount, item.currentAmount + amount);
+  item.active = true;
+};
+
+const removeItem = (state, name, amount) => {
+  const item = state.items[name];
+
+  item.currentAmount = Math.max(0, item.currentAmount - amount);
+};
+
 // WORLD
 const recalulateAllWorldResources = (worldResources, exploreGroups) => {
   Object.values(worldResources).forEach((worldResource) => {
@@ -211,6 +225,9 @@ const performJobCompletionEvent = (state, job, event) => {
       break;
     case COMPLETION_TYPE.EXPLORE_AREA:
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
+      break;
+    case COMPLETION_TYPE.ITEM:
+      addItem(state, event.value, 1);
       break;
     default:
       // eslint-disable-next-line no-console

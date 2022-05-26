@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Stack, Typography } from '@mui/material';
-import { getInventory } from '../../slice/gameSlice';
+import { getActiveInventory, getInventory } from '../../slice/gameSlice';
 import PlayerItem from './components/PlayerItem';
 
 class PlayerInventoryPanel extends React.PureComponent {
@@ -30,16 +30,22 @@ class PlayerInventoryPanel extends React.PureComponent {
 }
 
 PlayerInventoryPanel.propTypes = {
-  inventory: PropTypes.objectOf(
+  inventory: PropTypes.arrayOf(
     PropTypes.shape({
+      name: PropTypes.string.isRequired,
       currentAmount: PropTypes.number.isRequired,
       maxAmount: PropTypes.number.isRequired,
+      description: PropTypes.string.isRequired,
+      healType: PropTypes.string.isRequired,
+      healAmount: PropTypes.number.isRequired,
+      currentCooldown: PropTypes.number.isRequired,
+      maxCooldown: PropTypes.number.isRequired,
     })
   ).isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  inventory: getInventory(state),
+  inventory: getActiveInventory(state),
 });
 
 export default connect(mapStateToProps)(PlayerInventoryPanel);
