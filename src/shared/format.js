@@ -13,8 +13,10 @@ const formats = {
 const globalFormat = formats.ENGINEERING;
 
 const toClockTime = (timeMs) => {
-  const time = new Date(timeMs).toISOString().slice(11, 19);
-  return time;
+  if (timeMs < 60 * 60 * 1000) {
+    return new Date(timeMs).toISOString().slice(14, 19);
+  }
+  return new Date(timeMs).toISOString().slice(11, 19);
 };
 
 const toGameNumber = (number) => {
