@@ -24,12 +24,8 @@ export const initialState = {
   phase: PHASES.WANDER,
   isTicking: false,
   isPaused: false,
-  currentJobs: {
-    [JOB_CATEGORY.ACTION]: [],
-    [JOB_CATEGORY.CRAFT]: [],
-    [JOB_CATEGORY.EXPLORATION]: [],
-    [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
-  },
+  isStarted: false,
+  currentJobs: {},
   // INVENTORY
   items: ITEM_DATA,
   // WORLD
@@ -47,6 +43,9 @@ export const initialState = {
   // TEXT
   messages: [],
 };
+
+let currentTime = new Date();
+let gameTicksRem = 0;
 
 // GAME
 const addGameTime = (state, time) => {
@@ -140,8 +139,8 @@ const resetExploreGroup = (state, name) => {
 };
 
 // JOBS
-const resetQueueTick = (state, tickMult) => {
-  state.tickRemaining = tickMult;
+const resetQueueTick = (state) => {
+  state.tickRemaining = 1;
 };
 
 const tickXpToJob = (state, xp, name) => {
@@ -218,6 +217,15 @@ const decayStat = (state, name, currentTimeMs, decayTimeMs) => {
   stat.currentValue = Math.min(stat.maxValue, stat.currentValue - decay);
 };
 
+const resetStat = (state, name) => {
+  const stat = state.stats[name];
+  if (stat.baseDecayRate < 0) {
+    stat.currentValue = 0;
+  } else {
+    stat.currentValue = stat.maxValue;
+  }
+};
+
 // TEXT LOG
 const addMessage = (state, message) => {
   state.messages.push({ listId: uuid(), text: message });
@@ -258,8 +266,8 @@ const getXpForTick = (state, skillName) => {
   return baseXpPerTick * skillObj.xpScaling;
 };
 
-const tickJobQueue = (state, tickMult) => {
-  resetQueueTick(state, tickMult);
+const tickJobQueue = (state) => {
+  resetQueueTick(state);
 
   while (shouldTickJobQueue(state)) {
     const currentJob = getFirstJobInQueue(state);
@@ -299,22 +307,49 @@ const tickJobQueue = (state, tickMult) => {
   return state.tickRemaining;
 };
 
-const runGameLogicLoop = (state, tickMult) => {
-  // TODO: Attempt to load a game if it exists in save state
+const startupGame = (state) => {
+  // Set starting jobs
+  state.currentJobs = {
+    [JOB_CATEGORY.ACTION]: [],
+    [JOB_CATEGORY.CRAFT]: [],
+    [JOB_CATEGORY.EXPLORATION]: [],
+    [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
+  };
 
-  // TODO: If game is not started, run game startup script
+  resetStat(state, STAT_NAMES.HEALTH);
 
+  state.isStarted = true;
+};
+
+const tickGame = (state) => {
   if (!state.isPaused) {
     if (state.queue.length === 0) {
       state.isPaused = true;
     } else {
-      const tickRem = tickJobQueue(state, tickMult);
-      const jobTime = GAME_TICK_TIME * (tickMult - tickRem);
+      const tickRem = tickJobQueue(state);
+      const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
       decayStat(state, STAT_NAMES.PREP_TIME, state.gameTime, jobTime);
 
       addGameTime(state, jobTime);
     }
+  }
+};
+
+const runGameLogicLoop = (state, tickMult) => {
+  // TODO: Attempt to load a game if it exists in save state
+  if (!state.isStarted) {
+    startupGame(state);
+  }
+
+  // Calc ticks to process
+  const newTime = Date.now();
+  gameTicksRem += newTime - currentTime;
+  currentTime = newTime;
+  const currentTickTime = GAME_TICK_TIME / tickMult;
+  while (gameTicksRem >= currentTickTime) {
+    tickGame(state);
+    gameTicksRem -= currentTickTime;
   }
 
   // TODO: Attempt to save game every n ticks

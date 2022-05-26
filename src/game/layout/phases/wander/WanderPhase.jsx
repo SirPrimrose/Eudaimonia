@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -10,7 +10,7 @@ import WorldResourcePanel from '../../WorldResourcePanel';
 class WanderPhase extends React.PureComponent {
   renderJobCategory = (currentJobs, category) => {
     const jobsInCategory = currentJobs[category];
-    if (jobsInCategory.length > 0) {
+    if (jobsInCategory && jobsInCategory.length > 0) {
       return (
         <Box className="panelOutline">
           <Typography variant="h5" align="center">
