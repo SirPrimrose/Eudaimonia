@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, LinearProgress } from '@mui/material';
+import { Box, Grid, LinearProgress } from '@mui/material';
 import PropTypes from 'prop-types';
 
 class ProgressBarWithOverlay extends React.PureComponent {
@@ -7,46 +7,44 @@ class ProgressBarWithOverlay extends React.PureComponent {
     const { value, sx, children } = this.props;
 
     return (
-      <div>
-        <Grid container spacing={1} justify="space-between">
-          <Grid item xs={12} style={{ position: 'relative' }}>
-            <div
+      <Grid container spacing={1} justify="space-between">
+        <Grid item xs={12} style={{ position: 'relative' }}>
+          <Box
+            style={{
+              inset: 0,
+              zIndex: 1,
+              position: 'absolute',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Box
               style={{
-                inset: 0,
-                zIndex: 1,
-                position: 'absolute',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div
-                style={{
-                  paddingTop: '8px',
-                  paddingLeft: '8px',
-                  width: '100%',
-                  textAlign: 'center',
-                  /* TODO: Fix clipping from interfering with icons
+                paddingTop: '8px',
+                paddingLeft: '8px',
+                width: '100%',
+                textAlign: 'center',
+                /* TODO: Fix clipping from interfering with icons
                   background:
                     'linear-gradient(to right, white var(--p,50%), black 0)',
                   backgroundPositionX: '4px',
                   WebkitBackgroundClip: 'text',
                   color: 'transparent',
                   '--p': `${value}%`, */
-                }}
-              >
-                {children}
-              </div>
-            </div>
-            <LinearProgress
-              className="pb-fast-transition"
-              variant="determinate"
-              sx={sx}
-              value={value}
-            />
-          </Grid>
+              }}
+            >
+              {children}
+            </Box>
+          </Box>
+          <LinearProgress
+            className="pb-fast-transition"
+            variant="determinate"
+            sx={sx}
+            value={value}
+          />
         </Grid>
-      </div>
+      </Grid>
     );
   }
 }

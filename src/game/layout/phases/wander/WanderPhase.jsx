@@ -6,6 +6,7 @@ import { getCurrentJobs } from '../../../../slice/gameSlice';
 import JobActions from '../JobActions';
 import { JOB_CATEGORY } from '../../../data/jobs';
 import WorldResourcePanel from '../../WorldResourcePanel';
+import ExploreGroupPanel from '../../ExploreGroupPanel';
 
 class WanderPhase extends React.PureComponent {
   renderJobCategory = (currentJobs, category) => {
@@ -52,6 +53,9 @@ class WanderPhase extends React.PureComponent {
               {this.renderJobCategory(currentJobs, JOB_CATEGORY.EXPLORATION)}
               {this.renderJobCategory(currentJobs, JOB_CATEGORY.PROGRESSION)}
             </Stack>
+          </Grid>
+          <Grid item xs={4} overflow="hidden">
+            <ExploreGroupPanel />
           </Grid>
         </Grid>
       </Grid>
