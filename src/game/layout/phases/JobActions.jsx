@@ -26,7 +26,9 @@ class JobActions extends React.PureComponent {
           position: 'relative',
         }}
       >
-        <Button onClick={this.handleClickJob(jobName)}>{jobName}</Button>
+        <Button onClick={this.handleClickJob(jobName)} sx={{ zIndex: 1 }}>
+          {jobName}
+        </Button>
         <LinearProgress
           variant="determinate"
           value={getProgress(jobName)}
@@ -34,7 +36,6 @@ class JobActions extends React.PureComponent {
             position: 'absolute',
             width: '100%',
             bottom: 0,
-            zIndex: -1,
           }}
         />
       </Stack>

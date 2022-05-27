@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 class ProgressBarWithOverlay extends React.PureComponent {
   render() {
     const { value, sx, children } = this.props;
-    console.log(typeof children === 'string');
 
     return (
       <Grid container spacing={1} justify="space-between">

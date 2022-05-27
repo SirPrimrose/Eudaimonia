@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, Paper, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -78,6 +78,7 @@ class Eudaimonia extends React.PureComponent {
 
   render() {
     const { gameTime, activeStats, resetGame } = this.props;
+    const paperElevation = 5;
 
     return (
       <Stack className="eudaimonia">
@@ -85,14 +86,20 @@ class Eudaimonia extends React.PureComponent {
         {this.renderHeader(gameTime)}
         {this.renderActiveStatusBars(activeStats)}
         <Grid container sx={{ flexGrow: 1, overflow: 'hidden' }}>
-          <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
-            <PlayerSection />
+          <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }} p={2}>
+            <Paper elevation={paperElevation} sx={{ height: '100%' }}>
+              <PlayerSection />
+            </Paper>
           </Grid>
-          <Grid item xs={6} md={7} lg={8} sx={{ height: '100%' }}>
-            <GameSection />
+          <Grid item xs={6} md={7} lg={8} sx={{ height: '100%' }} p={2}>
+            <Paper elevation={paperElevation} sx={{ height: '100%' }}>
+              <GameSection />
+            </Paper>
           </Grid>
-          <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }}>
-            <InfoSection />
+          <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }} p={2}>
+            <Paper elevation={paperElevation} sx={{ height: '100%' }}>
+              <InfoSection />
+            </Paper>
           </Grid>
         </Grid>
       </Stack>
