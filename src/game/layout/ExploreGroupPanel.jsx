@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Grid, Tooltip, Typography } from '@mui/material';
 import ProgressBarWithOverlay from '../../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../../shared/util';
-import { getExploreGroups, getWorldResources } from '../../slice/gameSlice';
+import { getExploreGroups } from '../../slice/gameSlice';
 
 class ExploreGroupPanel extends React.PureComponent {
   renderGridItemContent = (exploreGroup) => (
@@ -16,10 +16,12 @@ class ExploreGroupPanel extends React.PureComponent {
             exploreGroup.maxExploration
           )}
         >
-          {`${getProgressValue(
-            exploreGroup.permExplorationScaled,
-            exploreGroup.maxExploration
-          ).toFixed(2)}%`}
+          <Typography color="primary.contrastText">
+            {`${getProgressValue(
+              exploreGroup.permExplorationScaled,
+              exploreGroup.maxExploration
+            ).toFixed(2)}%`}
+          </Typography>
         </ProgressBarWithOverlay>
       </div>
     </Tooltip>

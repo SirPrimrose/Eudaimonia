@@ -20,11 +20,13 @@ class WorldResourcePanel extends React.PureComponent {
             worldResource.unlockedResource
           )}
         >
-          {`${worldResource.currentResource}/${
-            worldResource.unlockedResource
-          } ${worldResourceName} - ${
-            worldResource.maxPotency - worldResource.checkedPotency
-          } Unchecked`}
+          <Typography color="primary.contrastText">
+            {`${worldResource.currentResource}/${
+              worldResource.unlockedResource
+            } ${worldResourceName} - ${
+              worldResource.maxPotency - worldResource.checkedPotency
+            } Unchecked`}
+          </Typography>
         </ProgressBarWithOverlay>
       </div>
     </Tooltip>

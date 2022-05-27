@@ -61,13 +61,13 @@ class Eudaimonia extends React.PureComponent {
             direction="row"
             spacing={4}
           >
-            <Typography>
+            <Typography color="primary.contrastText">
               {`${toGameNumber(stat.currentValue)}/${toGameNumber(
                 stat.maxValue
               )} `}
               {getIconForStatType(stat.name)}
             </Typography>
-            <Typography>
+            <Typography color="primary.contrastText">
               {`${toGameNumber(stat.currentDecayRate)} ${stat.shortName}/s`}
             </Typography>
           </Stack>

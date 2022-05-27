@@ -9,11 +9,8 @@ import {
   getCurrentJobs,
   getStatByName,
 } from '../../../../slice/gameSlice';
-import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
-import { getProgressValue } from '../../../../shared/util';
 import { STAT_NAMES } from '../../../data/stats';
 import JobActions from '../JobActions';
-import { JOB_NAMES } from '../../../data/jobs';
 
 class PreparationPhase extends React.PureComponent {
   beginToWander = () => {
