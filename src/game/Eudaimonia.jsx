@@ -78,7 +78,6 @@ class Eudaimonia extends React.PureComponent {
 
   render() {
     const { gameTime, activeStats, resetGame } = this.props;
-    const paperElevation = 5;
 
     return (
       <Stack className="eudaimonia">
@@ -87,19 +86,13 @@ class Eudaimonia extends React.PureComponent {
         {this.renderActiveStatusBars(activeStats)}
         <Grid container sx={{ flexGrow: 1, overflow: 'hidden' }}>
           <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }} p={2}>
-            <Paper elevation={paperElevation} sx={{ height: '100%' }}>
-              <PlayerSection />
-            </Paper>
+            <PlayerSection />
           </Grid>
           <Grid item xs={6} md={7} lg={8} sx={{ height: '100%' }} p={2}>
-            <Paper elevation={paperElevation} sx={{ height: '100%' }}>
-              <GameSection />
-            </Paper>
+            <GameSection />
           </Grid>
           <Grid item xs={3} md={2.5} lg={2} sx={{ height: '100%' }} p={2}>
-            <Paper elevation={paperElevation} sx={{ height: '100%' }}>
-              <InfoSection />
-            </Paper>
+            <InfoSection />
           </Grid>
         </Grid>
       </Stack>
