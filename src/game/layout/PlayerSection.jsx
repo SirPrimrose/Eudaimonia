@@ -4,14 +4,19 @@ import PlayerInventoryPanel from './PlayerInventoryPanel';
 import SkillPanel from './SkillPanel';
 
 class PlayerSection extends React.PureComponent {
+  // TODO: Check overflow on xs size for panels, apply fix from InfoSection
   render() {
     return (
       <Paper elevation={8} sx={{ height: '100%' }}>
-        <Grid sx={{ height: '100%' }} container direction="column">
-          <Grid item xs={4} sx={{ height: '100%', overflow: 'hidden' }}>
+        <Grid
+          sx={{ height: '100%' }}
+          container
+          direction={{ xs: 'row', md: 'column' }}
+        >
+          <Grid item xs={6} md={4} sx={{ height: '100%', overflow: 'hidden' }}>
             <SkillPanel />
           </Grid>
-          <Grid item xs={8} sx={{ height: '100%', overflow: 'hidden' }}>
+          <Grid item xs={6} md={8} sx={{ height: '100%', overflow: 'hidden' }}>
             <PlayerInventoryPanel />
           </Grid>
         </Grid>
