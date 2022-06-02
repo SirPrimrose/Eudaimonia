@@ -180,6 +180,19 @@ const removeJobFromQueueById = (state, queueId) => {
 };
 
 // SKILLS
+const recalculateSkillXpReq = (state, skillName) => {
+  const skill = state.skills[skillName];
+
+  skill.currentLevelXpReq = xpReqForCurrentLevel(skill.currentLevel);
+  skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
+};
+
+const recalculateAllSkillsXpReq = (state) => {
+  Object.keys(state.skills).forEach((skillName) => {
+    recalculateSkillXpReq(state, skillName);
+  });
+};
+
 const addXpToSkill = (state, name, xp) => {
   const skill = state.skills[name];
 
@@ -187,20 +200,24 @@ const addXpToSkill = (state, name, xp) => {
   skill.currentXp += xp;
   skill.permXp += xp;
 
+  let leveledUp = false;
   // Check for level ups
   while (skill.currentXp >= skill.currentLevelXpReq) {
     skill.currentXp -= skill.currentLevelXpReq;
     skill.currentLevel += 1;
-    skill.currentLevelXpReq = xpReqForCurrentLevel(skill.currentLevel);
+    leveledUp = true;
   }
 
   while (skill.permXp >= skill.permLevelXpReq) {
     skill.permXp -= skill.permLevelXpReq;
     skill.permLevel += 1;
-    skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
+    leveledUp = true;
   }
 
+  if (leveledUp) recalculateSkillXpReq(state, skill.name);
+
   // TODO: Turn xp scaling into an object with array of modifiers
+  // TODO: Only recalculate xp scaling on level up or other modifier change
   skill.xpScaling = 1 * 1.01 ** skill.permLevel * 1.05 ** skill.currentLevel;
 };
 
@@ -318,6 +335,7 @@ const startupGame = (state) => {
     [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
   };
 
+  recalculateAllSkillsXpReq(state);
   resetStat(state, STAT_NAMES.HEALTH);
 
   state.isStarted = true;
