@@ -13,6 +13,7 @@ const STAT_BASES = {
     baseDecayRate: -0.5,
     decayModifier: 2,
     maxValue: 20,
+    isActive: true,
   },
   [STAT_NAMES.WANDER_TIME]: {
     shortName: 'PS',
@@ -38,11 +39,11 @@ const STAT_DATA = Object.entries(STAT_BASES).reduce(
   (result, [key, value]) => ({
     ...result,
     [key]: {
+      isActive: false,
       ...value,
       name: key,
       currentDecayRate: -value.baseDecayRate,
       currentValue: 0,
-      isActive: true,
     },
   }),
   {}

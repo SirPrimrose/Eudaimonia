@@ -35,7 +35,6 @@ export const initialState = {
   tickRemaining: 1,
   jobs: JOB_DATA,
   queue: [],
-  xpAdded: 0,
   // SKILLS
   skills: SKILL_DATA,
   // STATS
@@ -222,7 +221,6 @@ const addXpToSkill = (state, name, xp) => {
 };
 
 // STATS
-// TODO: Redo calculation of decay so that taking larger "jumps" in time does not affect the outcome (need a continuous function)
 const decayStat = (state, name, currentTimeMs, decayTimeMs) => {
   const stat = state.stats[name];
   const { baseDecayRate, decayModifier } = stat;
@@ -325,9 +323,14 @@ const tickJobQueue = (state) => {
   return state.tickRemaining;
 };
 
-// TODO: Recalcate things like req xp for skills and other determined values
+/**
+ * Startup function to load all deterministic data at the loading of the game
+ */
+// TODO: Update all deterministic values
+// TODO: Update currentDecayValue of stats on re-opening of app
+// TODO: Move things like setting starting jobs and health initialization to a "startLife" function
 const startupGame = (state) => {
-  // Set starting jobs
+  // Things to move to a "newgame" startup
   state.currentJobs = {
     [JOB_CATEGORY.ACTION]: [],
     [JOB_CATEGORY.CRAFT]: [],
@@ -335,8 +338,10 @@ const startupGame = (state) => {
     [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
   };
 
-  recalculateAllSkillsXpReq(state);
   resetStat(state, STAT_NAMES.HEALTH);
+
+  // Calculate deterministic values
+  recalculateAllSkillsXpReq(state);
 
   state.isStarted = true;
 };

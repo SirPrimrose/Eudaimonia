@@ -100,7 +100,6 @@ export const getJobProgress = (store) => (jobName) =>
     store.game.jobs[jobName].currentXp,
     store.game.jobs[jobName].maxXp
   );
-export const getXpAdded = (store) => store.game.xpAdded;
 export const getJobQueue = (store) => store.game.queue;
 export const getTickRemaining = (store) => store.game.tickRemaining;
 

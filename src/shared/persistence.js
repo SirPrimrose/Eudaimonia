@@ -4,7 +4,7 @@ import { initialState } from '../slice/gameLogic';
 
 const SAVE_DATA_KEY = 'saveData';
 
-const savePropsFromData = (propsToSave, data) =>
+const savePropsFromObjectMap = (propsToSave, data) =>
   Object.keys(data).reduce(
     (trimmedObj, j) => ({
       ...trimmedObj,
@@ -22,10 +22,38 @@ const savePropsFromData = (propsToSave, data) =>
 const exportSaveData = (gameState) => {
   const saveObj = {
     gameTime: gameState.gameTime,
-    jobs: savePropsFromData(['currentXp'], gameState.jobs),
-    skills: savePropsFromData(
+    phase: gameState.phase,
+    isPaused: gameState.isPaused,
+    currentJobs: gameState.currentJobs,
+    tickRemaining: gameState.tickRemaining,
+    queue: gameState.queue,
+    messages: gameState.messages,
+    items: savePropsFromObjectMap(
+      [
+        'currentExploration',
+        'permExploration',
+        'currentLevel',
+        'currentCooldown',
+        'active',
+      ],
+      gameState.items
+    ),
+    worldResources: savePropsFromObjectMap(
+      ['currentResource', 'checkedPotency', 'unlockedResource'],
+      gameState.worldResources
+    ),
+    exploreGroups: savePropsFromObjectMap(
+      ['currentExploration', 'permExploration'],
+      gameState.exploreGroups
+    ),
+    jobs: savePropsFromObjectMap(['currentXp'], gameState.jobs),
+    skills: savePropsFromObjectMap(
       ['currentXp', 'permXp', 'currentLevel', 'permLevel'],
       gameState.skills
+    ),
+    stats: savePropsFromObjectMap(
+      ['currentValue', 'isActive'],
+      gameState.stats
     ),
   };
   return JSON.stringify(saveObj);
