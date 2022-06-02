@@ -17,6 +17,7 @@ import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../shared/util';
 import { getIconForStatType } from './layout/components/Icons';
 import { toClockTime, toGameNumber } from '../shared/format';
+import { actions as themeActions } from '../slice/themeSlice';
 
 const pauseKey = KEY_P;
 
@@ -77,11 +78,14 @@ class Eudaimonia extends React.PureComponent {
   );
 
   render() {
-    const { gameTime, activeStats, resetGame } = this.props;
+    const { gameTime, activeStats, resetGame, toggleTheme } = this.props;
 
     return (
       <Stack className="eudaimonia">
-        <Button onClick={() => resetGame()}>Hard Reset</Button>
+        <Stack direction="row" justifyContent="center">
+          <Button onClick={() => resetGame()}>Hard Reset</Button>
+          <Button onClick={() => toggleTheme()}>Toggle Theme</Button>
+        </Stack>
         {this.renderHeader(gameTime)}
         {this.renderActiveStatusBars(activeStats)}
         <Grid
@@ -140,9 +144,11 @@ Eudaimonia.propTypes = {
       maxValue: PropTypes.number.isRequired,
     })
   ).isRequired,
+
   togglePaused: PropTypes.func.isRequired,
   runGameLoop: PropTypes.func.isRequired,
   resetGame: PropTypes.func.isRequired,
+  toggleTheme: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (store) => ({
@@ -155,6 +161,7 @@ const mapDispatchToProps = {
   togglePaused: gameActions.togglePaused,
   runGameLoop: gameActions.runGameLoop,
   resetGame: gameActions.resetGame,
+  toggleTheme: themeActions.toggleTheme,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Eudaimonia);
