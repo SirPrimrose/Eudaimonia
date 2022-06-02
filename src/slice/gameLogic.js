@@ -200,6 +200,7 @@ const addXpToSkill = (state, name, xp) => {
     skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
   }
 
+  // TODO: Turn xp scaling into an object with array of modifiers
   skill.xpScaling = 1 * 1.01 ** skill.permLevel * 1.05 ** skill.currentLevel;
 };
 
@@ -307,6 +308,7 @@ const tickJobQueue = (state) => {
   return state.tickRemaining;
 };
 
+// TODO: Recalcate things like req xp for skills and other determined values
 const startupGame = (state) => {
   // Set starting jobs
   state.currentJobs = {
