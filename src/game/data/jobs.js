@@ -113,7 +113,7 @@ const JOB_BASES = {
   [JOB_NAMES.CATCH_FISH]: {
     skill: SKILL_NAMES.FISHING,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 3,
+    maxXp: 1,
     completionEvents: [
       {
         type: COMPLETION_TYPE.ITEM,

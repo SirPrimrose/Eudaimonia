@@ -9,7 +9,7 @@ const WORLD_RESOURCE_BASES = {
   [WORLD_RESOURCE_NAMES.WOOD]: {
     potencyPerUnlock: 10, // how much potency is required per unlock, determines resource availability
     exploreGroupPotency: {
-      [EXPLORE_GROUP.POND]: 2, // how much potency an explore contribute to current potency
+      [EXPLORE_GROUP.POND]: 2, // how much potency an explore contributes to current potency
     },
   },
   [WORLD_RESOURCE_NAMES.FISH]: {

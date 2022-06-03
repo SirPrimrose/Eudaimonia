@@ -3,8 +3,14 @@ const GAME_TPS = 60;
 const GAME_TICK_TIME = 1000 / GAME_TPS;
 
 const PHASES = {
+  NEW_GAME: 'New Game',
   WANDER: 'Wander',
   PREP: 'Preparation',
 };
 
-export { PHASES, GAME_TICK_TIME };
+const JOB_REJECT_REASONS = {
+  UNAVAILABLE: 'Job is not currently available',
+  FULL_INVENTORY: 'Inventory is full of the produced item',
+};
+
+export { PHASES, GAME_TICK_TIME, JOB_REJECT_REASONS };

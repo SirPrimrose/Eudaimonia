@@ -1,5 +1,61 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
+import { initialState } from '../slice/gameLogic';
+
 const SAVE_DATA_KEY = 'saveData';
+
+const savePropsFromObjectMap = (propsToSave, data) =>
+  Object.keys(data).reduce(
+    (trimmedObj, j) => ({
+      ...trimmedObj,
+      [j]: propsToSave.reduce(
+        (innerObj, prop) => ({
+          ...innerObj,
+          [prop]: data[j][prop],
+        }),
+        {}
+      ),
+    }),
+    {}
+  );
+
+const exportSaveData = (gameState) => {
+  const saveObj = {
+    gameTime: gameState.gameTime,
+    phase: gameState.phase,
+    isPaused: gameState.isPaused,
+    currentJobs: gameState.currentJobs,
+    tickRemaining: gameState.tickRemaining,
+    queue: gameState.queue,
+    messages: gameState.messages,
+    items: savePropsFromObjectMap(
+      ['currentAmount', 'currentCooldown', 'active'],
+      gameState.items
+    ),
+    worldResources: savePropsFromObjectMap(
+      ['currentResource', 'checkedPotency', 'unlockedResource'],
+      gameState.worldResources
+    ),
+    exploreGroups: savePropsFromObjectMap(
+      ['currentExploration', 'permExploration'],
+      gameState.exploreGroups
+    ),
+    jobs: savePropsFromObjectMap(['currentXp'], gameState.jobs),
+    skills: savePropsFromObjectMap(
+      ['currentXp', 'permXp', 'currentLevel', 'permLevel'],
+      gameState.skills
+    ),
+    stats: savePropsFromObjectMap(
+      ['currentValue', 'isActive'],
+      gameState.stats
+    ),
+  };
+  return JSON.stringify(saveObj);
+};
+
+const importSaveData = (gameState) => ({
+  game: _.merge({}, initialState, gameState),
+});
 
 export const loadLocalState = () => {
   try {
@@ -7,15 +63,17 @@ export const loadLocalState = () => {
     if (serializedState === null) {
       return undefined;
     }
-    return JSON.parse(serializedState);
+    const gameState = JSON.parse(serializedState);
+    return importSaveData(gameState);
   } catch (err) {
     return undefined;
   }
 };
 
+// TODO: Consider using electron-store or similar library for storage that allows "migration" steps (https://github.com/sindresorhus/electron-store)
 export const saveLocalState = (state) => {
   try {
-    const serializedState = JSON.stringify(state);
+    const serializedState = exportSaveData(state.game);
     localStorage.setItem(SAVE_DATA_KEY, serializedState);
   } catch {
     // ignore write errors

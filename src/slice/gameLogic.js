@@ -8,7 +8,7 @@ import {
   JOB_NAMES,
 } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
-import { GAME_TICK_TIME, PHASES } from '../shared/consts';
+import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../shared/consts';
 import { ITEM_DATA } from '../game/data/inventory';
 import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
 import { EXPLORE_DATA } from '../game/data/exploreGroup';
@@ -17,15 +17,16 @@ import {
   xpReqForCurrentLevel,
   xpReqForPermLevel,
 } from '../game/data/skills';
+import CalculatedValue from '../game/data/calculatedValue';
 
 export const initialState = {
   // GAME
   gameTime: 0,
-  phase: PHASES.WANDER,
+  phase: PHASES.NEW_GAME,
   isTicking: false,
   isPaused: false,
   isStarted: false,
-  currentJobs: {},
+  currentJobs: {}, // Key is category and value is the array of jobs in them
   // INVENTORY
   items: ITEM_DATA,
   // WORLD
@@ -35,7 +36,6 @@ export const initialState = {
   tickRemaining: 1,
   jobs: JOB_DATA,
   queue: [],
-  xpAdded: 0,
   // SKILLS
   skills: SKILL_DATA,
   // STATS
@@ -93,6 +93,12 @@ const removeItem = (state, name, amount) => {
   const item = state.items[name];
 
   item.currentAmount = Math.max(0, item.currentAmount - amount);
+};
+
+const isItemFull = (state, name) => {
+  const item = state.items[name];
+
+  return item.currentAmount >= item.maxAmount;
 };
 
 // WORLD
@@ -179,7 +185,58 @@ const removeJobFromQueueById = (state, queueId) => {
   state.queue = state.queue.filter((j) => j.queueId !== queueId);
 };
 
+const removeJobFromQueueByName = (state, jobName) => {
+  state.queue = state.queue.filter((j) => j.name !== jobName);
+};
+
+const isJobAvailable = (state, jobName) =>
+  Object.values(state.currentJobs).some((jobsInCategory) =>
+    jobsInCategory.includes(jobName)
+  );
+
+const isJobItemsFull = (state, job) =>
+  job.completionEvents.every(
+    (e) => e.type === COMPLETION_TYPE.ITEM && isItemFull(state, e.value)
+  );
+
+/**
+ * Validates whether the named job is currently ready to work.
+ * @returns null if the job can be worked on, otherwise returns a reason for the job being uncompletable
+ */
+const blockerForJob = (state, jobName) => {
+  const job = state.jobs[jobName];
+
+  if (!isJobAvailable(state, jobName)) {
+    return JOB_REJECT_REASONS.UNAVAILABLE;
+  }
+  // TODO: Check for required items for crafting recipies
+  if (isJobItemsFull(state, job)) {
+    return JOB_REJECT_REASONS.FULL_INVENTORY;
+  }
+  // TODO: Check for max exploration
+
+  return null;
+};
+
 // SKILLS
+const recalculateSkillXpReq = (state, skillName) => {
+  const skill = state.skills[skillName];
+
+  skill.currentLevelXpReq = xpReqForCurrentLevel(skill.currentLevel);
+  skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
+};
+
+const recalculateSkillXpScaling = (state, name) => {
+  const skill = state.skills[name];
+
+  const calculatedValue = new CalculatedValue(skill.xpScaling.baseValue);
+
+  calculatedValue.addModifier('permLevel', 1.01 ** skill.permLevel);
+  calculatedValue.addModifier('currentLevel', 1.05 ** skill.currentLevel);
+
+  skill.xpScaling = calculatedValue.obj;
+};
+
 const addXpToSkill = (state, name, xp) => {
   const skill = state.skills[name];
 
@@ -187,24 +244,28 @@ const addXpToSkill = (state, name, xp) => {
   skill.currentXp += xp;
   skill.permXp += xp;
 
+  let leveledUp = false;
   // Check for level ups
   while (skill.currentXp >= skill.currentLevelXpReq) {
     skill.currentXp -= skill.currentLevelXpReq;
     skill.currentLevel += 1;
-    skill.currentLevelXpReq = xpReqForCurrentLevel(skill.currentLevel);
+    leveledUp = true;
   }
 
   while (skill.permXp >= skill.permLevelXpReq) {
     skill.permXp -= skill.permLevelXpReq;
     skill.permLevel += 1;
-    skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
+    leveledUp = true;
   }
 
-  skill.xpScaling = 1 * 1.01 ** skill.permLevel * 1.05 ** skill.currentLevel;
+  if (leveledUp) recalculateSkillXpReq(state, skill.name);
+
+  // TODO: Turn xp scaling into an object with array of modifiers
+  // TODO: Only recalculate xp scaling on level up or other modifier change
+  recalculateSkillXpScaling(state, name);
 };
 
 // STATS
-// TODO: Redo calculation of decay so that taking larger "jumps" in time does not affect the outcome (need a continuous function)
 const decayStat = (state, name, currentTimeMs, decayTimeMs) => {
   const stat = state.stats[name];
   const { baseDecayRate, decayModifier } = stat;
@@ -243,9 +304,11 @@ const performJobCompletionEvent = (state, job, event) => {
       break;
     case COMPLETION_TYPE.LOCK_JOB:
       removeFromCurrentJobs(state, event.value);
+      removeJobFromQueueByName(state, event.value);
       break;
     case COMPLETION_TYPE.HIDE_SELF:
       removeFromCurrentJobs(state, job.name);
+      removeJobFromQueueByName(state, job.name);
       break;
     case COMPLETION_TYPE.EXPLORE_AREA:
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
@@ -263,7 +326,7 @@ const performJobCompletionEvent = (state, job, event) => {
 const getXpForTick = (state, skillName) => {
   const baseXpPerTick = GAME_TICK_TIME / 1000;
   const skillObj = state.skills[skillName];
-  return baseXpPerTick * skillObj.xpScaling;
+  return baseXpPerTick * skillObj.xpScaling.value;
 };
 
 const tickJobQueue = (state) => {
@@ -273,33 +336,32 @@ const tickJobQueue = (state) => {
     const currentJob = getFirstJobInQueue(state);
 
     if (currentJob) {
-      // TODO: Add conditional check for requirements before ticking job
-      // 1. Is job in current list of jobs that can be done
-      // 2. Do I have the item requirements for the job (requires inventory set up); includes if the player already has the maximum of the given items
-      // 3. Am I already max exploration for this (if explore area type)
-      const xpAdded = tickXpToJob(
-        state,
-        getXpForTick(state, currentJob.skill),
-        currentJob.name
-      );
-      addXpToSkill(state, currentJob.skill, xpAdded);
+      const blocker = blockerForJob(state, currentJob.name);
+      if (blocker) {
+        // TODO: Remove job and display dialog for reason why it was removed (requires toast dialog system)
+        removeJobFromQueueById(state, currentJob.queueId);
+        addMessage(state, `Canceled ${currentJob.name}: ${blocker}`);
+      } else {
+        const xpAdded = tickXpToJob(
+          state,
+          getXpForTick(state, currentJob.skill),
+          currentJob.name
+        );
+        addXpToSkill(state, currentJob.skill, xpAdded);
 
-      addMessage(
-        state,
-        `${currentJob.name} gained ${xpAdded} xp and now has ${
-          state.jobs[currentJob.name].currentXp
-        } xp`
-      );
+        addMessage(
+          state,
+          `${currentJob.name} gained ${xpAdded} xp and now has ${
+            state.jobs[currentJob.name].currentXp
+          } xp`
+        );
 
-      // If job is complete, perform "completionEvents" according to job
-      if (isJobComplete(state, currentJob.name)) {
-        currentJob.completionEvents.forEach((event) => {
-          performJobCompletionEvent(state, currentJob, event);
-        });
-        resetJobXp(state, currentJob.name);
-        // TODO: Remove this "removeJob" action once requirements are implemented
-        if (true) {
-          removeJobFromQueueById(state, currentJob.queueId);
+        // If job is complete, perform "completionEvents" according to job
+        if (isJobComplete(state, currentJob.name)) {
+          currentJob.completionEvents.forEach((event) => {
+            performJobCompletionEvent(state, currentJob, event);
+          });
+          resetJobXp(state, currentJob.name);
         }
       }
     }
@@ -307,8 +369,10 @@ const tickJobQueue = (state) => {
   return state.tickRemaining;
 };
 
-const startupGame = (state) => {
-  // Set starting jobs
+/**
+ * Starts a brand new game for the player, assuming a completely new player
+ */
+const startNewGame = (state) => {
   state.currentJobs = {
     [JOB_CATEGORY.ACTION]: [],
     [JOB_CATEGORY.CRAFT]: [],
@@ -317,6 +381,21 @@ const startupGame = (state) => {
   };
 
   resetStat(state, STAT_NAMES.HEALTH);
+
+  state.phase = PHASES.WANDER;
+};
+
+/**
+ * Startup function to load all deterministic data at the loading of the game
+ */
+// TODO: Update all deterministic values
+// TODO: Update currentDecayValue of stats on re-opening of app
+const startupGame = (state) => {
+  // Calculate deterministic values
+  Object.keys(state.skills).forEach((skillName) => {
+    recalculateSkillXpReq(state, skillName);
+    recalculateSkillXpScaling(state, skillName);
+  });
 
   state.isStarted = true;
 };
@@ -339,6 +418,10 @@ const tickGame = (state) => {
 const runGameLogicLoop = (state, tickMult) => {
   if (!state.isStarted) {
     startupGame(state);
+  }
+
+  if (state.phase === PHASES.NEW_GAME) {
+    startNewGame(state);
   }
 
   // Calc ticks to process
