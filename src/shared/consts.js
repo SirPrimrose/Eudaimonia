@@ -7,4 +7,9 @@ const PHASES = {
   PREP: 'Preparation',
 };
 
-export { PHASES, GAME_TICK_TIME };
+const JOB_REJECT_REASONS = {
+  UNAVAILABLE: 'Job is not currently available',
+  FULL_INVENTORY: 'Inventory is full of the produced item',
+};
+
+export { PHASES, GAME_TICK_TIME, JOB_REJECT_REASONS };

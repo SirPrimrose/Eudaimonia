@@ -8,7 +8,7 @@ import {
   JOB_NAMES,
 } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
-import { GAME_TICK_TIME, PHASES } from '../shared/consts';
+import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../shared/consts';
 import { ITEM_DATA } from '../game/data/inventory';
 import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
 import { EXPLORE_DATA } from '../game/data/exploreGroup';
@@ -25,7 +25,7 @@ export const initialState = {
   isTicking: false,
   isPaused: false,
   isStarted: false,
-  currentJobs: {},
+  currentJobs: {}, // Key is category and value is the array of jobs in them
   // INVENTORY
   items: ITEM_DATA,
   // WORLD
@@ -92,6 +92,12 @@ const removeItem = (state, name, amount) => {
   const item = state.items[name];
 
   item.currentAmount = Math.max(0, item.currentAmount - amount);
+};
+
+const isItemFull = (state, name) => {
+  const item = state.items[name];
+
+  return item.currentAmount >= item.maxAmount;
 };
 
 // WORLD
@@ -176,6 +182,35 @@ const resetJobXp = (state, jobName) => {
 
 const removeJobFromQueueById = (state, queueId) => {
   state.queue = state.queue.filter((j) => j.queueId !== queueId);
+};
+
+const isJobAvailable = (state, jobName) =>
+  Object.values(state.currentJobs).some((jobsInCategory) =>
+    jobsInCategory.includes(jobName)
+  );
+
+const isJobItemsFull = (state, job) =>
+  job.completionEvents.every(
+    (e) => e.type === COMPLETION_TYPE.ITEM && isItemFull(state, e.value)
+  );
+
+/**
+ * Validates whether the named job is currently ready to work.
+ * @returns null if the job can be worked on, otherwise returns a reason for the job being uncompletable
+ */
+const blockerForJob = (state, jobName) => {
+  const job = state.jobs[jobName];
+
+  if (!isJobAvailable(state, jobName)) {
+    return JOB_REJECT_REASONS.UNAVAILABLE;
+  }
+  // TODO: Check for required items for crafting recipies
+  if (isJobItemsFull(state, job)) {
+    return JOB_REJECT_REASONS.FULL_INVENTORY;
+  }
+  // TODO: Check for max exploration
+
+  return null;
 };
 
 // SKILLS
@@ -289,33 +324,32 @@ const tickJobQueue = (state) => {
     const currentJob = getFirstJobInQueue(state);
 
     if (currentJob) {
-      // TODO: Add conditional check for requirements before ticking job
-      // 1. Is job in current list of jobs that can be done
-      // 2. Do I have the item requirements for the job (requires inventory set up); includes if the player already has the maximum of the given items
-      // 3. Am I already max exploration for this (if explore area type)
-      const xpAdded = tickXpToJob(
-        state,
-        getXpForTick(state, currentJob.skill),
-        currentJob.name
-      );
-      addXpToSkill(state, currentJob.skill, xpAdded);
+      const blocker = blockerForJob(state, currentJob.name);
+      if (blocker) {
+        // TODO: Remove job and display dialog for reason why it was removed (requires toast dialog system)
+        removeJobFromQueueById(state, currentJob.queueId);
+        addMessage(state, `Canceled ${currentJob.name}: ${blocker}`);
+      } else {
+        const xpAdded = tickXpToJob(
+          state,
+          getXpForTick(state, currentJob.skill),
+          currentJob.name
+        );
+        addXpToSkill(state, currentJob.skill, xpAdded);
 
-      addMessage(
-        state,
-        `${currentJob.name} gained ${xpAdded} xp and now has ${
-          state.jobs[currentJob.name].currentXp
-        } xp`
-      );
+        addMessage(
+          state,
+          `${currentJob.name} gained ${xpAdded} xp and now has ${
+            state.jobs[currentJob.name].currentXp
+          } xp`
+        );
 
-      // If job is complete, perform "completionEvents" according to job
-      if (isJobComplete(state, currentJob.name)) {
-        currentJob.completionEvents.forEach((event) => {
-          performJobCompletionEvent(state, currentJob, event);
-        });
-        resetJobXp(state, currentJob.name);
-        // TODO: Remove this "removeJob" action once requirements are implemented
-        if (true) {
-          removeJobFromQueueById(state, currentJob.queueId);
+        // If job is complete, perform "completionEvents" according to job
+        if (isJobComplete(state, currentJob.name)) {
+          currentJob.completionEvents.forEach((event) => {
+            performJobCompletionEvent(state, currentJob, event);
+          });
+          resetJobXp(state, currentJob.name);
         }
       }
     }

@@ -29,13 +29,7 @@ const exportSaveData = (gameState) => {
     queue: gameState.queue,
     messages: gameState.messages,
     items: savePropsFromObjectMap(
-      [
-        'currentExploration',
-        'permExploration',
-        'currentLevel',
-        'currentCooldown',
-        'active',
-      ],
+      ['currentAmount', 'currentCooldown', 'active'],
       gameState.items
     ),
     worldResources: savePropsFromObjectMap(
@@ -76,6 +70,7 @@ export const loadLocalState = () => {
   }
 };
 
+// TODO: Consider using electron-store or similar library for storage that allows "migration" steps (https://github.com/sindresorhus/electron-store)
 export const saveLocalState = (state) => {
   try {
     const serializedState = exportSaveData(state.game);
