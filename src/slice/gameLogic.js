@@ -266,16 +266,21 @@ const addXpToSkill = (state, name, xp) => {
 };
 
 // STATS
-const decayStat = (state, name, currentTimeMs, decayTimeMs) => {
+const updateDecayRate = (state, name) => {
   const stat = state.stats[name];
-  const { baseDecayRate, decayModifier } = stat;
+
+  stat.currentDecayRate =
+    -stat.baseDecayRate * stat.decayModifier ** (state.gameTime / 60000);
+};
+
+const decayStat = (state, name, decayTimeMs) => {
+  const stat = state.stats[name];
 
   // Decay rate grows exponentially with time
-  const decayRate = baseDecayRate * decayModifier ** (currentTimeMs / 60000);
-  const decay = decayRate * (decayTimeMs / 1000);
+  updateDecayRate(state, name);
 
-  stat.currentDecayRate = -decayRate;
-  stat.currentValue = Math.min(stat.maxValue, stat.currentValue - decay);
+  const decay = stat.currentDecayRate * (decayTimeMs / 1000);
+  stat.currentValue = Math.min(stat.maxValue, stat.currentValue + decay);
 };
 
 const resetStat = (state, name) => {
@@ -397,6 +402,12 @@ const startupGame = (state) => {
     recalculateSkillXpScaling(state, skillName);
   });
 
+  Object.keys(state.stats).forEach((statName) => {
+    updateDecayRate(state, statName);
+  });
+
+  recalulateAllWorldResources(state.worldResources, state.exploreGroups);
+
   state.isStarted = true;
 };
 
@@ -408,7 +419,7 @@ const tickGame = (state) => {
       const tickRem = tickJobQueue(state);
       const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
-      decayStat(state, STAT_NAMES.PREP_TIME, state.gameTime, jobTime);
+      decayStat(state, STAT_NAMES.PREP_TIME, jobTime);
 
       addGameTime(state, jobTime);
     }
