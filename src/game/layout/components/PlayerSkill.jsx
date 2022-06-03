@@ -41,7 +41,7 @@ class PlayerSkill extends React.PureComponent {
           <Stack spacing={0.25}>
             <Typography noWrap align="center" variant="subtitle2">
               {getIconForSkillType(skillName)}
-              {`⨯${xpScaling.toFixed(2)}`}
+              {`⨯${xpScaling.value.toFixed(2)}`}
             </Typography>
 
             <LinearProgress
@@ -70,7 +70,15 @@ PlayerSkill.propTypes = {
   permLevel: PropTypes.number.isRequired,
   permXp: PropTypes.number.isRequired,
   permLevelXpReq: PropTypes.number.isRequired,
-  xpScaling: PropTypes.number.isRequired,
+  xpScaling: PropTypes.shape({
+    value: PropTypes.number.isRequired,
+    modifiers: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        multiplier: PropTypes.number.isRequired,
+      }).isRequired
+    ).isRequired,
+  }).isRequired,
 };
 
 export default PlayerSkill;

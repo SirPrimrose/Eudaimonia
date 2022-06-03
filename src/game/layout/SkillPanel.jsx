@@ -53,6 +53,15 @@ SkillPanel.propTypes = {
       permLevel: PropTypes.number.isRequired,
       permXp: PropTypes.number.isRequired,
       permLevelXpReq: PropTypes.number.isRequired,
+      xpScaling: PropTypes.shape({
+        value: PropTypes.number.isRequired,
+        modifiers: PropTypes.arrayOf(
+          PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            multiplier: PropTypes.number.isRequired,
+          })
+        ).isRequired,
+      }).isRequired,
     })
   ).isRequired,
 };

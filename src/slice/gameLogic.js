@@ -17,11 +17,12 @@ import {
   xpReqForCurrentLevel,
   xpReqForPermLevel,
 } from '../game/data/skills';
+import CalculatedValue from '../game/data/calculatedValue';
 
 export const initialState = {
   // GAME
   gameTime: 0,
-  phase: PHASES.WANDER,
+  phase: PHASES.NEW_GAME,
   isTicking: false,
   isPaused: false,
   isStarted: false,
@@ -184,6 +185,10 @@ const removeJobFromQueueById = (state, queueId) => {
   state.queue = state.queue.filter((j) => j.queueId !== queueId);
 };
 
+const removeJobFromQueueByName = (state, jobName) => {
+  state.queue = state.queue.filter((j) => j.name !== jobName);
+};
+
 const isJobAvailable = (state, jobName) =>
   Object.values(state.currentJobs).some((jobsInCategory) =>
     jobsInCategory.includes(jobName)
@@ -221,10 +226,15 @@ const recalculateSkillXpReq = (state, skillName) => {
   skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
 };
 
-const recalculateAllSkillsXpReq = (state) => {
-  Object.keys(state.skills).forEach((skillName) => {
-    recalculateSkillXpReq(state, skillName);
-  });
+const recalculateSkillXpScaling = (state, name) => {
+  const skill = state.skills[name];
+
+  const calculatedValue = new CalculatedValue(skill.xpScaling.baseValue);
+
+  calculatedValue.addModifier('permLevel', 1.01 ** skill.permLevel);
+  calculatedValue.addModifier('currentLevel', 1.05 ** skill.currentLevel);
+
+  skill.xpScaling = calculatedValue.obj;
 };
 
 const addXpToSkill = (state, name, xp) => {
@@ -252,7 +262,7 @@ const addXpToSkill = (state, name, xp) => {
 
   // TODO: Turn xp scaling into an object with array of modifiers
   // TODO: Only recalculate xp scaling on level up or other modifier change
-  skill.xpScaling = 1 * 1.01 ** skill.permLevel * 1.05 ** skill.currentLevel;
+  recalculateSkillXpScaling(state, name);
 };
 
 // STATS
@@ -294,9 +304,11 @@ const performJobCompletionEvent = (state, job, event) => {
       break;
     case COMPLETION_TYPE.LOCK_JOB:
       removeFromCurrentJobs(state, event.value);
+      removeJobFromQueueByName(state, event.value);
       break;
     case COMPLETION_TYPE.HIDE_SELF:
       removeFromCurrentJobs(state, job.name);
+      removeJobFromQueueByName(state, job.name);
       break;
     case COMPLETION_TYPE.EXPLORE_AREA:
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
@@ -314,7 +326,7 @@ const performJobCompletionEvent = (state, job, event) => {
 const getXpForTick = (state, skillName) => {
   const baseXpPerTick = GAME_TICK_TIME / 1000;
   const skillObj = state.skills[skillName];
-  return baseXpPerTick * skillObj.xpScaling;
+  return baseXpPerTick * skillObj.xpScaling.value;
 };
 
 const tickJobQueue = (state) => {
@@ -358,13 +370,9 @@ const tickJobQueue = (state) => {
 };
 
 /**
- * Startup function to load all deterministic data at the loading of the game
+ * Starts a brand new game for the player, assuming a completely new player
  */
-// TODO: Update all deterministic values
-// TODO: Update currentDecayValue of stats on re-opening of app
-// TODO: Move things like setting starting jobs and health initialization to a "startLife" function
-const startupGame = (state) => {
-  // Things to move to a "newgame" startup
+const startNewGame = (state) => {
   state.currentJobs = {
     [JOB_CATEGORY.ACTION]: [],
     [JOB_CATEGORY.CRAFT]: [],
@@ -374,8 +382,20 @@ const startupGame = (state) => {
 
   resetStat(state, STAT_NAMES.HEALTH);
 
+  state.phase = PHASES.WANDER;
+};
+
+/**
+ * Startup function to load all deterministic data at the loading of the game
+ */
+// TODO: Update all deterministic values
+// TODO: Update currentDecayValue of stats on re-opening of app
+const startupGame = (state) => {
   // Calculate deterministic values
-  recalculateAllSkillsXpReq(state);
+  Object.keys(state.skills).forEach((skillName) => {
+    recalculateSkillXpReq(state, skillName);
+    recalculateSkillXpScaling(state, skillName);
+  });
 
   state.isStarted = true;
 };
@@ -398,6 +418,10 @@ const tickGame = (state) => {
 const runGameLogicLoop = (state, tickMult) => {
   if (!state.isStarted) {
     startupGame(state);
+  }
+
+  if (state.phase === PHASES.NEW_GAME) {
+    startNewGame(state);
   }
 
   // Calc ticks to process
