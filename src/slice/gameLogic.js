@@ -22,6 +22,7 @@ import CalculatedValue from '../game/data/calculatedValue';
 export const initialState = {
   // GAME
   gameTime: 0,
+  generationCount: 0,
   phase: PHASES.NEW_GAME,
   isTicking: false,
   isPaused: false,
@@ -36,6 +37,11 @@ export const initialState = {
   tickRemaining: 1,
   jobs: JOB_DATA,
   queue: [],
+  globalXpModifier: {
+    baseValue: 1,
+    value: 1,
+    modifiers: [],
+  },
   // SKILLS
   skills: SKILL_DATA,
   // STATS
@@ -145,6 +151,16 @@ const resetExploreGroup = (state, name) => {
 };
 
 // JOBS
+const recalculateGlobalXpModifier = (state) => {
+  const calculatedValue = new CalculatedValue(state.globalXpModifier.baseValue);
+
+  if (state.generationCount <= 4) {
+    calculatedValue.addModifier('awakening', state.generationCount * 0.2 + 0.1);
+  }
+
+  state.globalXpModifier = calculatedValue.obj;
+};
+
 const resetQueueTick = (state) => {
   state.tickRemaining = 1;
 };
@@ -270,7 +286,7 @@ const updateDecayRate = (state, name) => {
   const stat = state.stats[name];
 
   stat.currentDecayRate =
-    -stat.baseDecayRate * stat.decayModifier ** (state.gameTime / 60000);
+    stat.baseDecayRate * stat.decayModifier ** (state.gameTime / 60000);
 };
 
 const decayStat = (state, name, decayTimeMs) => {
@@ -280,7 +296,7 @@ const decayStat = (state, name, decayTimeMs) => {
   updateDecayRate(state, name);
 
   const decay = stat.currentDecayRate * (decayTimeMs / 1000);
-  stat.currentValue = Math.min(stat.maxValue, stat.currentValue + decay);
+  stat.currentValue = Math.min(stat.maxValue, stat.currentValue - decay);
 };
 
 const resetStat = (state, name) => {
@@ -330,8 +346,9 @@ const performJobCompletionEvent = (state, job, event) => {
 
 const getXpForTick = (state, skillName) => {
   const baseXpPerTick = GAME_TICK_TIME / 1000;
+  const globalXpMod = state.globalXpModifier.value;
   const skillObj = state.skills[skillName];
-  return baseXpPerTick * skillObj.xpScaling.value;
+  return baseXpPerTick * globalXpMod * skillObj.xpScaling.value;
 };
 
 const tickJobQueue = (state) => {
@@ -393,8 +410,6 @@ const startNewGame = (state) => {
 /**
  * Startup function to load all deterministic data at the loading of the game
  */
-// TODO: Update all deterministic values
-// TODO: Update currentDecayValue of stats on re-opening of app
 const startupGame = (state) => {
   // Calculate deterministic values
   Object.keys(state.skills).forEach((skillName) => {
@@ -408,6 +423,8 @@ const startupGame = (state) => {
 
   recalulateAllWorldResources(state.worldResources, state.exploreGroups);
 
+  recalculateGlobalXpModifier(state);
+
   state.isStarted = true;
 };
 
@@ -419,7 +436,7 @@ const tickGame = (state) => {
       const tickRem = tickJobQueue(state);
       const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
-      decayStat(state, STAT_NAMES.PREP_TIME, jobTime);
+      decayStat(state, STAT_NAMES.HEALTH, jobTime);
 
       addGameTime(state, jobTime);
     }
