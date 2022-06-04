@@ -10,6 +10,12 @@ const SKILL_NAMES = {
   FISHING: 'Fishing',
 };
 
+const XP_SCALING_FACTORS = {
+  CURRENT_LEVEL: 'Life',
+  PERM_LEVEL: 'Soul',
+  NEW_GAME: 'Awakening',
+};
+
 // Add unique fields to each skill
 const SKILL_BASES = {
   [SKILL_NAMES.AGILITY]: {},
@@ -41,4 +47,10 @@ const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
   {}
 );
 
-export { SKILL_NAMES, SKILL_DATA, xpReqForCurrentLevel, xpReqForPermLevel };
+export {
+  SKILL_NAMES,
+  XP_SCALING_FACTORS,
+  SKILL_DATA,
+  xpReqForCurrentLevel,
+  xpReqForPermLevel,
+};

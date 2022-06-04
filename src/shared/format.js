@@ -1,8 +1,15 @@
-import * as ADNotations from '@antimatter-dimensions/notations';
-
-const scientific = new ADNotations.ScientificNotation();
-const engineering = new ADNotations.EngineeringNotation();
-const standard = new ADNotations.StandardNotation();
+const scientific = new Intl.NumberFormat('en-US', {
+  notation: 'scientific',
+  maximumSignificantDigits: 3,
+});
+const standard = new Intl.NumberFormat('en-US', {
+  notation: 'standard',
+  maximumSignificantDigits: 3,
+});
+const engineering = new Intl.NumberFormat('en-US', {
+  notation: 'engineering',
+  maximumSignificantDigits: 3,
+});
 
 const formats = {
   SCIENTIFIC: 'SCI',
@@ -20,13 +27,16 @@ const toClockTime = (timeMs) => {
 };
 
 const toGameNumber = (number) => {
+  if (number < 1000) {
+    return standard.format(number);
+  }
   if (globalFormat === formats.SCIENTIFIC) {
-    return scientific.format(number, 2, 2);
+    return scientific.format(number);
   }
   if (globalFormat === formats.ENGINEERING) {
-    return engineering.format(number, 2, 2);
+    return engineering.format(number);
   }
-  return standard.format(number, 2, 2);
+  return standard.format(number);
 };
 
 export { toClockTime, toGameNumber };

@@ -16,6 +16,7 @@ import {
   SKILL_DATA,
   xpReqForCurrentLevel,
   xpReqForPermLevel,
+  XP_SCALING_FACTORS,
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
 
@@ -37,11 +38,6 @@ export const initialState = {
   tickRemaining: 1,
   jobs: JOB_DATA,
   queue: [],
-  globalXpModifier: {
-    baseValue: 1,
-    value: 1,
-    modifiers: [],
-  },
   // SKILLS
   skills: SKILL_DATA,
   // STATS
@@ -151,16 +147,6 @@ const resetExploreGroup = (state, name) => {
 };
 
 // JOBS
-const recalculateGlobalXpModifier = (state) => {
-  const calculatedValue = new CalculatedValue(state.globalXpModifier.baseValue);
-
-  if (state.generationCount <= 4) {
-    calculatedValue.addModifier('awakening', state.generationCount * 0.2 + 0.1);
-  }
-
-  state.globalXpModifier = calculatedValue.obj;
-};
-
 const resetQueueTick = (state) => {
   state.tickRemaining = 1;
 };
@@ -247,8 +233,25 @@ const recalculateSkillXpScaling = (state, name) => {
 
   const calculatedValue = new CalculatedValue(skill.xpScaling.baseValue);
 
-  calculatedValue.addModifier('permLevel', 1.01 ** skill.permLevel);
-  calculatedValue.addModifier('currentLevel', 1.05 ** skill.currentLevel);
+  calculatedValue.addModifier(
+    XP_SCALING_FACTORS.CURRENT_LEVEL,
+    skill.currentLevel,
+    1.05 ** skill.currentLevel
+  );
+  calculatedValue.addModifier(
+    XP_SCALING_FACTORS.PERM_LEVEL,
+    skill.permLevel,
+    1.01 ** skill.permLevel
+  );
+
+  // GLOBAL XP MODIFIERS
+  if (state.generationCount <= 4) {
+    calculatedValue.addModifier(
+      XP_SCALING_FACTORS.NEW_GAME,
+      -1,
+      state.generationCount * 0.2 + 0.1
+    );
+  }
 
   skill.xpScaling = calculatedValue.obj;
 };
@@ -274,11 +277,10 @@ const addXpToSkill = (state, name, xp) => {
     leveledUp = true;
   }
 
-  if (leveledUp) recalculateSkillXpReq(state, skill.name);
-
-  // TODO: Turn xp scaling into an object with array of modifiers
-  // TODO: Only recalculate xp scaling on level up or other modifier change
-  recalculateSkillXpScaling(state, name);
+  if (leveledUp) {
+    recalculateSkillXpReq(state, skill.name);
+    recalculateSkillXpScaling(state, name);
+  }
 };
 
 // STATS
@@ -354,9 +356,8 @@ const performJobCompletionEvent = (state, job, event) => {
 
 const getXpForTick = (state, skillName) => {
   const baseXpPerTick = GAME_TICK_TIME / 1000;
-  const globalXpMod = state.globalXpModifier.value;
   const skillObj = state.skills[skillName];
-  return baseXpPerTick * globalXpMod * skillObj.xpScaling.value;
+  return baseXpPerTick * skillObj.xpScaling.value;
 };
 
 const tickJobQueue = (state) => {
@@ -430,8 +431,6 @@ const startupGame = (state) => {
   });
 
   recalulateAllWorldResources(state.worldResources, state.exploreGroups);
-
-  recalculateGlobalXpModifier(state);
 
   state.isStarted = true;
 };
