@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import ProgressBarWithOverlay from '../../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../../shared/util';
 import { getWorldResources } from '../../slice/gameSlice';
@@ -13,7 +13,7 @@ class WorldResourcePanel extends React.PureComponent {
         worldResource.potencyPerUnlock
       } checked`}
     >
-      <div>
+      <Box>
         <ProgressBarWithOverlay
           value={getProgressValue(
             worldResource.currentResource,
@@ -28,7 +28,7 @@ class WorldResourcePanel extends React.PureComponent {
             } Unchecked`}
           </Typography>
         </ProgressBarWithOverlay>
-      </div>
+      </Box>
     </Tooltip>
   );
 
