@@ -5,6 +5,7 @@ const GAME_TICK_TIME = 1000 / GAME_TPS;
 const PHASES = {
   NEW_GAME: 'New Game',
   WANDER: 'Wander',
+  REBIRTH: 'Rebirth',
   PREP: 'Preparation',
 };
 

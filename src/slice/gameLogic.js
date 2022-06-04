@@ -308,6 +308,14 @@ const resetStat = (state, name) => {
   }
 };
 
+const getStatValue = (state, name) => {
+  const stat = state.stats[name];
+  if (stat) {
+    return stat.currentValue;
+  }
+  return 0;
+};
+
 // TEXT LOG
 const addMessage = (state, message) => {
   state.messages.push({ listId: uuid(), text: message });
@@ -428,6 +436,11 @@ const startupGame = (state) => {
   state.isStarted = true;
 };
 
+/**
+ * Returns true if dead by whatever reason, false if not
+ */
+const isPlayerDead = (state) => getStatValue(state, STAT_NAMES.HEALTH) <= 0;
+
 const tickGame = (state) => {
   if (!state.isPaused) {
     if (state.queue.length === 0) {
@@ -439,6 +452,12 @@ const tickGame = (state) => {
       decayStat(state, STAT_NAMES.HEALTH, jobTime);
 
       addGameTime(state, jobTime);
+
+      // Check for death
+      if (isPlayerDead(state)) {
+        console.log('died');
+        state.phase = PHASES.REBIRTH;
+      }
     }
   }
 };
