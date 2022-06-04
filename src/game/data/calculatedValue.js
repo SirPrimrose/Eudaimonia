@@ -20,9 +20,10 @@ export default class CalculatedValue {
     };
   }
 
-  addModifier(name, multiplier) {
+  addModifier(name, level, multiplier) {
     this.modifiers.push({
       name,
+      level,
       multiplier,
     });
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   Grid,
@@ -9,14 +9,60 @@ import {
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
 import { getIconForSkillType } from './Icons';
+import { MULTIPLICATION_SIGN } from '../../../shared/consts';
+import { toGameNumber } from '../../../shared/format';
+
+const columns = ['Effect', 'Level', 'Multiplier'];
 
 class PlayerSkill extends React.PureComponent {
-  getTooltipValue = (skillName, currentLevel, permLevel) => (
-    <Stack alignItems="center">
-      <Typography variant="body1">{skillName}</Typography>
-      <Typography variant="body2">{`Current: ${currentLevel} Perm: ${permLevel}`}</Typography>
-    </Stack>
-  );
+  getTooltipValue = () => {
+    const { skillName, xpScaling } = this.props;
+
+    return (
+      <Stack alignItems="center">
+        <Typography variant="h6">{skillName}</Typography>
+        <Grid container>
+          {columns.map((col) => (
+            <Grid key={col} item xs={12 / columns.length}>
+              <Typography variant="body1" align="right">
+                {col}
+              </Typography>
+            </Grid>
+          ))}
+          {xpScaling.modifiers.map((mod) => (
+            <Fragment key={mod.name}>
+              <Grid item xs={12 / columns.length}>
+                <Typography variant="body2" align="right">
+                  {mod.name}
+                </Typography>
+              </Grid>
+              <Grid item xs={12 / columns.length}>
+                <Typography variant="body2" align="right">
+                  {mod.level !== -1 ? toGameNumber(mod.level) : ''}
+                </Typography>
+              </Grid>
+              <Grid item xs={12 / columns.length}>
+                <Typography variant="body2" align="right">
+                  {`${MULTIPLICATION_SIGN} ${toGameNumber(mod.multiplier)}`}
+                </Typography>
+              </Grid>
+            </Fragment>
+          ))}
+          <Grid item xs={12 / columns.length}>
+            <Typography variant="body2" align="right">
+              Total
+            </Typography>
+          </Grid>
+          <Grid item xs={12 / columns.length} />
+          <Grid item xs={12 / columns.length}>
+            <Typography variant="body2" align="right">
+              {`${toGameNumber(xpScaling.value)}`}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Stack>
+    );
+  };
 
   render() {
     const {
@@ -34,14 +80,11 @@ class PlayerSkill extends React.PureComponent {
     // TODO: Add icons for skills from skills.js
     return (
       <Grid item xs={4}>
-        <Tooltip
-          title={this.getTooltipValue(skillName, currentLevel, permLevel)}
-          disableInteractive
-        >
+        <Tooltip title={this.getTooltipValue()} disableInteractive>
           <Stack spacing={0.25}>
             <Typography noWrap align="center" variant="subtitle2">
               {getIconForSkillType(skillName)}
-              {`⨯${xpScaling.value.toFixed(2)}`}
+              {` ${MULTIPLICATION_SIGN} ${toGameNumber(xpScaling.value)}`}
             </Typography>
 
             <LinearProgress
@@ -75,6 +118,7 @@ PlayerSkill.propTypes = {
     modifiers: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
+        level: PropTypes.number.isRequired,
         multiplier: PropTypes.number.isRequired,
       }).isRequired
     ).isRequired,

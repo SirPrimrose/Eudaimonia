@@ -29,6 +29,7 @@
         "import/order": "warn",
         "react/no-unused-state": "warn",
         "react/no-unused-prop-types": "warn",
+        "spaced-comment": "warn",
         "no-plusplus": "off",
         "no-prototype-builtins": "off",
         "class-methods-use-this": "off"

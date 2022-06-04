@@ -58,6 +58,7 @@ SkillPanel.propTypes = {
         modifiers: PropTypes.arrayOf(
           PropTypes.shape({
             name: PropTypes.string.isRequired,
+            level: PropTypes.number.isRequired,
             multiplier: PropTypes.number.isRequired,
           })
         ).isRequired,
