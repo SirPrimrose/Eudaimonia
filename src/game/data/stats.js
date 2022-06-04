@@ -13,7 +13,6 @@ const STAT_BASES = {
     baseDecayRate: -0.5,
     decayModifier: 2,
     maxValue: 20,
-    isActive: true,
   },
   [STAT_NAMES.WANDER_TIME]: {
     shortName: 'PS',
@@ -24,8 +23,9 @@ const STAT_BASES = {
   [STAT_NAMES.HEALTH]: {
     shortName: 'HP',
     baseDecayRate: 1,
-    decayModifier: 0,
+    decayModifier: 1.1,
     maxValue: 100,
+    isActive: true,
   },
   [STAT_NAMES.MAGIC]: {
     shortName: 'MP',
