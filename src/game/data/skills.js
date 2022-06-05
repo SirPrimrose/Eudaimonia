@@ -1,6 +1,12 @@
+import CalculatedValue from './calculatedValue';
+
 const xpReqForCurrentLevel = (level) => Math.floor(10 * 1.1 ** level);
 
 const xpReqForPermLevel = (level) => Math.floor(50 * 1.02 ** level);
+
+const xpMultiplierForCurrentLevel = (level) => 1.05 ** level;
+
+const xpMultiplierForPermLevel = (level) => 1.01 ** level;
 
 const SKILL_NAMES = {
   AGILITY: 'Agility',
@@ -37,11 +43,7 @@ const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
       permLevel: 0,
       permXp: 0,
       permLevelXpReq: xpReqForPermLevel(0),
-      xpScaling: {
-        baseValue: 1,
-        value: 0,
-        modifiers: [],
-      },
+      xpScaling: CalculatedValue.baseObject(1),
     },
   }),
   {}
@@ -53,4 +55,6 @@ export {
   SKILL_DATA,
   xpReqForCurrentLevel,
   xpReqForPermLevel,
+  xpMultiplierForCurrentLevel,
+  xpMultiplierForPermLevel,
 };

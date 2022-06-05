@@ -14,30 +14,39 @@ import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
 import { EXPLORE_DATA } from '../game/data/exploreGroup';
 import {
   SKILL_DATA,
+  xpMultiplierForCurrentLevel,
+  xpMultiplierForPermLevel,
   xpReqForCurrentLevel,
   xpReqForPermLevel,
   XP_SCALING_FACTORS,
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
+import { calculateSoulpower } from '../game/data/soulpower';
 
 const initialState = {
   // GAME
   gameTime: 0,
+  soulpower: {
+    resource: CalculatedValue.baseObject(),
+    // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation
+  },
+  upgrades: [], // Array of all active modifiers to values, filter by type
   generationCount: 0,
   phase: PHASES.NEW_GAME,
   isTicking: false,
   isPaused: false,
   isStarted: false,
+  // JOB QUEUE
+  tickRemaining: 1,
   currentJobs: {}, // Key is category and value is the array of jobs in them
+  queue: [],
   // INVENTORY
   items: ITEM_DATA,
   // WORLD
   worldResources: WORLD_RESOURCE_DATA,
   exploreGroups: EXPLORE_DATA,
   // JOBS
-  tickRemaining: 1,
   jobs: JOB_DATA,
-  queue: [],
   // SKILLS
   skills: SKILL_DATA,
   // STATS
@@ -66,6 +75,28 @@ const removeFromCurrentJobs = (state, jobName) => {
   state.currentJobs[job.category] = state.currentJobs[job.category].filter(
     (j) => j !== jobName
   );
+};
+
+// JOB QUEUE
+const resetQueueTick = (state) => {
+  state.tickRemaining = 1;
+};
+
+const removeJobFromQueueById = (state, queueId) => {
+  state.queue = state.queue.filter((j) => j.queueId !== queueId);
+};
+
+const removeJobFromQueueByName = (state, jobName) => {
+  state.queue = state.queue.filter((j) => j.name !== jobName);
+};
+
+const isJobAvailable = (state, jobName) =>
+  Object.values(state.currentJobs).some((jobsInCategory) =>
+    jobsInCategory.includes(jobName)
+  );
+
+const resetjobQueue = (state) => {
+  state.queue = initialState.queue;
 };
 
 const shouldTickJobQueue = (state) =>
@@ -147,10 +178,6 @@ const resetExploreGroup = (state, name) => {
 };
 
 // JOBS
-const resetQueueTick = (state) => {
-  state.tickRemaining = 1;
-};
-
 const tickXpToJob = (state, xp, name) => {
   const job = state.jobs[name];
 
@@ -182,19 +209,6 @@ const resetJobXp = (state, jobName) => {
   const job = state.jobs[jobName];
   job.currentXp = 0;
 };
-
-const removeJobFromQueueById = (state, queueId) => {
-  state.queue = state.queue.filter((j) => j.queueId !== queueId);
-};
-
-const removeJobFromQueueByName = (state, jobName) => {
-  state.queue = state.queue.filter((j) => j.name !== jobName);
-};
-
-const isJobAvailable = (state, jobName) =>
-  Object.values(state.currentJobs).some((jobsInCategory) =>
-    jobsInCategory.includes(jobName)
-  );
 
 const isJobItemsFull = (state, job) =>
   job.completionEvents.every(
@@ -236,12 +250,12 @@ const recalculateSkillXpScaling = (state, name) => {
   calculatedValue.addModifier(
     XP_SCALING_FACTORS.CURRENT_LEVEL,
     skill.currentLevel,
-    1.05 ** skill.currentLevel
+    xpMultiplierForCurrentLevel(skill.currentLevel)
   );
   calculatedValue.addModifier(
     XP_SCALING_FACTORS.PERM_LEVEL,
     skill.permLevel,
-    1.01 ** skill.permLevel
+    xpMultiplierForPermLevel(skill.permLevel)
   );
 
   // GLOBAL XP MODIFIERS
@@ -253,7 +267,7 @@ const recalculateSkillXpScaling = (state, name) => {
     );
   }
 
-  skill.xpScaling = calculatedValue.obj;
+  skill.xpScaling = calculatedValue.toObj;
 };
 
 const addXpToSkill = (state, name, xp) => {
@@ -401,29 +415,6 @@ const tickJobQueue = (state) => {
 };
 
 /**
- * Restarts the player to the beginning of their next life
- */
-const startNewLife = (state) => {
-  state.currentJobs = {
-    [JOB_CATEGORY.ACTION]: [],
-    [JOB_CATEGORY.CRAFT]: [],
-    [JOB_CATEGORY.EXPLORATION]: [],
-    [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
-  };
-
-  resetStat(state, STAT_NAMES.HEALTH);
-
-  state.phase = PHASES.WANDER;
-};
-
-/**
- * Starts a brand new game for the player, assuming a completely new player
- */
-const startNewGame = (state) => {
-  startNewLife(state);
-};
-
-/**
  * Startup function to load all deterministic data at the loading of the game
  */
 const startupGame = (state) => {
@@ -443,9 +434,52 @@ const startupGame = (state) => {
 };
 
 /**
+ * Restarts the player to the beginning of their next life
+ */
+const startNewLife = (state) => {
+  state.currentJobs = {
+    [JOB_CATEGORY.ACTION]: [],
+    [JOB_CATEGORY.CRAFT]: [],
+    [JOB_CATEGORY.EXPLORATION]: [],
+    [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
+  };
+
+  resetjobQueue(state);
+
+  Object.keys(state.jobs).forEach((jobName) => {
+    resetJobXp(state, jobName);
+  });
+
+  resetStat(state, STAT_NAMES.HEALTH);
+
+  state.phase = PHASES.WANDER;
+};
+
+/**
+ * Starts a brand new game for the player, assuming a completely new player
+ */
+const startNewGame = (state) => {
+  startNewLife(state);
+};
+
+/**
  * Returns true if dead by whatever reason, false if not
  */
 const isPlayerDead = (state) => getStatValue(state, STAT_NAMES.HEALTH) <= 0;
+
+const playerHasDied = (state) => {
+  state.soulpower.resource = calculateSoulpower(state);
+
+  state.phase = PHASES.PREP;
+};
+
+const reviveCharacter = (state) => {
+  state.generationCount += 1;
+  state.gameTime = 0;
+
+  startNewLife(state);
+  startupGame(state);
+};
 
 const tickGame = (state) => {
   if (state.phase === PHASES.WANDER) {
@@ -463,7 +497,7 @@ const tickGame = (state) => {
         // Check for death
         if (isPlayerDead(state)) {
           console.log('died');
-          state.phase = PHASES.PREP;
+          playerHasDied(state);
         }
       }
     }
@@ -490,13 +524,6 @@ const runGameLogicLoop = (state, tickMult) => {
     tickGame(state);
     gameTicksRem -= currentTickDuration;
   }
-};
-
-const reviveCharacter = (state) => {
-  state.generationCount += 1;
-  state.gameTime = 0;
-
-  startNewLife(state);
 };
 
 export { initialState, runGameLogicLoop, reviveCharacter };
