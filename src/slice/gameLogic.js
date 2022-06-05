@@ -20,7 +20,7 @@ import {
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
 
-export const initialState = {
+const initialState = {
   // GAME
   gameTime: 0,
   generationCount: 0,
@@ -401,9 +401,9 @@ const tickJobQueue = (state) => {
 };
 
 /**
- * Starts a brand new game for the player, assuming a completely new player
+ * Restarts the player to the beginning of their next life
  */
-const startNewGame = (state) => {
+const startNewLife = (state) => {
   state.currentJobs = {
     [JOB_CATEGORY.ACTION]: [],
     [JOB_CATEGORY.CRAFT]: [],
@@ -414,6 +414,13 @@ const startNewGame = (state) => {
   resetStat(state, STAT_NAMES.HEALTH);
 
   state.phase = PHASES.WANDER;
+};
+
+/**
+ * Starts a brand new game for the player, assuming a completely new player
+ */
+const startNewGame = (state) => {
+  startNewLife(state);
 };
 
 /**
@@ -441,44 +448,55 @@ const startupGame = (state) => {
 const isPlayerDead = (state) => getStatValue(state, STAT_NAMES.HEALTH) <= 0;
 
 const tickGame = (state) => {
-  if (!state.isPaused) {
-    if (state.queue.length === 0) {
-      state.isPaused = true;
-    } else {
-      const tickRem = tickJobQueue(state);
-      const jobTime = GAME_TICK_TIME * (1 - tickRem);
+  if (state.phase === PHASES.WANDER) {
+    if (!state.isPaused) {
+      if (state.queue.length === 0) {
+        state.isPaused = true;
+      } else {
+        const tickRem = tickJobQueue(state);
+        const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
-      decayStat(state, STAT_NAMES.HEALTH, jobTime);
+        decayStat(state, STAT_NAMES.HEALTH, jobTime);
 
-      addGameTime(state, jobTime);
+        addGameTime(state, jobTime);
 
-      // Check for death
-      if (isPlayerDead(state)) {
-        console.log('died');
-        state.phase = PHASES.REBIRTH;
+        // Check for death
+        if (isPlayerDead(state)) {
+          console.log('died');
+          state.phase = PHASES.PREP;
+        }
       }
     }
+  } else if (state.phase === PHASES.PREP) {
+    console.log('Waiting for prep');
   }
 };
 
 const runGameLogicLoop = (state, tickMult) => {
-  if (!state.isStarted) {
-    startupGame(state);
-  }
-
   if (state.phase === PHASES.NEW_GAME) {
     startNewGame(state);
+  }
+
+  if (!state.isStarted) {
+    startupGame(state);
   }
 
   // Calc ticks to process
   const newTime = Date.now();
   gameTicksRem += newTime - currentTime;
   currentTime = newTime;
-  const currentTickTime = GAME_TICK_TIME / tickMult;
-  while (gameTicksRem >= currentTickTime) {
+  const currentTickDuration = GAME_TICK_TIME / tickMult;
+  while (gameTicksRem >= currentTickDuration) {
     tickGame(state);
-    gameTicksRem -= currentTickTime;
+    gameTicksRem -= currentTickDuration;
   }
 };
 
-export default runGameLogicLoop;
+const reviveCharacter = (state) => {
+  state.generationCount += 1;
+  state.gameTime = 0;
+
+  startNewLife(state);
+};
+
+export { initialState, runGameLogicLoop, reviveCharacter };

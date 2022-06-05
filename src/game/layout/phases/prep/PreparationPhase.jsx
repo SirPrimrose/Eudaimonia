@@ -12,10 +12,10 @@ import { STAT_NAMES } from '../../../data/stats';
 
 class PreparationPhase extends React.PureComponent {
   beginToWander = () => {
-    const { setPhase, addMessage } = this.props;
+    const { reviveCharacter, addMessage } = this.props;
 
-    setPhase(PHASES.WANDER);
-    addMessage('You take the first step...');
+    reviveCharacter();
+    addMessage('You take another step...');
   };
 
   render() {
@@ -33,7 +33,7 @@ class PreparationPhase extends React.PureComponent {
 }
 
 PreparationPhase.propTypes = {
-  setPhase: PropTypes.func.isRequired,
+  reviveCharacter: PropTypes.func.isRequired,
   addMessage: PropTypes.func.isRequired,
 };
 
@@ -48,7 +48,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setPhase: gameActions.setPhase,
+  reviveCharacter: gameActions.reviveCharacter,
   addMessage: gameActions.addMessage,
 };
 

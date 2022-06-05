@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
 import { getProgressValue } from '../shared/util';
 import { xpReqForCurrentLevel } from '../game/data/skills';
-import runGameLogicLoop, { initialState } from './gameLogic';
+import { initialState, runGameLogicLoop, reviveCharacter } from './gameLogic';
 
 export const gameSlice = createSlice({
   name: 'game',
@@ -17,8 +17,8 @@ export const gameSlice = createSlice({
 
       state.isTicking = false;
     },
-    setPhase: (state, action) => {
-      state.phase = action.payload;
+    reviveCharacter: (state) => {
+      reviveCharacter(state);
     },
     setPaused: (state, action) => {
       state.isPaused = action.payload;

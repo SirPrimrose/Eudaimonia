@@ -4,7 +4,6 @@ import ActionQueuePanel from './ActionQueuePanel';
 import TextPanel from './TextPanel';
 
 class InfoSection extends React.PureComponent {
-  // TODO: Fix overflow on xs size for text panel
   render() {
     return (
       <Paper elevation={8} sx={{ height: '100%' }}>
@@ -16,7 +15,7 @@ class InfoSection extends React.PureComponent {
           <Grid item xs={6} md={4} sx={{ overflow: 'hidden' }}>
             <ActionQueuePanel />
           </Grid>
-          <Grid item xs={6} md={8} sx={{ overflow: 'hidden' }}>
+          <Grid item xs={6} md={8} sx={{ overflow: 'hidden', height: '100%' }}>
             <TextPanel />
           </Grid>
         </Grid>

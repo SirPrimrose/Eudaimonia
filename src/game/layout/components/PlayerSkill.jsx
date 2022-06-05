@@ -43,7 +43,7 @@ class PlayerSkill extends React.PureComponent {
               </Grid>
               <Grid item xs={12 / columns.length}>
                 <Typography variant="body2" align="right">
-                  {`${MULTIPLICATION_SIGN} ${toGameNumber(mod.multiplier)}`}
+                  {`${MULTIPLICATION_SIGN}${toGameNumber(mod.multiplier)}`}
                 </Typography>
               </Grid>
             </Fragment>
@@ -56,7 +56,7 @@ class PlayerSkill extends React.PureComponent {
           <Grid item xs={12 / columns.length} />
           <Grid item xs={12 / columns.length}>
             <Typography variant="body2" align="right">
-              {`${toGameNumber(xpScaling.value)}`}
+              {`${MULTIPLICATION_SIGN}${toGameNumber(xpScaling.value)}`}
             </Typography>
           </Grid>
         </Grid>

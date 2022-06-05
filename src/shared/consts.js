@@ -7,7 +7,6 @@ const MULTIPLICATION_SIGN = '⨯';
 const PHASES = {
   NEW_GAME: 'New Game',
   WANDER: 'Wander',
-  REBIRTH: 'Rebirth',
   PREP: 'Preparation',
 };
 

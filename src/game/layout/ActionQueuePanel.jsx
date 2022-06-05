@@ -23,6 +23,7 @@ class ActionQueuePanel extends React.PureComponent {
     removeJobFromQueueById(jobId);
   };
 
+  // TODO: Add more "helper" buttons; shift up and shift down in queue
   getJobLayout = (jobs) => (
     <div className="panelGrid">
       <Grid container overflow="hidden">

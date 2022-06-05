@@ -18,6 +18,7 @@ import { getProgressValue } from '../shared/util';
 import { getIconForStatType } from './layout/components/Icons';
 import { toClockTime, toGameNumber } from '../shared/format';
 import { actions as themeActions } from '../slice/themeSlice';
+import PhasePanel from './layout/PhasePanel';
 
 const pauseKey = KEY_P;
 
@@ -88,44 +89,7 @@ class Eudaimonia extends React.PureComponent {
         </Stack>
         {this.renderHeader(gameTime)}
         {this.renderActiveStatusBars(activeStats)}
-        <Grid
-          container
-          sx={{
-            flexGrow: 1,
-            overflow: { xs: 'auto', md: 'hidden' },
-          }}
-        >
-          <Grid
-            item
-            xs={12}
-            md={2.5}
-            lg={2}
-            sx={{ height: { xs: '40%', md: '100%' } }}
-            p={2}
-          >
-            <PlayerSection />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={7}
-            sx={{ height: { xs: '50%', md: '100%' } }}
-            p={2}
-          >
-            <GameSection />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={3.5}
-            lg={3}
-            sx={{ height: { xs: '50%', md: '100%' } }}
-            p={2}
-          >
-            <InfoSection />
-          </Grid>
-        </Grid>
+        <PhasePanel />
       </Stack>
     );
   }
