@@ -1,20 +1,33 @@
+import _ from 'lodash';
+
 export default class CalculatedValue {
-  constructor(baseValue) {
-    this.baseValue = baseValue;
+  #baseValue;
+
+  #precision;
+
+  static baseObject = (baseValue = 1) => ({
+    baseValue,
+    value: baseValue,
+    modifiers: [],
+  });
+
+  constructor(baseValue, precision = -1) {
+    this.#baseValue = baseValue;
+    this.#precision = precision;
     this.modifiers = [];
   }
 
   get value() {
     const val = this.modifiers.reduce(
       (totalMod, mod) => totalMod * mod.multiplier,
-      this.baseValue
+      this.#baseValue
     );
-    return val;
+    return this.#precision >= 0 ? _.round(val, this.#precision) : val;
   }
 
-  get obj() {
+  get toObj() {
     return {
-      baseValue: this.baseValue,
+      baseValue: this.#baseValue,
       modifiers: this.modifiers,
       value: this.value,
     };

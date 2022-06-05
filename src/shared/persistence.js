@@ -22,6 +22,7 @@ const savePropsFromObjectMap = (propsToSave, data) =>
 const exportSaveData = (gameState) => {
   const saveObj = {
     gameTime: gameState.gameTime,
+    soulpower: gameState.soulpower,
     generationCount: gameState.generationCount,
     phase: gameState.phase,
     isPaused: gameState.isPaused,
