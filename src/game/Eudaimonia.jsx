@@ -1,9 +1,8 @@
-import { Button, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { KEY_P } from 'keycode-js';
-import GameSection from './layout/GameSection';
 import {
   actions as gameActions,
   getGameTime,
@@ -11,14 +10,13 @@ import {
   getActiveStats,
 } from '../slice/gameSlice';
 import { GAME_TICK_TIME } from '../shared/consts';
-import PlayerSection from './layout/PlayerSection';
-import InfoSection from './layout/InfoSection';
 import ProgressBarWithOverlay from '../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../shared/util';
 import { getIconForStatType } from './layout/components/Icons';
 import { toClockTime, toGameNumber } from '../shared/format';
 import { actions as themeActions } from '../slice/themeSlice';
 import PhasePanel from './layout/PhasePanel';
+import ParticlesWrapper from '../particles/ParticlesWrapper';
 
 const pauseKey = KEY_P;
 
