@@ -22,7 +22,7 @@ const STAT_BASES = {
   },
   [STAT_NAMES.HEALTH]: {
     shortName: 'HP',
-    baseDecayRate: 1,
+    baseDecayRate: 5,
     decayModifier: 1.1,
     maxValue: 100,
     isActive: true,

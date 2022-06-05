@@ -2,7 +2,6 @@ import { Button } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { PHASES } from '../../../../shared/consts';
 import {
   actions as gameActions,
   getGameTime,
