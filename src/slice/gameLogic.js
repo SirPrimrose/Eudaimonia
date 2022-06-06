@@ -298,6 +298,15 @@ const addXpToSkill = (state, name, xp) => {
 };
 
 // STATS
+const addToStat = (state, name, value) => {
+  const stat = state.stats[name];
+
+  stat.currentValue = Math.max(
+    Math.min(stat.maxValue, stat.currentValue + value),
+    0
+  );
+};
+
 const updateDecayRate = (state, name) => {
   const stat = state.stats[name];
 
@@ -312,7 +321,7 @@ const decayStat = (state, name, decayTimeMs) => {
   updateDecayRate(state, name);
 
   const decay = stat.currentDecayRate * (decayTimeMs / 1000);
-  stat.currentValue = Math.min(stat.maxValue, stat.currentValue - decay);
+  addToStat(state, name, -decay);
 };
 
 const resetStat = (state, name) => {
@@ -496,13 +505,10 @@ const tickGame = (state) => {
 
         // Check for death
         if (isPlayerDead(state)) {
-          console.log('died');
           playerHasDied(state);
         }
       }
     }
-  } else if (state.phase === PHASES.PREP) {
-    console.log('Waiting for prep');
   }
 };
 
