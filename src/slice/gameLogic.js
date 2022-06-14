@@ -296,10 +296,17 @@ const resetJobXp = (state, jobName) => {
   job.currentXp = 0;
 };
 
-const isJobItemsFull = (state, job) =>
-  job.completionEvents.every(
-    (e) => e.type === COMPLETION_TYPE.ITEM && isItemFull(state, e.value)
+const isJobItemsFull = (state, job) => {
+  const jobsThatGiveItems = job.completionEvents.filter(
+    (e) =>
+      e.type === COMPLETION_TYPE.ITEM ||
+      e.type === COMPLETION_TYPE.WORLD_RESOURCE
   );
+  return (
+    jobsThatGiveItems.length > 0 &&
+    jobsThatGiveItems.every((e) => isItemFull(state, e.item))
+  );
+};
 
 const isJobResourceUnavailable = (state, job) =>
   job.completionEvents.some(
@@ -472,10 +479,10 @@ const performJobCompletionEvent = (state, job, event) => {
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
       break;
     case COMPLETION_TYPE.ITEM:
-      addItem(state, event.value, event.amount);
+      addItem(state, event.item, event.amount);
       break;
     case COMPLETION_TYPE.WORLD_RESOURCE:
-      processWorldResource(state, event.value, event.result);
+      processWorldResource(state, event.value, event.item);
       break;
     default:
       // eslint-disable-next-line no-console
