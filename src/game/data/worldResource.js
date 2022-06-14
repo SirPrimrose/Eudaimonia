@@ -1,12 +1,12 @@
 import { EXPLORE_GROUP } from './exploreGroup';
 
 const WORLD_RESOURCE_NAMES = {
-  WOOD: 'Wood',
+  TREE: 'Tree',
   FISH: 'Fish',
 };
 
 const WORLD_RESOURCE_BASES = {
-  [WORLD_RESOURCE_NAMES.WOOD]: {
+  [WORLD_RESOURCE_NAMES.TREE]: {
     potencyPerUnlock: 10, // how much potency is required per unlock, determines resource availability
     exploreGroupPotency: {
       [EXPLORE_GROUP.POND]: 2, // how much potency an explore contributes to current potency
@@ -26,10 +26,10 @@ const WORLD_RESOURCE_DATA = Object.entries(WORLD_RESOURCE_BASES).reduce(
     [key]: {
       ...value,
       name: key,
-      currentResource: 0, // current resource available in current life
+      usedResource: 0, // current resource available in current life
+      unlockedResource: 0, // how much max resource is available
       maxPotency: 0, // total "checks" until max resources, calculated from explore group potency
       checkedPotency: 0, // how many checks have been finished
-      unlockedResource: 0, // how much max resource is available
     },
   }),
   {}

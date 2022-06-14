@@ -10,10 +10,11 @@ import {
 import { getProgressValue } from '../../../shared/util';
 import { getIconForStatType } from './Icons';
 import { STAT_NAMES } from '../../data/stats';
+import { toGameNumber } from '../../../shared/format';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healAmount, description) => {
-    if (healType) {
+    if (healType !== STAT_NAMES.NONE) {
       return (
         <Stack alignItems="center">
           <Typography variant="body2">{description}</Typography>
@@ -23,7 +24,11 @@ class PlayerItem extends React.PureComponent {
         </Stack>
       );
     }
-    return <Typography variant="body2">{description}</Typography>;
+    return (
+      <Typography variant="body2" textAlign="center">
+        {description}
+      </Typography>
+    );
   };
 
   render() {
@@ -66,7 +71,9 @@ class PlayerItem extends React.PureComponent {
         </Tooltip>
         {healType !== STAT_NAMES.NONE && (
           <Tooltip
-            title={`${currentCooldown}s/${maxCooldown}s Cooldown`}
+            title={`${toGameNumber(currentCooldown / 1000)}/${toGameNumber(
+              maxCooldown / 1000
+            )}s Cooldown`}
             disableInteractive
           >
             <Grid item xs={12}>

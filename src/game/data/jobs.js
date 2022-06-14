@@ -1,9 +1,11 @@
 import { EXPLORE_GROUP } from './exploreGroup';
 import { ITEM_NAMES } from './inventory';
 import { SKILL_NAMES } from './skills';
+import { WORLD_RESOURCE_NAMES } from './worldResource';
 
 const COMPLETION_TYPE = {
   ITEM: 'Item',
+  WORLD_RESOURCE: 'World_Resource',
   UNLOCK_JOB: 'Unlock_Job',
   LOCK_JOB: 'Lock_Job',
   HIDE_SELF: 'Hide_Self',
@@ -22,6 +24,7 @@ const JOB_NAMES = {
   WANDER: 'Wander',
   COLLECT: 'Collect',
   CUT_WOOD: 'Cut Wood',
+  BURN_WOOD: 'Burn Wood',
   STUDY_POND: 'Study Pond',
   CATCH_FISH: 'Catch Fish',
   SEARCH_CLEARING: 'Search Clearing',
@@ -61,6 +64,10 @@ const JOB_BASES = {
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_NAMES.CUT_WOOD,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
         value: JOB_NAMES.LEAVE_CLEARING,
       },
       {
@@ -90,11 +97,29 @@ const JOB_BASES = {
   [JOB_NAMES.CUT_WOOD]: {
     skill: SKILL_NAMES.WOODCUTTING,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 10,
+    maxXp: 5,
     completionEvents: [
       {
-        type: COMPLETION_TYPE.ITEM,
-        value: ITEM_NAMES.WOOD,
+        type: COMPLETION_TYPE.WORLD_RESOURCE,
+        value: WORLD_RESOURCE_NAMES.TREE,
+        result: ITEM_NAMES.WOOD,
+        numResourceChecked: 1,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_NAMES.BURN_WOOD,
+      },
+    ],
+  },
+  [JOB_NAMES.BURN_WOOD]: {
+    skill: SKILL_NAMES.COMBAT,
+    category: JOB_CATEGORY.ACTION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.WORLD_RESOURCE,
+        value: WORLD_RESOURCE_NAMES.TREE,
+        result: ITEM_NAMES.ASH,
       },
     ],
   },
@@ -118,6 +143,7 @@ const JOB_BASES = {
       {
         type: COMPLETION_TYPE.ITEM,
         value: ITEM_NAMES.FISH,
+        amount: 1,
       },
     ],
   },
