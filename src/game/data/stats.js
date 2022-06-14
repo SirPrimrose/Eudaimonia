@@ -1,7 +1,7 @@
 const STAT_NAMES = {
   NONE: 'None',
   PREP_TIME: 'Wanderlust',
-  WANDER_TIME: 'Perserverence',
+  WANDER_TIME: 'Energy',
   HEALTH: 'Health',
   MAGIC: 'Magic',
 };
@@ -15,15 +15,16 @@ const STAT_BASES = {
     maxValue: 20,
   },
   [STAT_NAMES.WANDER_TIME]: {
-    shortName: 'PS',
-    baseDecayRate: 1,
+    shortName: 'NRG',
+    baseDecayRate: 5,
     decayModifier: 1.5,
     maxValue: 100,
+    isActive: true,
   },
   [STAT_NAMES.HEALTH]: {
     shortName: 'HP',
-    baseDecayRate: 5,
-    decayModifier: 1.1,
+    baseDecayRate: 0,
+    decayModifier: 1,
     maxValue: 100,
     isActive: true,
   },

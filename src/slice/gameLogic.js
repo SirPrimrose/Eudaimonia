@@ -459,7 +459,9 @@ const startNewLife = (state) => {
     resetJobXp(state, jobName);
   });
 
-  resetStat(state, STAT_NAMES.HEALTH);
+  Object.keys(state.stats).forEach((statName) => {
+    resetStat(state, statName);
+  });
 
   state.phase = PHASES.WANDER;
 };
@@ -474,7 +476,9 @@ const startNewGame = (state) => {
 /**
  * Returns true if dead by whatever reason, false if not
  */
-const isPlayerDead = (state) => getStatValue(state, STAT_NAMES.HEALTH) <= 0;
+const isPlayerDead = (state) =>
+  getStatValue(state, STAT_NAMES.HEALTH) <= 0 ||
+  getStatValue(state, STAT_NAMES.WANDER_TIME) <= 0;
 
 const playerHasDied = (state) => {
   state.soulpower.resource = calculateSoulpower(state);
@@ -499,7 +503,9 @@ const tickGame = (state) => {
         const tickRem = tickJobQueue(state);
         const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
-        decayStat(state, STAT_NAMES.HEALTH, jobTime);
+        Object.keys(state.stats).forEach((statName) => {
+          decayStat(state, statName, jobTime);
+        });
 
         addGameTime(state, jobTime);
 
