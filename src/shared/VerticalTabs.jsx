@@ -9,7 +9,7 @@ function TabPanel(props) {
 
   return (
     <Box hidden={value !== index} width="100%" height="100%">
-      {value === index && <div>{children}</div>}
+      {value === index && children}
     </Box>
   );
 }

@@ -9,9 +9,9 @@ import {
   isGameTicking,
   getActiveStats,
 } from '../slice/gameSlice';
-import { GAME_TICK_TIME } from '../shared/consts';
 import { actions as themeActions } from '../slice/themeSlice';
 import PhasePanel from './layout/PhasePanel';
+import { GAME_TICK_TIME } from './consts';
 
 const pauseKey = KEY_P;
 

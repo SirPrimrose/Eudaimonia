@@ -1,0 +1,26 @@
+.ciclegraph {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  height: 85%;
+
+  > * {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    width: 8em;
+    height: 15%;
+    border-radius: 50% !important;
+  }
+}
+
+// Uncomment below to see circle "outline"
+/* .ciclegraph:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid teal;
+  width: calc(100% - 2px * 2);
+  height: calc(100% - 2px * 2);
+  border-radius: 50%;
+} */

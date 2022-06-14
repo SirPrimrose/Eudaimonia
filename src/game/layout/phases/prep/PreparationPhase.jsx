@@ -6,8 +6,10 @@ import {
   faSkull,
   faTowerObservation,
 } from '@fortawesome/free-solid-svg-icons';
+import { Button, Stack } from '@mui/material';
 import VerticalTabs from '../../../../shared/VerticalTabs';
 import DeathTab from './DeathTab';
+import CampfireTab from './CampfireTab';
 
 const tabs = [
   {
@@ -18,7 +20,7 @@ const tabs = [
   {
     label: 'Campfire',
     icon: <FontAwesomeIcon icon={faFire} />,
-    component: <DeathTab />,
+    component: <CampfireTab />,
   },
   {
     label: 'Town',

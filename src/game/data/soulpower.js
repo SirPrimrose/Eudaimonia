@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { toClockTime } from '../../shared/format';
+import { toClockTime } from '../format';
 import CalculatedValue from './calculatedValue';
 
 // TODO: Allow these values to come from state and be configured

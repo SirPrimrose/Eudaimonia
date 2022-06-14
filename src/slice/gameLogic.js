@@ -8,7 +8,7 @@ import {
   JOB_NAMES,
 } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
-import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../shared/consts';
+import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
 import { ITEM_DATA } from '../game/data/inventory';
 import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
 import { EXPLORE_DATA } from '../game/data/exploreGroup';

@@ -10,7 +10,7 @@ import {
 import { getProgressValue } from '../../../shared/util';
 import { getIconForStatType } from './Icons';
 import { STAT_NAMES } from '../../data/stats';
-import { toGameNumber } from '../../../shared/format';
+import { toGameNumber } from '../../format';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healAmount, maxCooldown, description) => {

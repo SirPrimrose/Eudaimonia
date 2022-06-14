@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
 import { getIconForSkillType } from './Icons';
-import { MULTIPLICATION_SIGN } from '../../../shared/consts';
-import { toGameNumber } from '../../../shared/format';
+import { MULTIPLICATION_SIGN } from '../../consts';
+import { toGameNumber } from '../../format';
 
 const columns = ['Effect', 'Level', 'Multiplier'];
 
@@ -67,10 +67,8 @@ class PlayerSkill extends React.PureComponent {
   render() {
     const {
       skillName,
-      currentLevel,
       currentXp,
       currentLevelXpReq,
-      permLevel,
       permXp,
       permLevelXpReq,
       xpScaling,
