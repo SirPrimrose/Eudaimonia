@@ -9,7 +9,7 @@ const ITEM_NAMES = {
 const ITEM_BASES = {
   [ITEM_NAMES.WOOD]: {
     currentAmount: 0,
-    maxAmount: 1,
+    maxAmount: 10,
     healType: STAT_NAMES.NONE,
     healAmount: 0,
     description: 'Basic Wood',
