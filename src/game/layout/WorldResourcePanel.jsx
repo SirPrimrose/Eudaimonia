@@ -1,37 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Box, Grid, Tooltip, Typography } from '@mui/material';
-import ProgressBarWithOverlay from '../../shared/ProgressBarWithOverlay';
-import { getProgressValue } from '../../shared/util';
+import { Grid, Typography } from '@mui/material';
 import { getWorldResources } from '../../slice/gameSlice';
+import WorldResource from './components/WorldResource';
 
 class WorldResourcePanel extends React.PureComponent {
-  renderGridItemContent = (worldResourceName, worldResource) => (
-    <Tooltip
-      title={`Gain ${1} ${worldResourceName} every ${
-        worldResource.potencyPerUnlock
-      } checked`}
-    >
-      <Box>
-        <ProgressBarWithOverlay
-          value={getProgressValue(
-            worldResource.currentResource,
-            worldResource.unlockedResource
-          )}
-        >
-          <Typography color="primary.contrastText">
-            {`${worldResource.currentResource}/${
-              worldResource.unlockedResource
-            } ${worldResourceName} - ${
-              worldResource.maxPotency - worldResource.checkedPotency
-            } Unchecked`}
-          </Typography>
-        </ProgressBarWithOverlay>
-      </Box>
-    </Tooltip>
-  );
-
   getWorldResourceLayout = (worldResources) => (
     <div className="panelGrid">
       <Grid
@@ -42,11 +16,10 @@ class WorldResourcePanel extends React.PureComponent {
       >
         {Object.entries(worldResources).map(
           ([worldResourceName, worldResource]) => (
-            <Fragment key={worldResourceName}>
-              <Grid item xs={12}>
-                {this.renderGridItemContent(worldResourceName, worldResource)}
-              </Grid>
-            </Fragment>
+            <WorldResource
+              key={worldResourceName}
+              worldResource={worldResource}
+            />
           )
         )}
       </Grid>
@@ -70,8 +43,9 @@ class WorldResourcePanel extends React.PureComponent {
 WorldResourcePanel.propTypes = {
   worldResources: PropTypes.objectOf(
     PropTypes.shape({
+      name: PropTypes.string.isRequired,
       potencyPerUnlock: PropTypes.number.isRequired,
-      currentResource: PropTypes.number.isRequired,
+      usedResource: PropTypes.number.isRequired,
       unlockedResource: PropTypes.number.isRequired,
       checkedPotency: PropTypes.number.isRequired,
       maxPotency: PropTypes.number.isRequired,

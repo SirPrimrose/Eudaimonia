@@ -35,7 +35,7 @@ const exportSaveData = (gameState) => {
       gameState.items
     ),
     worldResources: savePropsFromObjectMap(
-      ['currentResource', 'checkedPotency', 'unlockedResource'],
+      ['usedResource', 'checkedPotency', 'unlockedResource'],
       gameState.worldResources
     ),
     exploreGroups: savePropsFromObjectMap(

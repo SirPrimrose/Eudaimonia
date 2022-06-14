@@ -37,12 +37,7 @@ class ProgressBarWithOverlay extends React.PureComponent {
               {children}
             </Box>
           </Box>
-          <LinearProgress
-            className="pb-fast-transition"
-            variant="determinate"
-            sx={sx}
-            value={value}
-          />
+          <LinearProgress variant="determinate" sx={sx} value={value} />
         </Grid>
       </Grid>
     );

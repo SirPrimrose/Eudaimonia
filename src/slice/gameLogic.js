@@ -129,6 +129,13 @@ const removeItem = (state, name, amount) => {
   item.currentAmount = Math.max(0, item.currentAmount - amount);
 };
 
+const resetItem = (state, name) => {
+  const item = state.items[name];
+
+  item.currentAmount = 0;
+  item.currentCooldown = 0;
+};
+
 const isItemFull = (state, name) => {
   const item = state.items[name];
 
@@ -163,7 +170,7 @@ const canItemHeal = (state, name) => {
 };
 
 /**
- * Directly use the given item name to heal the stat that it should be healing. All logical checks should be done before calling this.
+ * Directly use the given item name to heal the stat that it should be healing. All logical checks (such as having enough of the item) should be done before calling this.
  */
 const useItemHeal = (state, name) => {
   const item = state.items[name];
@@ -215,6 +222,47 @@ const resetExploreGroup = (state, name) => {
   recalulateAllWorldResources(state.worldResources, state.exploreGroups);
 };
 
+const recalculateUnlockedResource = (state, worldResourceName) => {
+  const worldResource = state.worldResources[worldResourceName];
+
+  worldResource.unlockedResource = Math.floor(
+    worldResource.checkedPotency / worldResource.potencyPerUnlock
+  );
+};
+
+const processWorldResource = (state, worldResourceName, itemResultName) => {
+  const worldResource = state.worldResources[worldResourceName];
+
+  if (
+    worldResource.usedResource >= worldResource.unlockedResource &&
+    worldResource.checkedPotency < worldResource.maxPotency
+  ) {
+    // Check for a "usable" resource
+    worldResource.checkedPotency += 1;
+    recalculateUnlockedResource(state, worldResourceName);
+  }
+
+  if (worldResource.usedResource + 1 <= worldResource.unlockedResource) {
+    addItem(state, itemResultName, 1);
+    worldResource.usedResource += 1;
+  }
+};
+
+const resetWorldResource = (state, worldResourceName) => {
+  const worldResource = state.worldResources[worldResourceName];
+
+  worldResource.usedResource = 0;
+};
+
+const isWorldResourceAvailable = (state, worldResourceName) => {
+  const worldResource = state.worldResources[worldResourceName];
+
+  return (
+    worldResource.usedResource < worldResource.unlockedResource ||
+    worldResource.checkedPotency < worldResource.maxPotency
+  );
+};
+
 // JOBS
 const tickXpToJob = (state, xp, name) => {
   const job = state.jobs[name];
@@ -253,6 +301,13 @@ const isJobItemsFull = (state, job) =>
     (e) => e.type === COMPLETION_TYPE.ITEM && isItemFull(state, e.value)
   );
 
+const isJobResourceUnavailable = (state, job) =>
+  job.completionEvents.some(
+    (e) =>
+      e.type === COMPLETION_TYPE.WORLD_RESOURCE &&
+      !isWorldResourceAvailable(state, e.value)
+  );
+
 /**
  * Validates whether the named job is currently ready to work.
  * @returns null if the job can be worked on, otherwise returns a reason for the job being uncompletable
@@ -266,6 +321,9 @@ const blockerForJob = (state, jobName) => {
   // TODO: Check for required items for crafting recipies
   if (isJobItemsFull(state, job)) {
     return JOB_REJECT_REASONS.FULL_INVENTORY;
+  }
+  if (isJobResourceUnavailable(state, job)) {
+    return JOB_REJECT_REASONS.NO_RESOURCE;
   }
   // TODO: Check for max exploration
 
@@ -414,7 +472,10 @@ const performJobCompletionEvent = (state, job, event) => {
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
       break;
     case COMPLETION_TYPE.ITEM:
-      addItem(state, event.value, 1);
+      addItem(state, event.value, event.amount);
+      break;
+    case COMPLETION_TYPE.WORLD_RESOURCE:
+      processWorldResource(state, event.value, event.result);
       break;
     default:
       // eslint-disable-next-line no-console
@@ -520,6 +581,14 @@ const startNewLife = (state) => {
 
   Object.keys(state.skills).forEach((skillName) => {
     resetSkill(state, skillName);
+  });
+
+  Object.keys(state.items).forEach((itemName) => {
+    resetItem(state, itemName);
+  });
+
+  Object.keys(state.worldResources).forEach((worldResourceName) => {
+    resetWorldResource(state, worldResourceName);
   });
 
   state.phase = PHASES.WANDER;
