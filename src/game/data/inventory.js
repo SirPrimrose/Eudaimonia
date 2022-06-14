@@ -16,7 +16,7 @@ const ITEM_BASES = {
   [ITEM_NAMES.FISH]: {
     currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_NAMES.HEALTH,
+    healType: STAT_NAMES.WANDER_TIME,
     healAmount: 25,
     description: 'Smelly',
   },
@@ -29,7 +29,7 @@ const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
       ...value,
       name: key,
       currentCooldown: 0,
-      maxCooldown: 5,
+      maxCooldown: 5000, // time between eating in ms
       active: false,
     },
   }),

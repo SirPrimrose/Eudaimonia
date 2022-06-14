@@ -109,10 +109,7 @@ export const getSkills = (store) => Object.values(store.game.skills);
 export const getSkillByName = (store) => (skillName) =>
   store.game.skills[skillName];
 export const getSkillsWithLevels = (store) =>
-  getSkills(store).filter(
-    (skill) =>
-      skill.permLevel > 0 || skill.currentLevel > 0 || skill.currentXp > 0
-  );
+  getSkills(store).filter((skill) => skill.permLevel > 0 || skill.permXp > 0);
 
 // STATS
 export const getStats = (store) => Object.values(store.game.stats);

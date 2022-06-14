@@ -21,6 +21,7 @@
         "react", "prettier"
     ],
     "rules": {
+        "no-use-before-define": ["error", { "functions": false }],
         "prettier/prettier": "warn",
         "no-unused-vars": "warn",
         "react/no-unused-class-component-methods": "warn",

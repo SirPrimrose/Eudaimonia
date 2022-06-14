@@ -26,6 +26,7 @@ import { calculateSoulpower } from '../game/data/soulpower';
 const initialState = {
   // GAME
   gameTime: 0,
+  // Move soulpower into some sort of "resources" section (perhaps treat it as an item or stat)
   soulpower: {
     resource: CalculatedValue.baseObject(),
     // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation
@@ -132,6 +133,43 @@ const isItemFull = (state, name) => {
   const item = state.items[name];
 
   return item.currentAmount >= item.maxAmount;
+};
+
+const tickFoodHealTime = (state, name, tickTime) => {
+  const item = state.items[name];
+
+  item.currentCooldown = Math.max(item.currentCooldown - tickTime, 0);
+};
+
+const canItemHeal = (state, name) => {
+  const item = state.items[name];
+
+  if (
+    item.healType !== STAT_NAMES.NONE &&
+    item.currentCooldown <= 0 &&
+    item.currentAmount >= 1
+  ) {
+    const stat = state.stats[item.healType];
+    const { healAmount } = item;
+    // 1. Can we fully use the heal amount
+    const healAtMaxEfficiency = stat.currentValue + healAmount <= stat.maxValue;
+    // 2. Do we need the heal right now
+    const healNeededImmediately = stat.currentValue <= 0;
+    if (healAtMaxEfficiency || healNeededImmediately) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Directly use the given item name to heal the stat that it should be healing. All logical checks should be done before calling this.
+ */
+const useItemHeal = (state, name) => {
+  const item = state.items[name];
+  addToStat(state, item.healType, item.healAmount);
+  item.currentCooldown = item.maxCooldown;
+  item.currentAmount -= 1;
 };
 
 // WORLD
@@ -297,15 +335,23 @@ const addXpToSkill = (state, name, xp) => {
   }
 };
 
+const resetSkill = (state, name) => {
+  const skill = state.skills[name];
+
+  skill.currentLevel = 0;
+  skill.currentXp = 0;
+  skill.currentLevelXpReq = xpReqForCurrentLevel(0);
+};
+
 // STATS
-const addToStat = (state, name, value) => {
+function addToStat(state, name, value) {
   const stat = state.stats[name];
 
   stat.currentValue = Math.max(
     Math.min(stat.maxValue, stat.currentValue + value),
     0
   );
-};
+}
 
 const updateDecayRate = (state, name) => {
   const stat = state.stats[name];
@@ -423,6 +469,15 @@ const tickJobQueue = (state) => {
   return state.tickRemaining;
 };
 
+const tickFood = (state, tickTime) => {
+  Object.keys(state.items).forEach((itemName) => {
+    tickFoodHealTime(state, itemName, tickTime);
+    if (canItemHeal(state, itemName)) {
+      useItemHeal(state, itemName);
+    }
+  });
+};
+
 /**
  * Startup function to load all deterministic data at the loading of the game
  */
@@ -461,6 +516,10 @@ const startNewLife = (state) => {
 
   Object.keys(state.stats).forEach((statName) => {
     resetStat(state, statName);
+  });
+
+  Object.keys(state.skills).forEach((skillName) => {
+    resetSkill(state, skillName);
   });
 
   state.phase = PHASES.WANDER;
@@ -508,6 +567,9 @@ const tickGame = (state) => {
         });
 
         addGameTime(state, jobTime);
+
+        // Check for eating food
+        tickFood(state, jobTime);
 
         // Check for death
         if (isPlayerDead(state)) {
