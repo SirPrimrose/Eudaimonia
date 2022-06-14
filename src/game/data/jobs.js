@@ -102,7 +102,7 @@ const JOB_BASES = {
       {
         type: COMPLETION_TYPE.WORLD_RESOURCE,
         value: WORLD_RESOURCE_NAMES.TREE,
-        result: ITEM_NAMES.WOOD,
+        item: ITEM_NAMES.WOOD,
         numResourceChecked: 1,
       },
       {
@@ -119,7 +119,7 @@ const JOB_BASES = {
       {
         type: COMPLETION_TYPE.WORLD_RESOURCE,
         value: WORLD_RESOURCE_NAMES.TREE,
-        result: ITEM_NAMES.ASH,
+        item: ITEM_NAMES.ASH,
       },
     ],
   },
@@ -142,7 +142,7 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.ITEM,
-        value: ITEM_NAMES.FISH,
+        item: ITEM_NAMES.FISH,
         amount: 1,
       },
     ],

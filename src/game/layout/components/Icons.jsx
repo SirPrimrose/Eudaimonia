@@ -8,6 +8,7 @@ import {
   faTree,
   faTriangleCircleSquare,
   faWheatAwn,
+  faBolt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { STAT_NAMES } from '../../data/stats';
@@ -36,6 +37,8 @@ const getIconForStatType = (statName) => {
       return <FontAwesomeIcon icon={faHeart} />;
     case STAT_NAMES.MAGIC:
       return <FontAwesomeIcon icon={faPlay} rotation={90} />;
+    case STAT_NAMES.WANDER_TIME:
+      return <FontAwesomeIcon icon={faBolt} />;
     default:
       return <FontAwesomeIcon icon={faTriangleCircleSquare} />;
   }

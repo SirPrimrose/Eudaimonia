@@ -13,13 +13,16 @@ import { STAT_NAMES } from '../../data/stats';
 import { toGameNumber } from '../../../shared/format';
 
 class PlayerItem extends React.PureComponent {
-  getTooltipValue = (healType, healAmount, description) => {
+  getTooltipValue = (healType, healAmount, maxCooldown, description) => {
     if (healType !== STAT_NAMES.NONE) {
       return (
         <Stack alignItems="center">
           <Typography variant="body2">{description}</Typography>
           <Typography variant="body2">
-            Restores {healAmount / 5} {getIconForStatType(healType)} per second
+            Restores {healAmount} {getIconForStatType(healType)}
+            {' every '}
+            {maxCooldown / 1000} seconds ({healAmount / (maxCooldown / 1000)}
+            {getIconForStatType(healType)}/s)
           </Typography>
         </Stack>
       );
@@ -49,7 +52,12 @@ class PlayerItem extends React.PureComponent {
     return (
       <Grid container pb={1}>
         <Tooltip
-          title={this.getTooltipValue(healType, healAmount, description)}
+          title={this.getTooltipValue(
+            healType,
+            healAmount,
+            maxCooldown,
+            description
+          )}
           disableInteractive
         >
           <Grid item container xs={12} alignItems="center">
