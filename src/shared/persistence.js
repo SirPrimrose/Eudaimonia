@@ -42,7 +42,7 @@ const exportSaveData = (gameState) => {
       ['currentExploration', 'permExploration'],
       gameState.exploreGroups
     ),
-    jobs: savePropsFromObjectMap(['currentXp'], gameState.jobs),
+    jobs: savePropsFromObjectMap(['currentXp', 'usedItems'], gameState.jobs),
     skills: savePropsFromObjectMap(
       ['currentXp', 'permXp', 'currentLevel', 'permLevel'],
       gameState.skills

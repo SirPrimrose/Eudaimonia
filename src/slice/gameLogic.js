@@ -126,7 +126,9 @@ const addItem = (state, name, amount) => {
 const removeItem = (state, name, amount) => {
   const item = state.items[name];
 
-  item.currentAmount = Math.max(0, item.currentAmount - amount);
+  const actualRemoved = Math.min(amount, item.currentAmount);
+  item.currentAmount -= actualRemoved;
+  return actualRemoved;
 };
 
 const resetItem = (state, name) => {
@@ -264,31 +266,72 @@ const isWorldResourceAvailable = (state, worldResourceName) => {
 };
 
 // JOBS
-const tickXpToJob = (state, xp, name) => {
+const itemReqForXp = (currentXp, maxXp, amount) =>
+  Math.min(Math.floor((currentXp / maxXp) * amount) + 1, amount);
+
+const tickXpToJob = (state, tickXp, name) => {
   const job = state.jobs[name];
 
   const remainingXp = job.maxXp - job.currentXp;
-  const tickXp = state.tickRemaining * xp;
 
   if (remainingXp > 0) {
     if (job.currentXp + tickXp > job.maxXp) {
       // Only add needed xp
       const xpToAdd = job.maxXp - job.currentXp;
       job.currentXp = job.maxXp;
-      state.tickRemaining -= xpToAdd / xp;
       return xpToAdd;
     }
     // Add full xp amount
     job.currentXp += tickXp;
-    state.tickRemaining = 0;
     return tickXp;
   }
   return 0;
 };
 
+const useItemsForJob = (state, tickXp, jobName) => {
+  const job = state.jobs[jobName];
+
+  const remainingXp =
+    Math.min(
+      ...job.completionEvents
+        .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
+        .map((e) => {
+          const itemsAlreadyUsed = job.usedItems[e.item] || 0;
+          const currentItemAmount = state.items[e.item].currentAmount;
+          const possibleItemUsage = itemsAlreadyUsed + currentItemAmount;
+          return (possibleItemUsage / e.amount) * job.maxXp;
+        }),
+      job.maxXp
+    ) - job.currentXp;
+
+  if (remainingXp > 0) {
+    const limitedTickXp = Math.min(remainingXp, tickXp);
+    job.completionEvents
+      .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
+      .forEach((e) => {
+        const itemsAlreadyUsed = job.usedItems[e.item] || 0;
+
+        const endXp = job.currentXp + limitedTickXp;
+        const endItemNeeded = itemReqForXp(endXp, job.maxXp, e.amount);
+        const numItemUsed = endItemNeeded - itemsAlreadyUsed;
+
+        const actualUsed = removeItem(state, e.item, numItemUsed);
+        job.usedItems[e.item] = itemsAlreadyUsed + actualUsed;
+      });
+    return limitedTickXp;
+  }
+  return tickXp;
+};
+
 const isJobComplete = (state, jobName) => {
   const jobData = state.jobs[jobName];
   return jobData.currentXp >= jobData.maxXp;
+};
+
+const resetJobUsedItems = (state, jobName) => {
+  const job = state.jobs[jobName];
+
+  job.usedItems = {};
 };
 
 const resetJobXp = (state, jobName) => {
@@ -316,6 +359,26 @@ const isJobResourceUnavailable = (state, job) =>
   );
 
 /**
+ * Checks for the items required for the given job is available (does not use items)
+ */
+const checkJobCraftingRequirements = (state, jobName) => {
+  const job = state.jobs[jobName];
+
+  return job.completionEvents
+    .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
+    .every((e) => {
+      const itemsAlreadyUsed = job.usedItems[e.item] || 0;
+      const currentNeededItem = itemReqForXp(
+        job.currentXp,
+        job.maxXp,
+        e.amount
+      );
+      const currentItemAmount = state.items[e.item].currentAmount;
+      return currentItemAmount >= currentNeededItem - itemsAlreadyUsed;
+    });
+};
+
+/**
  * Validates whether the named job is currently ready to work.
  * @returns null if the job can be worked on, otherwise returns a reason for the job being uncompletable
  */
@@ -325,12 +388,15 @@ const blockerForJob = (state, jobName) => {
   if (!isJobAvailable(state, jobName)) {
     return JOB_REJECT_REASONS.UNAVAILABLE;
   }
-  // TODO: Check for required items for crafting recipies
   if (isJobItemsFull(state, job)) {
     return JOB_REJECT_REASONS.FULL_INVENTORY;
   }
   if (isJobResourceUnavailable(state, job)) {
     return JOB_REJECT_REASONS.NO_RESOURCE;
+  }
+  // TODO: Check for required items for crafting recipies
+  if (!checkJobCraftingRequirements(state, jobName)) {
+    return JOB_REJECT_REASONS.MISSING_CRAFTING_RESOURCES;
   }
   // TODO: Check for max exploration
 
@@ -506,15 +572,19 @@ const tickJobQueue = (state) => {
     if (currentJob) {
       const blocker = blockerForJob(state, currentJob.name);
       if (blocker) {
-        // TODO: Remove job and display dialog for reason why it was removed (requires toast dialog system)
+        // TODO: Display dialog for reason why it was removed (requires toast dialog system)
         removeJobFromQueueById(state, currentJob.queueId);
         addMessage(state, `Canceled ${currentJob.name}: ${blocker}`);
       } else {
-        const xpAdded = tickXpToJob(
+        const xpForTick = getXpForTick(state, currentJob.skill);
+        const xpRemaining = state.tickRemaining * xpForTick;
+        const xpAfterItemReq = useItemsForJob(
           state,
-          getXpForTick(state, currentJob.skill),
+          xpRemaining,
           currentJob.name
         );
+        const xpAdded = tickXpToJob(state, xpAfterItemReq, currentJob.name);
+        state.tickRemaining -= xpAdded / xpForTick;
         addXpToSkill(state, currentJob.skill, xpAdded);
 
         addMessage(
@@ -529,6 +599,7 @@ const tickJobQueue = (state) => {
           currentJob.completionEvents.forEach((event) => {
             performJobCompletionEvent(state, currentJob, event);
           });
+          resetJobUsedItems(state, currentJob.name);
           resetJobXp(state, currentJob.name);
         }
       }
@@ -579,6 +650,7 @@ const startNewLife = (state) => {
   resetjobQueue(state);
 
   Object.keys(state.jobs).forEach((jobName) => {
+    resetJobUsedItems(state, jobName);
     resetJobXp(state, jobName);
   });
 
@@ -596,6 +668,10 @@ const startNewLife = (state) => {
 
   Object.keys(state.worldResources).forEach((worldResourceName) => {
     resetWorldResource(state, worldResourceName);
+  });
+
+  Object.keys(state.exploreGroups).forEach((exploreGroupName) => {
+    resetExploreGroup(state, exploreGroupName);
   });
 
   state.phase = PHASES.WANDER;

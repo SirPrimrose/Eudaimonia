@@ -10,6 +10,7 @@ const COMPLETION_TYPE = {
   LOCK_JOB: 'Lock_Job',
   HIDE_SELF: 'Hide_Self',
   EXPLORE_AREA: 'Explore_Area',
+  CONSUME_ITEM: 'Consume_Item',
 };
 
 const JOB_CATEGORY = {
@@ -97,7 +98,7 @@ const JOB_BASES = {
   [JOB_NAMES.CUT_WOOD]: {
     skill: SKILL_NAMES.WOODCUTTING,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 5,
+    maxXp: 1,
     completionEvents: [
       {
         type: COMPLETION_TYPE.WORLD_RESOURCE,
@@ -117,9 +118,14 @@ const JOB_BASES = {
     maxXp: 5,
     completionEvents: [
       {
-        type: COMPLETION_TYPE.WORLD_RESOURCE,
-        value: WORLD_RESOURCE_NAMES.TREE,
+        type: COMPLETION_TYPE.CONSUME_ITEM,
+        item: ITEM_NAMES.WOOD,
+        amount: 5,
+      },
+      {
+        type: COMPLETION_TYPE.ITEM,
         item: ITEM_NAMES.ASH,
+        amount: 1,
       },
     ],
   },
@@ -156,6 +162,7 @@ const JOB_DATA = Object.entries(JOB_BASES).reduce(
       ...value,
       name: key,
       currentXp: 0,
+      usedItems: {}, // item name is key and used amount is value
     },
   }),
   {}

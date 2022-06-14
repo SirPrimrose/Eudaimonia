@@ -14,6 +14,7 @@ const JOB_REJECT_REASONS = {
   UNAVAILABLE: 'Job is not currently available',
   FULL_INVENTORY: 'Inventory is full of the produced item',
   NO_RESOURCE: 'World Resource is unavailable',
+  MISSING_CRAFTING_RESOURCES: 'Crafting resources unavailable.',
 };
 
 export { PHASES, GAME_TICK_TIME, JOB_REJECT_REASONS, MULTIPLICATION_SIGN };
