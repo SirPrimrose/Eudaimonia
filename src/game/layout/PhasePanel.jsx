@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { PHASES } from '../../shared/consts';
 import PreparationPhase from './phases/prep/PreparationPhase';
 import WanderPhase from './phases/wander/WanderPhase';
 import { getGamePhase } from '../../slice/gameSlice';
+import { PHASES } from '../consts';
 
 const compForPhase = {
   [PHASES.WANDER]: WanderPhase,

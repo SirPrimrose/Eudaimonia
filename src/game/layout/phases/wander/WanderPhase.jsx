@@ -8,9 +8,9 @@ import InfoSection from '../../InfoSection';
 
 import { getActiveStats, getGameTime } from '../../../../slice/gameSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
-import { toClockTime, toGameNumber } from '../../../../shared/format';
 import { getIconForStatType } from '../../components/Icons';
 import { getProgressValue } from '../../../../shared/util';
+import { toClockTime, toGameNumber } from '../../../format';
 
 class WanderPhase extends React.PureComponent {
   renderHeader = (gameTime) => (

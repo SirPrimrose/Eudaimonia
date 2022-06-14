@@ -7,7 +7,7 @@ import {
   getGameTime,
   getSoulpowerValue,
 } from '../../../../slice/gameSlice';
-import { toClockTime } from '../../../../shared/format';
+import { toClockTime } from '../../../format';
 
 class DeathTab extends React.PureComponent {
   beginToWander = () => {
