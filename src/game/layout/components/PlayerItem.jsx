@@ -72,7 +72,7 @@ class PlayerItem extends React.PureComponent {
             <Grid item xs={12}>
               <LinearProgress
                 variant="determinate"
-                value={getProgressValue(currentAmount, maxAmount)}
+                value={getProgressValue(currentCooldown, maxCooldown)}
               />
             </Grid>
           </Tooltip>
