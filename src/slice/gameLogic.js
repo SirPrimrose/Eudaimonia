@@ -200,6 +200,12 @@ const addProgressToExploreGroup = (state, name, exploreAmount) => {
     exploreGroup.maxExploration
   );
   exploreGroup.permExploration += exploreAmount;
+  recalculateExploreGroupExploration(state, name);
+};
+
+function recalculateExploreGroupExploration(state, name) {
+  const exploreGroup = state.exploreGroups[name];
+
   exploreGroup.permExplorationScaled = Math.min(
     getExponentialDecayValue(
       exploreGroup.permExploration,
@@ -208,17 +214,15 @@ const addProgressToExploreGroup = (state, name, exploreAmount) => {
     ),
     exploreGroup.maxExploration
   );
+}
 
-  recalulateAllWorldResources(state.worldResources, state.exploreGroups);
-};
-
-const resetExploreGroup = (state, name) => {
+function resetExploreGroup(state, name) {
   const exploreGroup = state.exploreGroups[name];
 
   exploreGroup.currentExploration = exploreGroup.permExplorationScaled;
 
   recalulateAllWorldResources(state.worldResources, state.exploreGroups);
-};
+}
 
 const recalculateUnlockedResource = (state, worldResourceName) => {
   const worldResource = state.worldResources[worldResourceName];
@@ -625,6 +629,10 @@ const startupGame = (state) => {
 
   Object.keys(state.stats).forEach((statName) => {
     updateDecayRate(state, statName);
+  });
+
+  Object.keys(state.exploreGroups).forEach((exploreGroupName) => {
+    recalculateExploreGroupExploration(state, exploreGroupName);
   });
 
   recalulateAllWorldResources(state.worldResources, state.exploreGroups);
