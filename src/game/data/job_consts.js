@@ -8,6 +8,7 @@ const JOB_NAMES = {
   CATCH_FISH: 'Catch Fish',
   SEARCH_CLEARING: 'Search Clearing',
   LEAVE_CLEARING: 'Leave Clearing',
+  FIGHT_FISH: 'Fight Fish',
 };
 
 // eslint-disable-next-line import/prefer-default-export

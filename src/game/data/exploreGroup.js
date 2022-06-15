@@ -18,7 +18,7 @@ const EXPLORE_BASES = {
     xScaling: 0.0016,
     maxExploration: 50,
     // TODO: Only display "active" explore groups and only show conditional unlocks from "active" groups
-    isActive: false,
+    isActive: false, // TODO: Add job completion event to set these as "active" or "inactive"
     completedUnlocks: [], // TODO: Decide if these unlocks should reset every life
     conditionalUnlocks: [
       {

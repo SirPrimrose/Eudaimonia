@@ -1,6 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
-import { STAT_DATA, STAT_NAMES } from '../game/data/stats';
+import {
+  DECAY_SCALING_FACTOR,
+  STAT_DATA,
+  STAT_NAMES,
+} from '../game/data/stats';
 import { COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
@@ -472,11 +476,13 @@ const recalculateSkillXpScaling = (state, name) => {
 
   calculatedValue.addModifier(
     XP_SCALING_FACTORS.CURRENT_LEVEL,
+    CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
     skill.currentLevel,
     xpMultiplierForCurrentLevel(skill.currentLevel)
   );
   calculatedValue.addModifier(
     XP_SCALING_FACTORS.PERM_LEVEL,
+    CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
     skill.permLevel,
     xpMultiplierForPermLevel(skill.permLevel)
   );
@@ -485,6 +491,7 @@ const recalculateSkillXpScaling = (state, name) => {
   if (state.generationCount <= 4) {
     calculatedValue.addModifier(
       XP_SCALING_FACTORS.NEW_GAME,
+      CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
       -1,
       state.generationCount * 0.2 + 0.1
     );
@@ -541,8 +548,25 @@ function addToStat(state, name, value) {
 const updateDecayRate = (state, name) => {
   const stat = state.stats[name];
 
-  stat.currentDecayRate =
-    stat.baseDecayRate * stat.decayModifier ** (state.gameTime / 60000);
+  const calculatedValue = new CalculatedValue(stat.baseDecayRate);
+
+  calculatedValue.addModifier(
+    DECAY_SCALING_FACTOR.TIME,
+    CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
+    -1,
+    stat.decayModifier ** (state.gameTime / 60000)
+  );
+  const currentJob = getFirstJobInQueue(state);
+  if (currentJob && currentJob.statDecay[stat.name]) {
+    calculatedValue.addModifier(
+      DECAY_SCALING_FACTOR.JOB,
+      CalculatedValue.MODIFIER_TYPE.ADDITIVE,
+      -1,
+      currentJob.statDecay[stat.name]
+    );
+  }
+
+  stat.currentDecayRate = calculatedValue.toObj;
 };
 
 const decayStat = (state, name, decayTimeMs) => {
@@ -551,7 +575,7 @@ const decayStat = (state, name, decayTimeMs) => {
   // Decay rate grows exponentially with time
   updateDecayRate(state, name);
 
-  const decay = stat.currentDecayRate * (decayTimeMs / 1000);
+  const decay = stat.currentDecayRate.value * (decayTimeMs / 1000);
   addToStat(state, name, -decay);
 };
 

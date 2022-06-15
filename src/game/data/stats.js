@@ -1,9 +1,16 @@
+import CalculatedValue from './calculatedValue';
+
 const STAT_NAMES = {
   NONE: 'None',
   PREP_TIME: 'Wanderlust',
   WANDER_TIME: 'Energy',
   HEALTH: 'Health',
   MAGIC: 'Magic',
+};
+
+const DECAY_SCALING_FACTOR = {
+  TIME: 'Time',
+  JOB: 'Job',
 };
 
 // Add unique fields to each stat
@@ -43,11 +50,11 @@ const STAT_DATA = Object.entries(STAT_BASES).reduce(
       isActive: false,
       ...value,
       name: key,
-      currentDecayRate: -value.baseDecayRate,
+      currentDecayRate: CalculatedValue.baseObject(),
       currentValue: 0,
     },
   }),
   {}
 );
 
-export { STAT_NAMES, STAT_DATA };
+export { STAT_NAMES, STAT_DATA, DECAY_SCALING_FACTOR };
