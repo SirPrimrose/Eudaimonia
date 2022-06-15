@@ -117,12 +117,12 @@ const JOB_BASES = {
   [JOB_NAMES.STUDY_POND]: {
     skill: SKILL_NAMES.FISHING,
     category: JOB_CATEGORY.EXPLORATION,
-    maxXp: 5,
+    maxXp: 3,
     completionEvents: [
       {
         type: COMPLETION_TYPE.EXPLORE_AREA,
         value: EXPLORE_GROUP.POND,
-        exploreAmount: 10,
+        exploreAmount: 4,
       },
     ],
   },

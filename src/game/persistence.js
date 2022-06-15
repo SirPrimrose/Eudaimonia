@@ -39,7 +39,7 @@ const exportSaveData = (gameState) => {
       gameState.worldResources
     ),
     exploreGroups: savePropsFromObjectMap(
-      ['currentExploration', 'permExploration', 'isActive'],
+      ['currentExploration', 'permExploration', 'isActive', 'completedUnlocks'],
       gameState.exploreGroups
     ),
     jobs: savePropsFromObjectMap(['currentXp', 'usedItems'], gameState.jobs),

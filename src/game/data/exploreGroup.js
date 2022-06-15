@@ -1,7 +1,11 @@
+import { ITEM_NAMES } from './inventory';
 import { JOB_NAMES } from './job_consts';
+import { SKILL_NAMES } from './skills';
 
 const EXPLORE_GROUP_UNLOCK_TYPE = {
   JOB: 'Job',
+  ITEM: 'Item',
+  SKILL_BONUS: 'Skil Bonus',
 };
 
 const EXPLORE_GROUP = {
@@ -15,12 +19,23 @@ const EXPLORE_BASES = {
     maxExploration: 50,
     // TODO: Only display "active" explore groups and only show conditional unlocks from "active" groups
     isActive: false,
-    // TODO: Conditionally unlock jobs based on the given values
+    completedUnlocks: [], // TODO: Decide if these unlocks should reset every life
     conditionalUnlocks: [
       {
-        explorationReq: 0.1,
+        explorationReq: 10,
         unlockType: EXPLORE_GROUP_UNLOCK_TYPE.JOB,
-        unlockedValue: JOB_NAMES.CATCH_FISH,
+        unlockValue: JOB_NAMES.CATCH_FISH,
+      },
+      {
+        id: 1, // Giving an id makes this unlock non-repeatable
+        explorationReq: 20,
+        unlockType: EXPLORE_GROUP_UNLOCK_TYPE.ITEM,
+        unlockValue: { item: ITEM_NAMES.FISH, amount: 5 },
+      },
+      {
+        explorationReq: 40,
+        unlockType: EXPLORE_GROUP_UNLOCK_TYPE.SKILL_BONUS, // TODO
+        unlockValue: { skill: SKILL_NAMES.FISHING, amount: 1.25 },
       },
     ],
   },
@@ -40,4 +55,4 @@ const EXPLORE_DATA = Object.entries(EXPLORE_BASES).reduce(
   {}
 );
 
-export { EXPLORE_GROUP, EXPLORE_DATA };
+export { EXPLORE_GROUP_UNLOCK_TYPE, EXPLORE_GROUP, EXPLORE_DATA };
