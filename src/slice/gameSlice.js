@@ -87,7 +87,7 @@ export const getInventory = (store) => Object.values(store.game.items);
 export const getItemByName = (store) => (itemName) =>
   getInventory(store)[itemName];
 export const getActiveInventory = (store) =>
-  getInventory(store).filter((i) => i.active);
+  getInventory(store).filter((i) => i.isActive);
 
 // WORLD
 export const getExploreGroups = (store) => store.game.exploreGroups;

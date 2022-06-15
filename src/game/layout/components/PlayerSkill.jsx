@@ -16,11 +16,13 @@ const columns = ['Effect', 'Level', 'Multiplier'];
 
 class PlayerSkill extends React.PureComponent {
   getTooltipValue = () => {
-    const { skillName, xpScaling } = this.props;
+    const {
+      skill: { name, xpScaling },
+    } = this.props;
 
     return (
       <Stack alignItems="center">
-        <Typography variant="h6">{skillName}</Typography>
+        <Typography variant="h6">{name}</Typography>
         <Grid container>
           {columns.map((col) => (
             <Grid key={col} item xs={12 / columns.length}>
@@ -66,22 +68,22 @@ class PlayerSkill extends React.PureComponent {
 
   render() {
     const {
-      skillName,
-      currentXp,
-      currentLevelXpReq,
-      permXp,
-      permLevelXpReq,
-      xpScaling,
+      skill: {
+        name,
+        currentXp,
+        currentLevelXpReq,
+        permXp,
+        permLevelXpReq,
+        xpScaling,
+      },
     } = this.props;
 
-    // TODO: Add number formatter for xpScaling
-    // TODO: Add icons for skills from skills.js
     return (
       <Grid item xs={4}>
         <Tooltip title={this.getTooltipValue()} disableInteractive>
           <Stack spacing={0.25}>
             <Typography noWrap align="center" variant="subtitle2">
-              {getIconForSkillType(skillName)}
+              {getIconForSkillType(name)}
               {` ${MULTIPLICATION_SIGN} ${toGameNumber(xpScaling.value)}`}
             </Typography>
 
@@ -104,22 +106,24 @@ class PlayerSkill extends React.PureComponent {
 }
 
 PlayerSkill.propTypes = {
-  skillName: PropTypes.string.isRequired,
-  currentLevel: PropTypes.number.isRequired,
-  currentXp: PropTypes.number.isRequired,
-  currentLevelXpReq: PropTypes.number.isRequired,
-  permLevel: PropTypes.number.isRequired,
-  permXp: PropTypes.number.isRequired,
-  permLevelXpReq: PropTypes.number.isRequired,
-  xpScaling: PropTypes.shape({
-    value: PropTypes.number.isRequired,
-    modifiers: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        level: PropTypes.number.isRequired,
-        multiplier: PropTypes.number.isRequired,
-      }).isRequired
-    ).isRequired,
+  skill: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    currentLevel: PropTypes.number.isRequired,
+    currentXp: PropTypes.number.isRequired,
+    currentLevelXpReq: PropTypes.number.isRequired,
+    permLevel: PropTypes.number.isRequired,
+    permXp: PropTypes.number.isRequired,
+    permLevelXpReq: PropTypes.number.isRequired,
+    xpScaling: PropTypes.shape({
+      value: PropTypes.number.isRequired,
+      modifiers: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          level: PropTypes.number.isRequired,
+          multiplier: PropTypes.number.isRequired,
+        }).isRequired
+      ).isRequired,
+    }).isRequired,
   }).isRequired,
 };
 

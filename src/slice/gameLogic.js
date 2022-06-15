@@ -1,12 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
 import { STAT_DATA, STAT_NAMES } from '../game/data/stats';
-import {
-  COMPLETION_TYPE,
-  JOB_CATEGORY,
-  JOB_DATA,
-  JOB_NAMES,
-} from '../game/data/jobs';
+import { COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
 import { ITEM_DATA } from '../game/data/inventory';
@@ -22,6 +17,7 @@ import {
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
 import { calculateSoulpower } from '../game/data/soulpower';
+import { JOB_NAMES } from '../game/data/job_consts';
 
 const initialState = {
   // GAME
@@ -29,9 +25,9 @@ const initialState = {
   // Move soulpower into some sort of "resources" section (perhaps treat it as an item or stat)
   soulpower: {
     resource: CalculatedValue.baseObject(),
-    // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation
+    // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation (these should probably just go into the "upgrades" prop, no?)
   },
-  upgrades: [], // Array of all active modifiers to values, filter by type
+  upgrades: [], // TODO: Implement upgrades; Array of all active modifiers to values, filter by type
   generationCount: 0,
   phase: PHASES.NEW_GAME,
   isTicking: false,
@@ -120,7 +116,7 @@ const addItem = (state, name, amount) => {
   const item = state.items[name];
 
   item.currentAmount = Math.min(item.maxAmount, item.currentAmount + amount);
-  item.active = true;
+  item.isActive = true;
 };
 
 const removeItem = (state, name, amount) => {
