@@ -31,7 +31,7 @@ const exportSaveData = (gameState) => {
     queue: gameState.queue,
     messages: gameState.messages,
     items: savePropsFromObjectMap(
-      ['currentAmount', 'currentCooldown', 'active'],
+      ['currentAmount', 'currentCooldown', 'isActive'],
       gameState.items
     ),
     worldResources: savePropsFromObjectMap(
@@ -39,7 +39,7 @@ const exportSaveData = (gameState) => {
       gameState.worldResources
     ),
     exploreGroups: savePropsFromObjectMap(
-      ['currentExploration', 'permExploration'],
+      ['currentExploration', 'permExploration', 'isActive'],
       gameState.exploreGroups
     ),
     jobs: savePropsFromObjectMap(['currentXp', 'usedItems'], gameState.jobs),

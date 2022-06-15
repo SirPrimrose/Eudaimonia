@@ -7,7 +7,7 @@ import {
   getGameTime,
   getSoulpowerValue,
 } from '../../../../slice/gameSlice';
-import { toClockTime } from '../../../format';
+import { toClockTime, toGameNumber } from '../../../format';
 
 class DeathTab extends React.PureComponent {
   beginToWander = () => {
@@ -21,13 +21,15 @@ class DeathTab extends React.PureComponent {
     const { gameTime, soulpowerValue } = this.props;
 
     return (
-      <Stack>
+      <Stack height="100%" justifyContent="center" alignItems="stretch">
         <Typography
           variant="h3"
           align="center"
         >{`This shell lasted ${toClockTime(gameTime)}`}</Typography>
         <Typography variant="h4" align="center">
-          {`Your consciousness receeds while retaining ${soulpowerValue} soul.`}
+          {`Your consciousness receeds while retaining ${toGameNumber(
+            soulpowerValue
+          )} soul.`}
         </Typography>
         <Button onClick={this.beginToWander}>Depart</Button>
       </Stack>

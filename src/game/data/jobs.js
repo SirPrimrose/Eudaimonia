@@ -1,7 +1,15 @@
 import { EXPLORE_GROUP } from './exploreGroup';
 import { ITEM_NAMES } from './inventory';
+import { JOB_NAMES } from './job_consts';
 import { SKILL_NAMES } from './skills';
 import { WORLD_RESOURCE_NAMES } from './worldResource';
+
+const JOB_CATEGORY = {
+  ACTION: 'Actions',
+  CRAFT: 'Crafting',
+  EXPLORATION: 'Explore',
+  PROGRESSION: 'Progress',
+};
 
 const COMPLETION_TYPE = {
   ITEM: 'Item',
@@ -11,25 +19,6 @@ const COMPLETION_TYPE = {
   HIDE_SELF: 'Hide_Self',
   EXPLORE_AREA: 'Explore_Area',
   CONSUME_ITEM: 'Consume_Item',
-};
-
-const JOB_CATEGORY = {
-  ACTION: 'Actions',
-  CRAFT: 'Crafting',
-  EXPLORATION: 'Explore',
-  PROGRESSION: 'Progress',
-};
-
-const JOB_NAMES = {
-  PACE: 'Pace',
-  WANDER: 'Wander',
-  COLLECT: 'Collect',
-  CUT_WOOD: 'Cut Wood',
-  BURN_WOOD: 'Burn Wood',
-  STUDY_POND: 'Study Pond',
-  CATCH_FISH: 'Catch Fish',
-  SEARCH_CLEARING: 'Search Clearing',
-  LEAVE_CLEARING: 'Leave Clearing',
 };
 
 const JOB_BASES = {
@@ -58,10 +47,6 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.HIDE_SELF,
-      },
-      {
-        type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_NAMES.CATCH_FISH,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
@@ -168,4 +153,4 @@ const JOB_DATA = Object.entries(JOB_BASES).reduce(
   {}
 );
 
-export { COMPLETION_TYPE, JOB_CATEGORY, JOB_NAMES, JOB_DATA };
+export { COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA };

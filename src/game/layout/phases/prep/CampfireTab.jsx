@@ -14,12 +14,7 @@ class CampfireTab extends React.PureComponent {
     const { soulpowerValue } = this.props;
 
     return (
-      <Stack
-        height="100%"
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-      >
+      <Stack height="100%" justifyContent="center" alignItems="center">
         <CircularDisplay>
           <Button>Upgrade 1</Button>
           <Button>Upgrade 1</Button>
@@ -32,7 +27,7 @@ class CampfireTab extends React.PureComponent {
           <Button>Upgrade 1</Button>
           <Button>Upgrade 1</Button>
         </CircularDisplay>
-        <Typography variant="h4" position="absolute" top="46%">
+        <Typography variant="h4" position="absolute" top="48%">
           {`Soulpower: ${toGameNumber(soulpowerValue)}`}
         </Typography>
       </Stack>

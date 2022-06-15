@@ -13,17 +13,7 @@ class SkillPanel extends React.PureComponent {
       <div className="panelGrid">
         <Grid container columns={numOfColumns} p={1} spacing={1}>
           {skills.map((skill) => (
-            <PlayerSkill
-              key={skill.name}
-              skillName={skill.name}
-              currentLevel={skill.currentLevel}
-              currentXp={skill.currentXp}
-              currentLevelXpReq={skill.currentLevelXpReq}
-              permLevel={skill.permLevel}
-              permXp={skill.permXp}
-              permLevelXpReq={skill.permLevelXpReq}
-              xpScaling={skill.xpScaling}
-            />
+            <PlayerSkill key={skill.name} skill={skill} />
           ))}
         </Grid>
       </div>

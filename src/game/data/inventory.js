@@ -38,7 +38,7 @@ const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
       name: key,
       currentCooldown: 0,
       maxCooldown: 5000, // time between eating in ms
-      active: false,
+      isActive: false,
     },
   }),
   {}
