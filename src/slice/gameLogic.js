@@ -6,7 +6,10 @@ import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
 import { ITEM_DATA } from '../game/data/inventory';
 import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
-import { EXPLORE_DATA } from '../game/data/exploreGroup';
+import {
+  EXPLORE_DATA,
+  EXPLORE_GROUP_UNLOCK_TYPE,
+} from '../game/data/exploreGroup';
 import {
   SKILL_DATA,
   xpMultiplierForCurrentLevel,
@@ -132,6 +135,7 @@ const resetItem = (state, name) => {
 
   item.currentAmount = 0;
   item.currentCooldown = 0;
+  item.isActive = false;
 };
 
 const isItemFull = (state, name) => {
@@ -178,18 +182,65 @@ const useItemHeal = (state, name) => {
 };
 
 // WORLD
-const recalulateAllWorldResources = (worldResources, exploreGroups) => {
-  Object.values(worldResources).forEach((worldResource) => {
+/**
+ * Updates world resource potency to appropriate amounts based on the related explore group progress.
+ */
+const recalculateAllWorldResources = (state) => {
+  // Calulcate world resources
+  Object.values(state.worldResources).forEach((worldResource) => {
     worldResource.maxPotency = Object.entries(
       worldResource.exploreGroupPotency
     ).reduce(
       (partialPotency, [exploreGroupName, potency]) =>
         partialPotency +
-        Math.floor(exploreGroups[exploreGroupName].currentExploration) *
+        Math.floor(state.exploreGroups[exploreGroupName].currentExploration) *
           potency,
       0
     );
   });
+};
+
+const handleExploreGroupUnlock = (state, unlockType, unlockValue) => {
+  switch (unlockType) {
+    case EXPLORE_GROUP_UNLOCK_TYPE.JOB:
+      addToCurrentJobs(state, unlockValue);
+      break;
+    case EXPLORE_GROUP_UNLOCK_TYPE.ITEM:
+      addItem(state, unlockValue.item, unlockValue.amount);
+      break;
+    case EXPLORE_GROUP_UNLOCK_TYPE.SKILL_BONUS:
+      addToCurrentJobs(state, unlockValue);
+      break;
+    default:
+      // eslint-disable-next-line no-console
+      console.error('No default case for event');
+      break;
+  }
+};
+
+const checkExploreGroupUnlocks = (state, name) => {
+  const exploreGroup = state.exploreGroups[name];
+
+  Object.values(exploreGroup.conditionalUnlocks).forEach(
+    (conditionalUnlock) => {
+      if (
+        !conditionalUnlock.id ||
+        !exploreGroup.completedUnlocks.includes(conditionalUnlock.id)
+      ) {
+        if (
+          exploreGroup.currentExploration >= conditionalUnlock.explorationReq
+        ) {
+          handleExploreGroupUnlock(
+            state,
+            conditionalUnlock.unlockType,
+            conditionalUnlock.unlockValue
+          );
+          if (conditionalUnlock.id)
+            exploreGroup.completedUnlocks.push(conditionalUnlock.id);
+        }
+      }
+    }
+  );
 };
 
 const addProgressToExploreGroup = (state, name, exploreAmount) => {
@@ -200,10 +251,13 @@ const addProgressToExploreGroup = (state, name, exploreAmount) => {
     exploreGroup.maxExploration
   );
   exploreGroup.permExploration += exploreAmount;
-  recalculateExploreGroupExploration(state, name);
+  recalculateScaledExploration(state, name);
+  checkExploreGroupUnlocks(state, name);
+
+  recalculateAllWorldResources(state);
 };
 
-function recalculateExploreGroupExploration(state, name) {
+function recalculateScaledExploration(state, name) {
   const exploreGroup = state.exploreGroups[name];
 
   exploreGroup.permExplorationScaled = Math.min(
@@ -221,7 +275,7 @@ function resetExploreGroup(state, name) {
 
   exploreGroup.currentExploration = exploreGroup.permExplorationScaled;
 
-  recalulateAllWorldResources(state.worldResources, state.exploreGroups);
+  recalculateAllWorldResources(state);
 }
 
 const recalculateUnlockedResource = (state, worldResourceName) => {
@@ -632,10 +686,11 @@ const startupGame = (state) => {
   });
 
   Object.keys(state.exploreGroups).forEach((exploreGroupName) => {
-    recalculateExploreGroupExploration(state, exploreGroupName);
+    recalculateScaledExploration(state, exploreGroupName);
+    checkExploreGroupUnlocks(state, exploreGroupName);
   });
 
-  recalulateAllWorldResources(state.worldResources, state.exploreGroups);
+  recalculateAllWorldResources(state);
 
   state.isStarted = true;
 };
@@ -676,6 +731,7 @@ const startNewLife = (state) => {
 
   Object.keys(state.exploreGroups).forEach((exploreGroupName) => {
     resetExploreGroup(state, exploreGroupName);
+    checkExploreGroupUnlocks(state, exploreGroupName);
   });
 
   state.phase = PHASES.WANDER;

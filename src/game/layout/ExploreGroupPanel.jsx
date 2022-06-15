@@ -5,27 +5,41 @@ import { Grid, Tooltip, Typography } from '@mui/material';
 import ProgressBarWithOverlay from '../../shared/ProgressBarWithOverlay';
 import { getProgressValue } from '../../shared/util';
 import { getExploreGroups } from '../../slice/gameSlice';
+import { toGameNumber } from '../format';
 
 class ExploreGroupPanel extends React.PureComponent {
-  renderGridItemContent = (exploreGroup) => (
-    <Tooltip title={`Explored a total of ${exploreGroup.permExploration}`}>
-      <div>
-        <ProgressBarWithOverlay
-          value={getProgressValue(
-            exploreGroup.currentExploration,
-            exploreGroup.maxExploration
-          )}
-        >
-          <Typography color="primary.contrastText">
-            {`${getProgressValue(
-              exploreGroup.permExplorationScaled,
+  renderGridItemContent = (exploreGroup) => {
+    const currentExplorationProgress = toGameNumber(
+      getProgressValue(
+        exploreGroup.currentExploration,
+        exploreGroup.maxExploration
+      )
+    );
+    const permExplorationProgress = toGameNumber(
+      getProgressValue(
+        exploreGroup.permExplorationScaled,
+        exploreGroup.maxExploration
+      )
+    );
+    return (
+      <Tooltip
+        title={`Explored a total of ${exploreGroup.permExploration}. On death will reset to ${permExplorationProgress}%.`}
+      >
+        <div>
+          <ProgressBarWithOverlay
+            value={getProgressValue(
+              exploreGroup.currentExploration,
               exploreGroup.maxExploration
-            ).toFixed(2)}%`}
-          </Typography>
-        </ProgressBarWithOverlay>
-      </div>
-    </Tooltip>
-  );
+            )}
+          >
+            <Typography color="primary.contrastText">
+              {`${exploreGroup.name} ${currentExplorationProgress}%`}
+            </Typography>
+          </ProgressBarWithOverlay>
+        </div>
+      </Tooltip>
+    );
+  };
 
   getExploreGroupLayout = (exploreGroups) => (
     <div className="panelGrid">
