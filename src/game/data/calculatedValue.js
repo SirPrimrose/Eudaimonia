@@ -5,6 +5,11 @@ export default class CalculatedValue {
 
   #precision;
 
+  static MODIFIER_TYPE = {
+    MULTIPLICATIVE: 'Multiplicative',
+    ADDITIVE: 'Additive',
+  };
+
   static baseObject = (baseValue = 1) => ({
     baseValue,
     value: baseValue,
@@ -19,7 +24,10 @@ export default class CalculatedValue {
 
   get value() {
     const val = this.modifiers.reduce(
-      (totalMod, mod) => totalMod * mod.multiplier,
+      (totalMod, mod) =>
+        mod.type === CalculatedValue.MODIFIER_TYPE.ADDITIVE
+          ? totalMod + mod.multiplier
+          : totalMod * mod.multiplier,
       this.#baseValue
     );
     return this.#precision >= 0 ? _.round(val, this.#precision) : val;
@@ -33,9 +41,10 @@ export default class CalculatedValue {
     };
   }
 
-  addModifier(name, level, multiplier) {
+  addModifier(name, type, level, multiplier) {
     this.modifiers.push({
       name,
+      type,
       level,
       multiplier,
     });

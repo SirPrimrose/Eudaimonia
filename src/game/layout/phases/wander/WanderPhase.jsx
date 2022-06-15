@@ -37,7 +37,9 @@ class WanderPhase extends React.PureComponent {
               {getIconForStatType(stat.name)}
             </Typography>
             <Typography color="primary.contrastText">
-              {`${toGameNumber(stat.currentDecayRate)} ${stat.shortName}/s`}
+              {`${toGameNumber(stat.currentDecayRate.value)} ${
+                stat.shortName
+              }/s`}
             </Typography>
           </Stack>
         </ProgressBarWithOverlay>
@@ -101,7 +103,16 @@ WanderPhase.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       shortName: PropTypes.string.isRequired,
-      currentDecayRate: PropTypes.number.isRequired,
+      currentDecayRate: PropTypes.shape({
+        value: PropTypes.number.isRequired,
+        modifiers: PropTypes.arrayOf(
+          PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            level: PropTypes.number.isRequired,
+            multiplier: PropTypes.number.isRequired,
+          }).isRequired
+        ).isRequired,
+      }).isRequired,
       currentValue: PropTypes.number.isRequired,
       isActive: PropTypes.bool.isRequired,
       maxValue: PropTypes.number.isRequired,

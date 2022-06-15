@@ -24,12 +24,14 @@ const calculateSoulpower = (state) => {
 
   calculatedValue.addModifier(
     SOULPOWER_SCALING_FACTORS.TIME,
+    CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
     toClockTime(state.gameTime),
     getSoulpowerFromGameTime(state.gameTime)
   );
   // TODO: Make story progress elements that add multipliers to soulpower
   /* calculatedValue.addModifier(
     SOULPOWER_SCALING_FACTORS.OBJECTIVES,
+    CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
     -1,
     2 ** state.permLevel
   ); */

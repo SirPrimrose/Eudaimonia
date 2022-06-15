@@ -2,6 +2,7 @@ import { EXPLORE_GROUP } from './exploreGroup';
 import { ITEM_NAMES } from './inventory';
 import { JOB_NAMES } from './job_consts';
 import { SKILL_NAMES } from './skills';
+import { STAT_NAMES } from './stats';
 import { WORLD_RESOURCE_NAMES } from './worldResource';
 
 const JOB_CATEGORY = {
@@ -51,6 +52,10 @@ const JOB_BASES = {
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
         value: JOB_NAMES.CUT_WOOD,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_NAMES.FIGHT_FISH,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
@@ -138,12 +143,28 @@ const JOB_BASES = {
       },
     ],
   },
+  [JOB_NAMES.FIGHT_FISH]: {
+    skill: SKILL_NAMES.COMBAT,
+    category: JOB_CATEGORY.ACTION,
+    maxXp: 10,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.ITEM,
+        item: ITEM_NAMES.FISH,
+        amount: 1,
+      },
+    ],
+    statDecay: {
+      [STAT_NAMES.HEALTH]: 5,
+    },
+  },
 };
 
 const JOB_DATA = Object.entries(JOB_BASES).reduce(
   (result, [key, value]) => ({
     ...result,
     [key]: {
+      statDecay: {}, // stat name is key and decay/s is value
       ...value,
       name: key,
       currentXp: 0,
