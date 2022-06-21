@@ -21,7 +21,12 @@ class DeathTab extends React.PureComponent {
     const { gameTime, soulpowerValue } = this.props;
 
     return (
-      <Stack height="100%" justifyContent="center" alignItems="stretch">
+      <Stack
+        flex={1}
+        height="100%"
+        justifyContent="center"
+        alignItems="stretch"
+      >
         <Typography
           variant="h3"
           align="center"

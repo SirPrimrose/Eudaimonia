@@ -14,7 +14,7 @@ class CampfireTab extends React.PureComponent {
     const { soulpowerValue } = this.props;
 
     return (
-      <Stack height="100%" justifyContent="center" alignItems="center">
+      <Stack flex={1} height="100%" justifyContent="center" alignItems="center">
         <CircularDisplay>
           <Button>Upgrade 1</Button>
           <Button>Upgrade 1</Button>
