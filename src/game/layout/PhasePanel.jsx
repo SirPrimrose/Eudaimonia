@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { Box } from '@mui/material';
 import PreparationPhase from './phases/prep/PreparationPhase';
 import WanderPhase from './phases/wander/WanderPhase';
 import { getGamePhase } from '../../slice/gameSlice';
@@ -17,7 +19,21 @@ class PhasePanel extends React.PureComponent {
     const PhaseComponent = compForPhase[phase];
 
     if (PhaseComponent) {
-      return <PhaseComponent />;
+      return (
+        <Box className="transition-container">
+          <TransitionGroup component={null}>
+            <CSSTransition
+              key={phase}
+              timeout={500}
+              classNames="transition-page"
+            >
+              <Box className="transition-page">
+                <PhaseComponent />
+              </Box>
+            </CSSTransition>
+          </TransitionGroup>
+        </Box>
+      );
     }
     return <div>Phase not found</div>;
   }

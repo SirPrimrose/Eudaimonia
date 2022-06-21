@@ -32,11 +32,11 @@ const EXPLORE_BASES = {
         unlockType: EXPLORE_GROUP_UNLOCK_TYPE.ITEM,
         unlockValue: { item: ITEM_NAMES.FISH, amount: 5 },
       },
-      {
+      /* {
         explorationReq: 40,
         unlockType: EXPLORE_GROUP_UNLOCK_TYPE.SKILL_BONUS, // TODO
         unlockValue: { skill: SKILL_NAMES.FISHING, amount: 1.25 },
-      },
+      }, */
     ],
   },
 };
