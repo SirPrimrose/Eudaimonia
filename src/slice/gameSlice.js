@@ -30,7 +30,7 @@ export const gameSlice = createSlice({
     // INVENTORY
     // WORLD
     // JOBS
-    removeJobFromQueueById: (state, { payload: queueId }) => {
+    removeJobFromQueueByQueueId: (state, { payload: queueId }) => {
       state.queue = state.queue.filter((j) => j.queueId !== queueId);
     },
     addJobToQueue: (state, action) => {
@@ -50,15 +50,15 @@ export const gameSlice = createSlice({
     },
     // STATS
     addStat: (state, { payload }) => {
-      const { name, value } = payload;
-      const stat = state.stats[name];
+      const { statId, value } = payload;
+      const stat = state.stats[statId];
 
       stat.currentValue = Math.min(stat.maxValue, stat.currentValue + value);
     },
     setStat: (state, { payload }) => {
-      const { name, newValue } = payload;
+      const { statId, newValue } = payload;
 
-      state.stats[name].currentValue = newValue;
+      state.stats[statId].currentValue = newValue;
     },
     // TEXT LOG
     addMessage: (state, action) => {

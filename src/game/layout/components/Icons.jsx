@@ -11,33 +11,33 @@ import {
   faBolt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { STAT_NAMES } from '../../data/stats';
-import { SKILL_NAMES } from '../../data/skills';
+import { STAT_IDS } from '../../data/stats';
+import { SKILL_IDS } from '../../data/skills';
 
-const getIconForSkillType = (skillName) => {
-  switch (skillName) {
-    case SKILL_NAMES.AGILITY:
+const getIconForSkillType = (skillId) => {
+  switch (skillId) {
+    case SKILL_IDS.AGILITY:
       return <FontAwesomeIcon icon={faPersonRunning} />;
-    case SKILL_NAMES.WOODCUTTING:
+    case SKILL_IDS.WOODCUTTING:
       return <FontAwesomeIcon icon={faTree} />;
-    case SKILL_NAMES.FARMING:
+    case SKILL_IDS.FARMING:
       return <FontAwesomeIcon icon={faWheatAwn} />;
-    case SKILL_NAMES.COMBAT:
+    case SKILL_IDS.COMBAT:
       return <FontAwesomeIcon icon={faHandFist} />;
-    case SKILL_NAMES.FISHING:
+    case SKILL_IDS.FISHING:
       return <FontAwesomeIcon icon={faFish} />;
     default:
       return <FontAwesomeIcon icon={faTriangleCircleSquare} />;
   }
 };
 
-const getIconForStatType = (statName) => {
-  switch (statName) {
-    case STAT_NAMES.HEALTH:
+const getIconForStatType = (statId) => {
+  switch (statId) {
+    case STAT_IDS.HEALTH:
       return <FontAwesomeIcon icon={faHeart} />;
-    case STAT_NAMES.MAGIC:
+    case STAT_IDS.MAGIC:
       return <FontAwesomeIcon icon={faPlay} rotation={90} />;
-    case STAT_NAMES.WANDER_TIME:
+    case STAT_IDS.WANDER_TIME:
       return <FontAwesomeIcon icon={faBolt} />;
     default:
       return <FontAwesomeIcon icon={faTriangleCircleSquare} />;

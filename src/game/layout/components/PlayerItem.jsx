@@ -9,12 +9,12 @@ import {
 } from '@mui/material';
 import { getProgressValue } from '../../../shared/util';
 import { getIconForStatType } from './Icons';
-import { STAT_NAMES } from '../../data/stats';
+import { STAT_IDS } from '../../data/stats';
 import { toGameNumber } from '../../format';
 
 class PlayerItem extends React.PureComponent {
   getTooltipValue = (healType, healAmount, maxCooldown, description) => {
-    if (healType !== STAT_NAMES.NONE) {
+    if (healType !== STAT_IDS.NONE) {
       return (
         <Stack alignItems="center">
           <Typography variant="body2">{description}</Typography>
@@ -71,13 +71,13 @@ class PlayerItem extends React.PureComponent {
               >{`${currentAmount} / ${maxAmount}`}</Typography>
             </Grid>
             <Grid item xs={1}>
-              {healType !== STAT_NAMES.NONE && (
+              {healType !== STAT_IDS.NONE && (
                 <Typography>{getIconForStatType(healType)}</Typography>
               )}
             </Grid>
           </Grid>
         </Tooltip>
-        {healType !== STAT_NAMES.NONE && (
+        {healType !== STAT_IDS.NONE && (
           <Tooltip
             title={`${toGameNumber(currentCooldown / 1000)}/${toGameNumber(
               maxCooldown / 1000
@@ -99,6 +99,7 @@ class PlayerItem extends React.PureComponent {
 
 PlayerItem.propTypes = {
   item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     currentAmount: PropTypes.number.isRequired,
     maxAmount: PropTypes.number.isRequired,

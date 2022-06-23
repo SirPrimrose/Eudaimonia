@@ -21,7 +21,7 @@ class WanderPhase extends React.PureComponent {
     <Stack borderBottom={1}>
       {stats.map((stat) => (
         <ProgressBarWithOverlay
-          key={stat.name}
+          key={stat.id}
           value={getProgressValue(stat.currentValue, stat.maxValue)}
         >
           <Stack
@@ -34,7 +34,7 @@ class WanderPhase extends React.PureComponent {
               {`${toGameNumber(stat.currentValue)}/${toGameNumber(
                 stat.maxValue
               )} `}
-              {getIconForStatType(stat.name)}
+              {getIconForStatType(stat.id)}
             </Typography>
             <Typography color="primary.contrastText">
               {`${toGameNumber(stat.currentDecayRate.value)} ${
@@ -101,6 +101,7 @@ WanderPhase.propTypes = {
   gameTime: PropTypes.number.isRequired,
   activeStats: PropTypes.arrayOf(
     PropTypes.shape({
+      id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       shortName: PropTypes.string.isRequired,
       currentDecayRate: PropTypes.shape({

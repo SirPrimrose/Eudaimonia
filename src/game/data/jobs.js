@@ -1,9 +1,9 @@
-import { EXPLORE_GROUP } from './exploreGroup';
-import { ITEM_NAMES } from './inventory';
-import { JOB_NAMES } from './job_consts';
-import { SKILL_NAMES } from './skills';
-import { STAT_NAMES } from './stats';
-import { WORLD_RESOURCE_NAMES } from './worldResource';
+import { EXPLORE_GROUP_IDS } from './exploreGroup';
+import { ITEM_IDS } from './inventory';
+import { JOB_IDS } from './job_consts';
+import { SKILL_IDS } from './skills';
+import { STAT_IDS } from './stats';
+import { WORLD_RESOURCE_IDS } from './worldResource';
 
 const JOB_CATEGORY = {
   ACTION: 'Actions',
@@ -23,26 +23,27 @@ const COMPLETION_TYPE = {
 };
 
 const JOB_BASES = {
-  [JOB_NAMES.PACE]: {
-    skill: SKILL_NAMES.AGILITY,
+  [JOB_IDS.PACE]: {
+    name: 'Pace',
+    skill: SKILL_IDS.AGILITY,
     category: JOB_CATEGORY.ACTION,
     maxXp: 20,
     completionEvents: [],
   },
-  [JOB_NAMES.WANDER]: {
-    skill: SKILL_NAMES.AGILITY,
+  [JOB_IDS.WANDER]: {
+    skill: SKILL_IDS.AGILITY,
     category: JOB_CATEGORY.ACTION,
     maxXp: 50,
     completionEvents: [],
   },
-  [JOB_NAMES.COLLECT]: {
-    skill: SKILL_NAMES.AGILITY,
+  [JOB_IDS.COLLECT]: {
+    skill: SKILL_IDS.AGILITY,
     category: JOB_CATEGORY.ACTION,
     maxXp: 50,
     completionEvents: [],
   },
-  [JOB_NAMES.SEARCH_CLEARING]: {
-    skill: SKILL_NAMES.AGILITY,
+  [JOB_IDS.SEARCH_CLEARING]: {
+    skill: SKILL_IDS.AGILITY,
     category: JOB_CATEGORY.PROGRESSION,
     maxXp: 5,
     completionEvents: [
@@ -51,24 +52,24 @@ const JOB_BASES = {
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_NAMES.CUT_WOOD,
+        value: JOB_IDS.CUT_WOOD,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_NAMES.FIGHT_FISH,
+        value: JOB_IDS.FIGHT_FISH,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_NAMES.LEAVE_CLEARING,
+        value: JOB_IDS.LEAVE_CLEARING,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_NAMES.STUDY_POND,
+        value: JOB_IDS.STUDY_POND,
       },
     ],
   },
-  [JOB_NAMES.LEAVE_CLEARING]: {
-    skill: SKILL_NAMES.AGILITY,
+  [JOB_IDS.LEAVE_CLEARING]: {
+    skill: SKILL_IDS.AGILITY,
     category: JOB_CATEGORY.PROGRESSION,
     maxXp: 5,
     completionEvents: [
@@ -77,85 +78,85 @@ const JOB_BASES = {
       },
       {
         type: COMPLETION_TYPE.LOCK_JOB,
-        value: JOB_NAMES.CATCH_FISH,
+        value: JOB_IDS.CATCH_FISH,
       },
       {
         type: COMPLETION_TYPE.LOCK_JOB,
-        value: JOB_NAMES.STUDY_POND,
+        value: JOB_IDS.STUDY_POND,
       },
     ],
   },
-  [JOB_NAMES.CUT_WOOD]: {
-    skill: SKILL_NAMES.WOODCUTTING,
+  [JOB_IDS.CUT_WOOD]: {
+    skill: SKILL_IDS.WOODCUTTING,
     category: JOB_CATEGORY.ACTION,
     maxXp: 1,
     completionEvents: [
       {
         type: COMPLETION_TYPE.WORLD_RESOURCE,
-        value: WORLD_RESOURCE_NAMES.TREE,
-        item: ITEM_NAMES.WOOD,
+        value: WORLD_RESOURCE_IDS.TREE,
+        item: ITEM_IDS.WOOD,
         numResourceChecked: 1,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_NAMES.BURN_WOOD,
+        value: JOB_IDS.BURN_WOOD,
       },
     ],
   },
-  [JOB_NAMES.BURN_WOOD]: {
-    skill: SKILL_NAMES.COMBAT,
+  [JOB_IDS.BURN_WOOD]: {
+    skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.ACTION,
     maxXp: 5,
     completionEvents: [
       {
         type: COMPLETION_TYPE.CONSUME_ITEM,
-        item: ITEM_NAMES.WOOD,
+        item: ITEM_IDS.WOOD,
         amount: 5,
       },
       {
         type: COMPLETION_TYPE.ITEM,
-        item: ITEM_NAMES.ASH,
+        item: ITEM_IDS.ASH,
         amount: 1,
       },
     ],
   },
-  [JOB_NAMES.STUDY_POND]: {
-    skill: SKILL_NAMES.FISHING,
+  [JOB_IDS.STUDY_POND]: {
+    skill: SKILL_IDS.FISHING,
     category: JOB_CATEGORY.EXPLORATION,
     maxXp: 3,
     completionEvents: [
       {
         type: COMPLETION_TYPE.EXPLORE_AREA,
-        value: EXPLORE_GROUP.POND,
+        value: EXPLORE_GROUP_IDS.POND,
         exploreAmount: 4,
       },
     ],
   },
-  [JOB_NAMES.CATCH_FISH]: {
-    skill: SKILL_NAMES.FISHING,
+  [JOB_IDS.CATCH_FISH]: {
+    skill: SKILL_IDS.FISHING,
     category: JOB_CATEGORY.ACTION,
     maxXp: 1,
     completionEvents: [
       {
         type: COMPLETION_TYPE.ITEM,
-        item: ITEM_NAMES.FISH,
+        item: ITEM_IDS.FISH,
         amount: 1,
       },
     ],
   },
-  [JOB_NAMES.FIGHT_FISH]: {
-    skill: SKILL_NAMES.COMBAT,
+  [JOB_IDS.FIGHT_FISH]: {
+    skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.ACTION,
     maxXp: 10,
     completionEvents: [
       {
         type: COMPLETION_TYPE.ITEM,
-        item: ITEM_NAMES.FISH,
+        item: ITEM_IDS.FISH,
         amount: 1,
       },
     ],
     statDecay: {
-      [STAT_NAMES.HEALTH]: 5,
+      [STAT_IDS.HEALTH]: 5,
     },
   },
 };
@@ -164,11 +165,12 @@ const JOB_DATA = Object.entries(JOB_BASES).reduce(
   (result, [key, value]) => ({
     ...result,
     [key]: {
-      statDecay: {}, // stat name is key and decay/s is value
-      ...value,
       name: key,
+      statDecay: {}, // stat id is key and decay/s is value
+      ...value,
+      id: key,
       currentXp: 0,
-      usedItems: {}, // item name is key and used amount is value
+      usedItems: {}, // item id is key and used amount is value
     },
   }),
   {}

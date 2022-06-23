@@ -8,12 +8,12 @@ const xpMultiplierForCurrentLevel = (level) => 1.05 ** level;
 
 const xpMultiplierForPermLevel = (level) => 1.01 ** level;
 
-const SKILL_NAMES = {
-  AGILITY: 'Agility',
-  FARMING: 'Farming',
-  COMBAT: 'Combat',
-  WOODCUTTING: 'Woodcutting',
-  FISHING: 'Fishing',
+const SKILL_IDS = {
+  AGILITY: 'Ag',
+  FARMING: 'Fm',
+  COMBAT: 'Cb',
+  WOODCUTTING: 'Wc',
+  FISHING: 'Fs',
 };
 
 const XP_SCALING_FACTORS = {
@@ -24,19 +24,24 @@ const XP_SCALING_FACTORS = {
 
 // Add unique fields to each skill
 const SKILL_BASES = {
-  [SKILL_NAMES.AGILITY]: {},
-  [SKILL_NAMES.FARMING]: {},
-  [SKILL_NAMES.COMBAT]: {},
-  [SKILL_NAMES.WOODCUTTING]: {},
-  [SKILL_NAMES.FISHING]: {},
+  [SKILL_IDS.AGILITY]: {
+    name: 'Agility',
+  },
+  [SKILL_IDS.FARMING]: {
+    name: 'Farming',
+  },
+  [SKILL_IDS.COMBAT]: {},
+  [SKILL_IDS.WOODCUTTING]: {},
+  [SKILL_IDS.FISHING]: {},
 };
 
 const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
   (result, [key, value]) => ({
     ...result,
     [key]: {
-      ...value,
       name: key,
+      ...value,
+      id: key,
       currentLevel: 0,
       currentXp: 0,
       currentLevelXpReq: xpReqForCurrentLevel(0),
@@ -50,7 +55,7 @@ const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
 );
 
 export {
-  SKILL_NAMES,
+  SKILL_IDS,
   XP_SCALING_FACTORS,
   SKILL_DATA,
   xpReqForCurrentLevel,

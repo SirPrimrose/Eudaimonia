@@ -13,7 +13,7 @@ class SkillPanel extends React.PureComponent {
       <div className="panelGrid">
         <Grid container columns={numOfColumns} p={1} spacing={1}>
           {skills.map((skill) => (
-            <PlayerSkill key={skill.name} skill={skill} />
+            <PlayerSkill key={skill.id} skill={skill} />
           ))}
         </Grid>
       </div>
@@ -36,6 +36,7 @@ class SkillPanel extends React.PureComponent {
 SkillPanel.propTypes = {
   skills: PropTypes.arrayOf(
     PropTypes.shape({
+      id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       currentLevel: PropTypes.number.isRequired,
       currentXp: PropTypes.number.isRequired,

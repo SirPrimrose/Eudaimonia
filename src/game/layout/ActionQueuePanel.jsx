@@ -18,9 +18,9 @@ class ActionQueuePanel extends React.PureComponent {
   };
 
   handleCancelJob = (jobId) => () => {
-    const { removeJobFromQueueById } = this.props;
+    const { removeJobFromQueueByQueueId } = this.props;
 
-    removeJobFromQueueById(jobId);
+    removeJobFromQueueByQueueId(jobId);
   };
 
   // TODO: Add more "helper" buttons; shift up and shift down in queue
@@ -33,7 +33,7 @@ class ActionQueuePanel extends React.PureComponent {
               <Typography>{`${index + 1}.`}</Typography>
             </Grid>
             <Grid item xs>
-              <Typography>{`${job.name}`}</Typography>
+              <Typography>{`${job.jobId}`}</Typography>
             </Grid>
             <Grid item xs="auto">
               <IconButton onClick={this.handleCancelJob(job.queueId)}>
@@ -66,12 +66,12 @@ ActionQueuePanel.propTypes = {
   jobs: PropTypes.arrayOf(
     PropTypes.shape({
       queueId: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
+      jobId: PropTypes.string.isRequired,
     })
   ).isRequired,
   isPaused: PropTypes.bool.isRequired,
   togglePaused: PropTypes.func.isRequired,
-  removeJobFromQueueById: PropTypes.func.isRequired,
+  removeJobFromQueueByQueueId: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -81,7 +81,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   togglePaused: gameActions.togglePaused,
-  removeJobFromQueueById: gameActions.removeJobFromQueueById,
+  removeJobFromQueueByQueueId: gameActions.removeJobFromQueueByQueueId,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionQueuePanel);
