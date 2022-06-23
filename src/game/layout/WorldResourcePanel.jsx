@@ -43,6 +43,7 @@ class WorldResourcePanel extends React.PureComponent {
 WorldResourcePanel.propTypes = {
   worldResources: PropTypes.objectOf(
     PropTypes.shape({
+      id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       potencyPerUnlock: PropTypes.number.isRequired,
       usedResource: PropTypes.number.isRequired,

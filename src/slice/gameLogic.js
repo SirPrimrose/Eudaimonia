@@ -1,10 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
-import {
-  DECAY_SCALING_FACTOR,
-  STAT_DATA,
-  STAT_NAMES,
-} from '../game/data/stats';
+import { DECAY_SCALING_FACTOR, STAT_DATA, STAT_IDS } from '../game/data/stats';
 import { COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
@@ -24,7 +20,7 @@ import {
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
 import { calculateSoulpower } from '../game/data/soulpower';
-import { JOB_NAMES } from '../game/data/job_consts';
+import { JOB_IDS } from '../game/data/job_consts';
 
 const initialState = {
   // GAME
@@ -67,17 +63,17 @@ const addGameTime = (state, time) => {
   state.gameTime += time;
 };
 
-const addToCurrentJobs = (state, jobName) => {
-  const job = state.jobs[jobName];
+const addToCurrentJobs = (state, jobId) => {
+  const job = state.jobs[jobId];
   if (!state.currentJobs[job.category]) state.currentJobs[job.category] = [];
-  if (!state.currentJobs[job.category].includes(jobName))
-    state.currentJobs[job.category].push(jobName);
+  if (!state.currentJobs[job.category].includes(jobId))
+    state.currentJobs[job.category].push(jobId);
 };
 
-const removeFromCurrentJobs = (state, jobName) => {
-  const job = state.jobs[jobName];
+const removeFromCurrentJobs = (state, jobId) => {
+  const job = state.jobs[jobId];
   state.currentJobs[job.category] = state.currentJobs[job.category].filter(
-    (j) => j !== jobName
+    (j) => j !== jobId
   );
 };
 
@@ -86,17 +82,17 @@ const resetQueueTick = (state) => {
   state.tickRemaining = 1;
 };
 
-const removeJobFromQueueById = (state, queueId) => {
+const removeJobFromQueueByQueueId = (state, queueId) => {
   state.queue = state.queue.filter((j) => j.queueId !== queueId);
 };
 
-const removeJobFromQueueByName = (state, jobName) => {
-  state.queue = state.queue.filter((j) => j.name !== jobName);
+const removeJobFromQueueByJobId = (state, jobId) => {
+  state.queue = state.queue.filter((j) => j.id !== jobId);
 };
 
-const isJobAvailable = (state, jobName) =>
+const isJobAvailable = (state, jobId) =>
   Object.values(state.currentJobs).some((jobsInCategory) =>
-    jobsInCategory.includes(jobName)
+    jobsInCategory.includes(jobId)
   );
 
 const resetjobQueue = (state) => {
@@ -109,7 +105,7 @@ const shouldTickJobQueue = (state) =>
 const getFirstJobInQueue = (state) => {
   const firstJobRaw = state.queue.find(() => true);
   if (firstJobRaw) {
-    const firstJobData = state.jobs[firstJobRaw.name];
+    const firstJobData = state.jobs[firstJobRaw.jobId];
     return {
       ...firstJobRaw,
       ...firstJobData,
@@ -119,46 +115,46 @@ const getFirstJobInQueue = (state) => {
 };
 
 // INVENTORY
-const addItem = (state, name, amount) => {
-  const item = state.items[name];
+const addItem = (state, itemId, amount) => {
+  const item = state.items[itemId];
 
   item.currentAmount = Math.min(item.maxAmount, item.currentAmount + amount);
   item.isActive = true;
 };
 
-const removeItem = (state, name, amount) => {
-  const item = state.items[name];
+const removeItem = (state, itemId, amount) => {
+  const item = state.items[itemId];
 
   const actualRemoved = Math.min(amount, item.currentAmount);
   item.currentAmount -= actualRemoved;
   return actualRemoved;
 };
 
-const resetItem = (state, name) => {
-  const item = state.items[name];
+const resetItem = (state, itemId) => {
+  const item = state.items[itemId];
 
   item.currentAmount = 0;
   item.currentCooldown = 0;
   item.isActive = false;
 };
 
-const isItemFull = (state, name) => {
-  const item = state.items[name];
+const isItemFull = (state, itemId) => {
+  const item = state.items[itemId];
 
   return item.currentAmount >= item.maxAmount;
 };
 
-const tickFoodHealTime = (state, name, tickTime) => {
-  const item = state.items[name];
+const tickFoodHealTime = (state, itemId, tickTime) => {
+  const item = state.items[itemId];
 
   item.currentCooldown = Math.max(item.currentCooldown - tickTime, 0);
 };
 
-const canItemHeal = (state, name) => {
-  const item = state.items[name];
+const canItemHeal = (state, itemId) => {
+  const item = state.items[itemId];
 
   if (
-    item.healType !== STAT_NAMES.NONE &&
+    item.healType !== STAT_IDS.NONE &&
     item.currentCooldown <= 0 &&
     item.currentAmount >= 1
   ) {
@@ -176,10 +172,10 @@ const canItemHeal = (state, name) => {
 };
 
 /**
- * Directly use the given item name to heal the stat that it should be healing. All logical checks (such as having enough of the item) should be done before calling this.
+ * Directly use the given item id to heal the stat that it should be healing. All logical checks (such as having enough of the item) should be done before calling this.
  */
-const useItemHeal = (state, name) => {
-  const item = state.items[name];
+const useItemHeal = (state, itemId) => {
+  const item = state.items[itemId];
   addToStat(state, item.healType, item.healAmount);
   item.currentCooldown = item.maxCooldown;
   item.currentAmount -= 1;
@@ -195,9 +191,9 @@ const recalculateAllWorldResources = (state) => {
     worldResource.maxPotency = Object.entries(
       worldResource.exploreGroupPotency
     ).reduce(
-      (partialPotency, [exploreGroupName, potency]) =>
+      (partialPotency, [exploreGroupId, potency]) =>
         partialPotency +
-        Math.floor(state.exploreGroups[exploreGroupName].currentExploration) *
+        Math.floor(state.exploreGroups[exploreGroupId].currentExploration) *
           potency,
       0
     );
@@ -222,8 +218,8 @@ const handleExploreGroupUnlock = (state, unlockType, unlockValue) => {
   }
 };
 
-const checkExploreGroupUnlocks = (state, name) => {
-  const exploreGroup = state.exploreGroups[name];
+const checkExploreGroupUnlocks = (state, exploreGroupId) => {
+  const exploreGroup = state.exploreGroups[exploreGroupId];
 
   Object.values(exploreGroup.conditionalUnlocks).forEach(
     (conditionalUnlock) => {
@@ -247,22 +243,22 @@ const checkExploreGroupUnlocks = (state, name) => {
   );
 };
 
-const addProgressToExploreGroup = (state, name, exploreAmount) => {
-  const exploreGroup = state.exploreGroups[name];
+const addProgressToExploreGroup = (state, exploreGroupId, exploreAmount) => {
+  const exploreGroup = state.exploreGroups[exploreGroupId];
 
   exploreGroup.currentExploration = Math.min(
     exploreGroup.currentExploration + exploreAmount,
     exploreGroup.maxExploration
   );
   exploreGroup.permExploration += exploreAmount;
-  recalculateScaledExploration(state, name);
-  checkExploreGroupUnlocks(state, name);
+  recalculateScaledExploration(state, exploreGroupId);
+  checkExploreGroupUnlocks(state, exploreGroupId);
 
   recalculateAllWorldResources(state);
 };
 
-function recalculateScaledExploration(state, name) {
-  const exploreGroup = state.exploreGroups[name];
+function recalculateScaledExploration(state, exploreGroupId) {
+  const exploreGroup = state.exploreGroups[exploreGroupId];
 
   exploreGroup.permExplorationScaled = Math.min(
     getExponentialDecayValue(
@@ -274,24 +270,24 @@ function recalculateScaledExploration(state, name) {
   );
 }
 
-function resetExploreGroup(state, name) {
-  const exploreGroup = state.exploreGroups[name];
+function resetExploreGroup(state, exploreGroupId) {
+  const exploreGroup = state.exploreGroups[exploreGroupId];
 
   exploreGroup.currentExploration = exploreGroup.permExplorationScaled;
 
   recalculateAllWorldResources(state);
 }
 
-const recalculateUnlockedResource = (state, worldResourceName) => {
-  const worldResource = state.worldResources[worldResourceName];
+const recalculateUnlockedResource = (state, worldResourceId) => {
+  const worldResource = state.worldResources[worldResourceId];
 
   worldResource.unlockedResource = Math.floor(
     worldResource.checkedPotency / worldResource.potencyPerUnlock
   );
 };
 
-const processWorldResource = (state, worldResourceName, itemResultName) => {
-  const worldResource = state.worldResources[worldResourceName];
+const processWorldResource = (state, worldResourceId, itemResultId) => {
+  const worldResource = state.worldResources[worldResourceId];
 
   if (
     worldResource.usedResource >= worldResource.unlockedResource &&
@@ -299,23 +295,23 @@ const processWorldResource = (state, worldResourceName, itemResultName) => {
   ) {
     // Check for a "usable" resource
     worldResource.checkedPotency += 1;
-    recalculateUnlockedResource(state, worldResourceName);
+    recalculateUnlockedResource(state, worldResourceId);
   }
 
   if (worldResource.usedResource + 1 <= worldResource.unlockedResource) {
-    addItem(state, itemResultName, 1);
+    addItem(state, itemResultId, 1);
     worldResource.usedResource += 1;
   }
 };
 
-const resetWorldResource = (state, worldResourceName) => {
-  const worldResource = state.worldResources[worldResourceName];
+const resetWorldResource = (state, worldResourceId) => {
+  const worldResource = state.worldResources[worldResourceId];
 
   worldResource.usedResource = 0;
 };
 
-const isWorldResourceAvailable = (state, worldResourceName) => {
-  const worldResource = state.worldResources[worldResourceName];
+const isWorldResourceAvailable = (state, worldResourceId) => {
+  const worldResource = state.worldResources[worldResourceId];
 
   return (
     worldResource.usedResource < worldResource.unlockedResource ||
@@ -327,8 +323,8 @@ const isWorldResourceAvailable = (state, worldResourceName) => {
 const itemReqForXp = (currentXp, maxXp, amount) =>
   Math.min(Math.floor((currentXp / maxXp) * amount) + 1, amount);
 
-const tickXpToJob = (state, tickXp, name) => {
-  const job = state.jobs[name];
+const tickXpToJob = (state, tickXp, jobId) => {
+  const job = state.jobs[jobId];
 
   const remainingXp = job.maxXp - job.currentXp;
 
@@ -346,8 +342,8 @@ const tickXpToJob = (state, tickXp, name) => {
   return 0;
 };
 
-const useItemsForJob = (state, tickXp, jobName) => {
-  const job = state.jobs[jobName];
+const useItemsForJob = (state, tickXp, jobId) => {
+  const job = state.jobs[jobId];
 
   const remainingXp =
     Math.min(
@@ -381,19 +377,19 @@ const useItemsForJob = (state, tickXp, jobName) => {
   return tickXp;
 };
 
-const isJobComplete = (state, jobName) => {
-  const jobData = state.jobs[jobName];
+const isJobComplete = (state, jobId) => {
+  const jobData = state.jobs[jobId];
   return jobData.currentXp >= jobData.maxXp;
 };
 
-const resetJobUsedItems = (state, jobName) => {
-  const job = state.jobs[jobName];
+const resetJobUsedItems = (state, jobId) => {
+  const job = state.jobs[jobId];
 
   job.usedItems = {};
 };
 
-const resetJobXp = (state, jobName) => {
-  const job = state.jobs[jobName];
+const resetJobXp = (state, jobId) => {
+  const job = state.jobs[jobId];
   job.currentXp = 0;
 };
 
@@ -419,8 +415,8 @@ const isJobResourceUnavailable = (state, job) =>
 /**
  * Checks for the items required for the given job is available (does not use items)
  */
-const checkJobCraftingRequirements = (state, jobName) => {
-  const job = state.jobs[jobName];
+const checkJobCraftingRequirements = (state, jobId) => {
+  const job = state.jobs[jobId];
 
   return job.completionEvents
     .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
@@ -437,13 +433,13 @@ const checkJobCraftingRequirements = (state, jobName) => {
 };
 
 /**
- * Validates whether the named job is currently ready to work.
+ * Validates whether the given job id is currently ready to work.
  * @returns null if the job can be worked on, otherwise returns a reason for the job being uncompletable
  */
-const blockerForJob = (state, jobName) => {
-  const job = state.jobs[jobName];
+const blockerForJob = (state, jobId) => {
+  const job = state.jobs[jobId];
 
-  if (!isJobAvailable(state, jobName)) {
+  if (!isJobAvailable(state, jobId)) {
     return JOB_REJECT_REASONS.UNAVAILABLE;
   }
   if (isJobItemsFull(state, job)) {
@@ -453,7 +449,7 @@ const blockerForJob = (state, jobName) => {
     return JOB_REJECT_REASONS.NO_RESOURCE;
   }
   // TODO: Check for required items for crafting recipies
-  if (!checkJobCraftingRequirements(state, jobName)) {
+  if (!checkJobCraftingRequirements(state, jobId)) {
     return JOB_REJECT_REASONS.MISSING_CRAFTING_RESOURCES;
   }
   // TODO: Check for max exploration
@@ -462,15 +458,15 @@ const blockerForJob = (state, jobName) => {
 };
 
 // SKILLS
-const recalculateSkillXpReq = (state, skillName) => {
-  const skill = state.skills[skillName];
+const recalculateSkillXpReq = (state, skillId) => {
+  const skill = state.skills[skillId];
 
   skill.currentLevelXpReq = xpReqForCurrentLevel(skill.currentLevel);
   skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
 };
 
-const recalculateSkillXpScaling = (state, name) => {
-  const skill = state.skills[name];
+const recalculateSkillXpScaling = (state, skillId) => {
+  const skill = state.skills[skillId];
 
   const calculatedValue = new CalculatedValue(skill.xpScaling.baseValue);
 
@@ -500,8 +496,8 @@ const recalculateSkillXpScaling = (state, name) => {
   skill.xpScaling = calculatedValue.toObj;
 };
 
-const addXpToSkill = (state, name, xp) => {
-  const skill = state.skills[name];
+const addXpToSkill = (state, skillId, xp) => {
+  const skill = state.skills[skillId];
 
   // Gain xp
   skill.currentXp += xp;
@@ -522,13 +518,13 @@ const addXpToSkill = (state, name, xp) => {
   }
 
   if (leveledUp) {
-    recalculateSkillXpReq(state, skill.name);
-    recalculateSkillXpScaling(state, name);
+    recalculateSkillXpReq(state, skill.id);
+    recalculateSkillXpScaling(state, skill.id);
   }
 };
 
-const resetSkill = (state, name) => {
-  const skill = state.skills[name];
+const resetSkill = (state, skillId) => {
+  const skill = state.skills[skillId];
 
   skill.currentLevel = 0;
   skill.currentXp = 0;
@@ -536,8 +532,8 @@ const resetSkill = (state, name) => {
 };
 
 // STATS
-function addToStat(state, name, value) {
-  const stat = state.stats[name];
+function addToStat(state, statId, value) {
+  const stat = state.stats[statId];
 
   stat.currentValue = Math.max(
     Math.min(stat.maxValue, stat.currentValue + value),
@@ -545,8 +541,8 @@ function addToStat(state, name, value) {
   );
 }
 
-const updateDecayRate = (state, name) => {
-  const stat = state.stats[name];
+const updateDecayRate = (state, statId) => {
+  const stat = state.stats[statId];
 
   const calculatedValue = new CalculatedValue(stat.baseDecayRate);
 
@@ -557,30 +553,30 @@ const updateDecayRate = (state, name) => {
     stat.decayModifier ** (state.gameTime / 60000)
   );
   const currentJob = getFirstJobInQueue(state);
-  if (currentJob && currentJob.statDecay[stat.name]) {
+  if (currentJob && currentJob.statDecay[stat.id]) {
     calculatedValue.addModifier(
       DECAY_SCALING_FACTOR.JOB,
       CalculatedValue.MODIFIER_TYPE.ADDITIVE,
       -1,
-      currentJob.statDecay[stat.name]
+      currentJob.statDecay[stat.id]
     );
   }
 
   stat.currentDecayRate = calculatedValue.toObj;
 };
 
-const decayStat = (state, name, decayTimeMs) => {
-  const stat = state.stats[name];
+const decayStat = (state, statId, decayTimeMs) => {
+  const stat = state.stats[statId];
 
   // Decay rate grows exponentially with time
-  updateDecayRate(state, name);
+  updateDecayRate(state, statId);
 
   const decay = stat.currentDecayRate.value * (decayTimeMs / 1000);
-  addToStat(state, name, -decay);
+  addToStat(state, statId, -decay);
 };
 
-const resetStat = (state, name) => {
-  const stat = state.stats[name];
+const resetStat = (state, statId) => {
+  const stat = state.stats[statId];
   if (stat.baseDecayRate < 0) {
     stat.currentValue = 0;
   } else {
@@ -588,8 +584,8 @@ const resetStat = (state, name) => {
   }
 };
 
-const getStatValue = (state, name) => {
-  const stat = state.stats[name];
+const getStatValue = (state, statId) => {
+  const stat = state.stats[statId];
   if (stat) {
     return stat.currentValue;
   }
@@ -613,11 +609,11 @@ const performJobCompletionEvent = (state, job, event) => {
       break;
     case COMPLETION_TYPE.LOCK_JOB:
       removeFromCurrentJobs(state, event.value);
-      removeJobFromQueueByName(state, event.value);
+      removeJobFromQueueByJobId(state, event.value);
       break;
     case COMPLETION_TYPE.HIDE_SELF:
-      removeFromCurrentJobs(state, job.name);
-      removeJobFromQueueByName(state, job.name);
+      removeFromCurrentJobs(state, job.id);
+      removeJobFromQueueByJobId(state, job.id);
       break;
     case COMPLETION_TYPE.EXPLORE_AREA:
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
@@ -635,9 +631,9 @@ const performJobCompletionEvent = (state, job, event) => {
   }
 };
 
-const getXpForTick = (state, skillName) => {
+const getXpForTick = (state, skillId) => {
   const baseXpPerTick = GAME_TICK_TIME / 1000;
-  const skillObj = state.skills[skillName];
+  const skillObj = state.skills[skillId];
   return baseXpPerTick * skillObj.xpScaling.value;
 };
 
@@ -648,37 +644,37 @@ const tickJobQueue = (state) => {
     const currentJob = getFirstJobInQueue(state);
 
     if (currentJob) {
-      const blocker = blockerForJob(state, currentJob.name);
+      const blocker = blockerForJob(state, currentJob.id);
       if (blocker) {
         // TODO: Display dialog for reason why it was removed (requires toast dialog system)
-        removeJobFromQueueById(state, currentJob.queueId);
-        addMessage(state, `Canceled ${currentJob.name}: ${blocker}`);
+        removeJobFromQueueByQueueId(state, currentJob.queueId);
+        addMessage(state, `Canceled ${currentJob.id}: ${blocker}`);
       } else {
         const xpForTick = getXpForTick(state, currentJob.skill);
         const xpRemaining = state.tickRemaining * xpForTick;
         const xpAfterItemReq = useItemsForJob(
           state,
           xpRemaining,
-          currentJob.name
+          currentJob.id
         );
-        const xpAdded = tickXpToJob(state, xpAfterItemReq, currentJob.name);
+        const xpAdded = tickXpToJob(state, xpAfterItemReq, currentJob.id);
         state.tickRemaining -= xpAdded / xpForTick;
         addXpToSkill(state, currentJob.skill, xpAdded);
 
         addMessage(
           state,
           `${currentJob.name} gained ${xpAdded} xp and now has ${
-            state.jobs[currentJob.name].currentXp
+            state.jobs[currentJob.id].currentXp
           } xp`
         );
 
         // If job is complete, perform "completionEvents" according to job
-        if (isJobComplete(state, currentJob.name)) {
+        if (isJobComplete(state, currentJob.id)) {
           currentJob.completionEvents.forEach((event) => {
             performJobCompletionEvent(state, currentJob, event);
           });
-          resetJobUsedItems(state, currentJob.name);
-          resetJobXp(state, currentJob.name);
+          resetJobUsedItems(state, currentJob.id);
+          resetJobXp(state, currentJob.id);
         }
       }
     }
@@ -687,10 +683,10 @@ const tickJobQueue = (state) => {
 };
 
 const tickFood = (state, tickTime) => {
-  Object.keys(state.items).forEach((itemName) => {
-    tickFoodHealTime(state, itemName, tickTime);
-    if (canItemHeal(state, itemName)) {
-      useItemHeal(state, itemName);
+  Object.keys(state.items).forEach((itemId) => {
+    tickFoodHealTime(state, itemId, tickTime);
+    if (canItemHeal(state, itemId)) {
+      useItemHeal(state, itemId);
     }
   });
 };
@@ -700,18 +696,18 @@ const tickFood = (state, tickTime) => {
  */
 const startupGame = (state) => {
   // Calculate deterministic values
-  Object.keys(state.skills).forEach((skillName) => {
-    recalculateSkillXpReq(state, skillName);
-    recalculateSkillXpScaling(state, skillName);
+  Object.keys(state.skills).forEach((skillId) => {
+    recalculateSkillXpReq(state, skillId);
+    recalculateSkillXpScaling(state, skillId);
   });
 
-  Object.keys(state.stats).forEach((statName) => {
-    updateDecayRate(state, statName);
+  Object.keys(state.stats).forEach((statId) => {
+    updateDecayRate(state, statId);
   });
 
-  Object.keys(state.exploreGroups).forEach((exploreGroupName) => {
-    recalculateScaledExploration(state, exploreGroupName);
-    checkExploreGroupUnlocks(state, exploreGroupName);
+  Object.keys(state.exploreGroups).forEach((exploreGroupId) => {
+    recalculateScaledExploration(state, exploreGroupId);
+    checkExploreGroupUnlocks(state, exploreGroupId);
   });
 
   recalculateAllWorldResources(state);
@@ -727,35 +723,35 @@ const startNewLife = (state) => {
     [JOB_CATEGORY.ACTION]: [],
     [JOB_CATEGORY.CRAFT]: [],
     [JOB_CATEGORY.EXPLORATION]: [],
-    [JOB_CATEGORY.PROGRESSION]: [JOB_NAMES.SEARCH_CLEARING],
+    [JOB_CATEGORY.PROGRESSION]: [JOB_IDS.SEARCH_CLEARING],
   };
 
   resetjobQueue(state);
 
-  Object.keys(state.jobs).forEach((jobName) => {
-    resetJobUsedItems(state, jobName);
-    resetJobXp(state, jobName);
+  Object.keys(state.jobs).forEach((jobId) => {
+    resetJobUsedItems(state, jobId);
+    resetJobXp(state, jobId);
   });
 
-  Object.keys(state.stats).forEach((statName) => {
-    resetStat(state, statName);
+  Object.keys(state.stats).forEach((statId) => {
+    resetStat(state, statId);
   });
 
-  Object.keys(state.skills).forEach((skillName) => {
-    resetSkill(state, skillName);
+  Object.keys(state.skills).forEach((skillId) => {
+    resetSkill(state, skillId);
   });
 
-  Object.keys(state.items).forEach((itemName) => {
-    resetItem(state, itemName);
+  Object.keys(state.items).forEach((itemId) => {
+    resetItem(state, itemId);
   });
 
-  Object.keys(state.worldResources).forEach((worldResourceName) => {
-    resetWorldResource(state, worldResourceName);
+  Object.keys(state.worldResources).forEach((worldResourceId) => {
+    resetWorldResource(state, worldResourceId);
   });
 
-  Object.keys(state.exploreGroups).forEach((exploreGroupName) => {
-    resetExploreGroup(state, exploreGroupName);
-    checkExploreGroupUnlocks(state, exploreGroupName);
+  Object.keys(state.exploreGroups).forEach((exploreGroupId) => {
+    resetExploreGroup(state, exploreGroupId);
+    checkExploreGroupUnlocks(state, exploreGroupId);
   });
 
   state.phase = PHASES.WANDER;
@@ -772,8 +768,8 @@ const startNewGame = (state) => {
  * Returns true if dead by whatever reason, false if not
  */
 const isPlayerDead = (state) =>
-  getStatValue(state, STAT_NAMES.HEALTH) <= 0 ||
-  getStatValue(state, STAT_NAMES.WANDER_TIME) <= 0;
+  getStatValue(state, STAT_IDS.HEALTH) <= 0 ||
+  getStatValue(state, STAT_IDS.WANDER_TIME) <= 0;
 
 const playerHasDied = (state) => {
   state.soulpower.resource = calculateSoulpower(state);
@@ -798,8 +794,8 @@ const tickGame = (state) => {
         const tickRem = tickJobQueue(state);
         const jobTime = GAME_TICK_TIME * (1 - tickRem);
 
-        Object.keys(state.stats).forEach((statName) => {
-          decayStat(state, statName, jobTime);
+        Object.keys(state.stats).forEach((statId) => {
+          decayStat(state, statId, jobTime);
         });
 
         addGameTime(state, jobTime);

@@ -69,7 +69,7 @@ class PlayerSkill extends React.PureComponent {
   render() {
     const {
       skill: {
-        name,
+        id,
         currentXp,
         currentLevelXpReq,
         permXp,
@@ -83,7 +83,7 @@ class PlayerSkill extends React.PureComponent {
         <Tooltip title={this.getTooltipValue()} disableInteractive>
           <Stack spacing={0.25}>
             <Typography noWrap align="center" variant="subtitle2">
-              {getIconForSkillType(name)}
+              {getIconForSkillType(id)}
               {` ${MULTIPLICATION_SIGN} ${toGameNumber(xpScaling.value)}`}
             </Typography>
 
@@ -107,6 +107,7 @@ class PlayerSkill extends React.PureComponent {
 
 PlayerSkill.propTypes = {
   skill: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     currentLevel: PropTypes.number.isRequired,
     currentXp: PropTypes.number.isRequired,

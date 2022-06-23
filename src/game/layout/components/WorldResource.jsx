@@ -52,6 +52,7 @@ class WorldResource extends React.PureComponent {
 
 WorldResource.propTypes = {
   worldResource: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     potencyPerUnlock: PropTypes.number.isRequired,
     usedResource: PropTypes.number.isRequired,

@@ -1,30 +1,31 @@
-import { STAT_NAMES } from './stats';
+import { STAT_IDS } from './stats';
 
-const ITEM_NAMES = {
-  WOOD: 'Wood',
+const ITEM_IDS = {
+  WOOD: 'w',
   FISH: 'Fish',
   ASH: 'Ash',
 };
 
 const ITEM_BASES = {
-  [ITEM_NAMES.WOOD]: {
+  [ITEM_IDS.WOOD]: {
+    name: 'Wood',
     currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_NAMES.NONE,
+    healType: STAT_IDS.NONE,
     healAmount: 0,
     description: 'Basic Wood',
   },
-  [ITEM_NAMES.FISH]: {
+  [ITEM_IDS.FISH]: {
     currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_NAMES.WANDER_TIME,
+    healType: STAT_IDS.WANDER_TIME,
     healAmount: 25,
     description: 'Smelly',
   },
-  [ITEM_NAMES.ASH]: {
+  [ITEM_IDS.ASH]: {
     currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_NAMES.NONE,
+    healType: STAT_IDS.NONE,
     healAmount: 0,
     description: 'Previous home for woodland creatures',
   },
@@ -34,8 +35,9 @@ const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
   (result, [key, value]) => ({
     ...result,
     [key]: {
-      ...value,
       name: key,
+      ...value,
+      id: key,
       currentCooldown: 0,
       maxCooldown: 5000, // time between eating in ms
       isActive: false,
@@ -44,4 +46,4 @@ const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
   {}
 );
 
-export { ITEM_NAMES, ITEM_DATA };
+export { ITEM_IDS, ITEM_DATA };

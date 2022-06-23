@@ -1,4 +1,4 @@
-const JOB_NAMES = {
+const JOB_IDS = {
   PACE: 'Pace',
   WANDER: 'Wander',
   COLLECT: 'Collect',
@@ -12,4 +12,4 @@ const JOB_NAMES = {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { JOB_NAMES };
+export { JOB_IDS };
