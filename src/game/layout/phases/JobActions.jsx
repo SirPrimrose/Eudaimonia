@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   actions as gameActions,
+  getJobById,
   getJobProgress,
 } from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
@@ -17,33 +18,38 @@ class JobActions extends React.PureComponent {
   };
 
   renderAvailableJobs = () => {
-    const { availableJobs, getProgress } = this.props;
+    const { availableJobs, getProgress, getJob } = this.props;
 
-    return availableJobs.map((jobName) => (
-      <Stack
-        key={jobName}
-        style={{
-          position: 'relative',
-        }}
-      >
-        <Button onClick={this.handleClickJob(jobName)} sx={{ zIndex: 1 }}>
-          {jobName}
-        </Button>
-        <LinearProgress
-          variant="determinate"
-          value={getProgress(jobName)}
-          sx={{
-            position: 'absolute',
-            width: '100%',
-            bottom: 0,
+    // TODO: Render a job in its own component, pass job data to component
+    return availableJobs.map((jobId) => {
+      const jobData = getJob(jobId);
+
+      return (
+        <Stack
+          key={jobId}
+          style={{
+            position: 'relative',
           }}
-        />
-      </Stack>
-    ));
+        >
+          <Button onClick={this.handleClickJob(jobId)} sx={{ zIndex: 1 }}>
+            {jobData.name}
+          </Button>
+          <LinearProgress
+            variant="determinate"
+            value={getProgress(jobId)}
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              bottom: 0,
+            }}
+          />
+        </Stack>
+      );
+    });
   };
 
   render() {
-    return <Stack>{this.renderAvailableJobs()}</Stack>;
+    return <Stack pb={1}>{this.renderAvailableJobs()}</Stack>;
   }
 }
 
@@ -52,12 +58,14 @@ JobActions.propTypes = {
 
   // Dispatch functions
   getProgress: PropTypes.func.isRequired,
+  getJob: PropTypes.func.isRequired,
   addJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   getProgress: getJobProgress(state),
+  getJob: getJobById(state),
 });
 
 const mapDispatchToProps = {

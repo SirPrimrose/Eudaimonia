@@ -84,37 +84,29 @@ export const getCurrentJobs = (store) => store.game.currentJobs;
 
 // INVENTORY
 export const getInventory = (store) => Object.values(store.game.items);
-export const getItemByName = (store) => (itemName) =>
-  getInventory(store)[itemName];
 export const getActiveInventory = (store) =>
   getInventory(store).filter((i) => i.isActive);
 
 // WORLD
 export const getExploreGroups = (store) => store.game.exploreGroups;
-export const getExploreGroupByName = (store) => (groupName) =>
-  getExploreGroups(store)[groupName];
 export const getWorldResources = (store) => store.game.worldResources;
 
 // JOBS
-export const getJobProgress = (store) => (jobName) =>
+export const getJobProgress = (store) => (jobId) =>
   getProgressValue(
-    store.game.jobs[jobName].currentXp,
-    store.game.jobs[jobName].maxXp
+    store.game.jobs[jobId].currentXp,
+    store.game.jobs[jobId].maxXp
   );
+export const getJobById = (store) => (jobId) => store.game.jobs[jobId];
 export const getJobQueue = (store) => store.game.queue;
-export const getTickRemaining = (store) => store.game.tickRemaining;
 
 // SKILLS
 export const getSkills = (store) => Object.values(store.game.skills);
-export const getSkillByName = (store) => (skillName) =>
-  store.game.skills[skillName];
 export const getSkillsWithLevels = (store) =>
   getSkills(store).filter((skill) => skill.permLevel > 0 || skill.permXp > 0);
 
 // STATS
 export const getStats = (store) => Object.values(store.game.stats);
-export const getStatByName = (store) => (statName) =>
-  store.game.stats[statName];
 export const getActiveStats = (store) =>
   getStats(store).filter((stat) => stat.isActive);
 

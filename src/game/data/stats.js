@@ -24,7 +24,7 @@ const STAT_BASES = {
   [STAT_IDS.WANDER_TIME]: {
     name: 'Energy',
     shortName: 'NRG',
-    baseDecayRate: 5,
+    baseDecayRate: 1,
     decayModifier: 1.5,
     maxValue: 100,
     isActive: true,
