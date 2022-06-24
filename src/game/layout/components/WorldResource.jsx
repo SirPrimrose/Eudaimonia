@@ -27,6 +27,7 @@ class WorldResource extends React.PureComponent {
       potencyPerUnlock - (checkedPotency % potencyPerUnlock);
     const remainingResource = unlockedResource - usedResource;
 
+    // TODO: Add icons instead of text to represent "checked", etc.
     return (
       <Grid item xs={12}>
         <Tooltip

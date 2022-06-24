@@ -13,150 +13,248 @@ const JOB_CATEGORY = {
 };
 
 const COMPLETION_TYPE = {
-  ITEM: 'Item',
-  WORLD_RESOURCE: 'World_Resource',
-  UNLOCK_JOB: 'Unlock_Job',
-  LOCK_JOB: 'Lock_Job',
-  HIDE_SELF: 'Hide_Self',
-  EXPLORE_AREA: 'Explore_Area',
-  CONSUME_ITEM: 'Consume_Item',
+  ITEM: 'Item', // {item: item id, amount: #}
+  WORLD_RESOURCE: 'World_Resource', // {value: resource id, item: item id, numResourceChecked: #}
+  UNLOCK_JOB: 'Unlock_Job', // {jobId: job id}
+  LOCK_JOB: 'Lock_Job', // {jobId: job id}
+  HIDE_SELF: 'Hide_Self', // no params
+  EXPLORE_AREA: 'Explore_Area', // {exploreGroupId: group id, amount: #}
+  CONSUME_ITEM: 'Consume_Item', // {item: item id, amount: #}
 };
 
+// TODO: Add an "order" so the "currentJobs" display knows what order to display jobs
 const JOB_BASES = {
-  [JOB_IDS.PACE]: {
-    name: 'Pace',
-    skill: SKILL_IDS.AGILITY,
-    category: JOB_CATEGORY.ACTION,
-    maxXp: 20,
-    completionEvents: [],
-  },
-  [JOB_IDS.WANDER]: {
-    skill: SKILL_IDS.AGILITY,
-    category: JOB_CATEGORY.ACTION,
-    maxXp: 50,
-    completionEvents: [],
-  },
-  [JOB_IDS.COLLECT]: {
-    skill: SKILL_IDS.AGILITY,
-    category: JOB_CATEGORY.ACTION,
-    maxXp: 50,
-    completionEvents: [],
-  },
-  [JOB_IDS.SEARCH_CLEARING]: {
-    skill: SKILL_IDS.AGILITY,
+  [JOB_IDS.CAVE_STORY_1]: {
+    name: 'Muster Strength',
+    skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 5,
-    completionEvents: [
-      {
-        type: COMPLETION_TYPE.HIDE_SELF,
-      },
-      {
-        type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_IDS.CUT_WOOD,
-      },
-      {
-        type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_IDS.FIGHT_FISH,
-      },
-      {
-        type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_IDS.LEAVE_CLEARING,
-      },
-      {
-        type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_IDS.STUDY_POND,
-      },
-    ],
-  },
-  [JOB_IDS.LEAVE_CLEARING]: {
-    skill: SKILL_IDS.AGILITY,
-    category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 5,
-    completionEvents: [
-      {
-        type: COMPLETION_TYPE.HIDE_SELF,
-      },
-      {
-        type: COMPLETION_TYPE.LOCK_JOB,
-        value: JOB_IDS.CATCH_FISH,
-      },
-      {
-        type: COMPLETION_TYPE.LOCK_JOB,
-        value: JOB_IDS.STUDY_POND,
-      },
-    ],
-  },
-  [JOB_IDS.CUT_WOOD]: {
-    skill: SKILL_IDS.WOODCUTTING,
-    category: JOB_CATEGORY.ACTION,
     maxXp: 1,
     completionEvents: [
       {
-        type: COMPLETION_TYPE.WORLD_RESOURCE,
-        value: WORLD_RESOURCE_IDS.TREE,
-        item: ITEM_IDS.WOOD,
-        numResourceChecked: 1,
+        type: COMPLETION_TYPE.HIDE_SELF,
       },
       {
         type: COMPLETION_TYPE.UNLOCK_JOB,
-        value: JOB_IDS.BURN_WOOD,
+        value: JOB_IDS.CAVE_STORY_2,
       },
     ],
   },
-  [JOB_IDS.BURN_WOOD]: {
-    skill: SKILL_IDS.COMBAT,
+  [JOB_IDS.CAVE_STORY_2]: {
+    name: 'Collect Thoughts',
+    skill: SKILL_IDS.ORDER,
+    category: JOB_CATEGORY.PROGRESSION,
+    maxXp: 2,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.HIDE_SELF,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.GET_CAVE_BUG,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.CAVE_STORY_3,
+      },
+    ],
+  },
+  [JOB_IDS.CAVE_STORY_3]: {
+    name: 'Examine Surroundings',
+    skill: SKILL_IDS.ATHLETICS,
+    category: JOB_CATEGORY.PROGRESSION,
+    maxXp: 3,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.HIDE_SELF,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.CAVE_EXPLORE,
+      },
+    ],
+  },
+  [JOB_IDS.UNLOCK_PEBBLES]: {
+    name: 'Prospect Cave',
+    skill: SKILL_IDS.MINING,
+    category: JOB_CATEGORY.PROGRESSION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.HIDE_SELF,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.GET_PEBBLES,
+      },
+    ],
+  },
+  [JOB_IDS.UNLOCK_CAVE_WAX]: {
+    name: 'Check Indentation',
+    skill: SKILL_IDS.MINING,
+    category: JOB_CATEGORY.PROGRESSION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.HIDE_SELF,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.GET_WAX,
+      },
+    ],
+  },
+  [JOB_IDS.UNLOCK_CAVE_MOSS]: {
+    name: 'Follow Moisture',
+    skill: SKILL_IDS.FARMING,
+    category: JOB_CATEGORY.PROGRESSION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.HIDE_SELF,
+      },
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.GET_CAVE_MOSS,
+      },
+    ],
+  },
+  [JOB_IDS.GET_PEBBLES]: {
+    name: 'Collect Pebbles',
+    skill: SKILL_IDS.MINING,
     category: JOB_CATEGORY.ACTION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.ITEM,
+        item: ITEM_IDS.PEBBLE,
+        amount: 1,
+      },
+    ],
+  },
+  [JOB_IDS.GET_CAVE_BUG]: {
+    name: 'Catch Critter',
+    skill: SKILL_IDS.ATHLETICS,
+    category: JOB_CATEGORY.ACTION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.ITEM,
+        item: ITEM_IDS.CAVE_BUG,
+        amount: 1,
+      },
+    ],
+  },
+  [JOB_IDS.GET_WAX]: {
+    name: 'Harvest Wax',
+    skill: SKILL_IDS.CRAFTING,
+    category: JOB_CATEGORY.ACTION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.ITEM,
+        item: ITEM_IDS.WAX,
+        amount: 1,
+      },
+    ],
+  },
+  [JOB_IDS.GET_CAVE_MOSS]: {
+    name: 'Collect Moss',
+    skill: SKILL_IDS.FARMING,
+    category: JOB_CATEGORY.ACTION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.WORLD_RESOURCE,
+        value: WORLD_RESOURCE_IDS.FISH,
+        item: ITEM_IDS.CAVE_MOSS,
+        numResourceChecked: 1,
+      },
+    ],
+  },
+  [JOB_IDS.CAVE_EXPLORE]: {
+    name: 'Explore In Darkness',
+    skill: SKILL_IDS.ATHLETICS,
+    category: JOB_CATEGORY.EXPLORATION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.EXPLORE_AREA,
+        value: EXPLORE_GROUP_IDS.CAVE,
+        exploreAmount: 1,
+      },
+    ],
+  },
+  [JOB_IDS.CAVE_EXPLORE_2]: {
+    name: 'Explore With Candle',
+    skill: SKILL_IDS.ATHLETICS,
+    category: JOB_CATEGORY.EXPLORATION,
     maxXp: 5,
     completionEvents: [
       {
         type: COMPLETION_TYPE.CONSUME_ITEM,
-        item: ITEM_IDS.WOOD,
-        amount: 5,
-      },
-      {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.ASH,
+        item: ITEM_IDS.CANDLE,
         amount: 1,
       },
-    ],
-  },
-  [JOB_IDS.STUDY_POND]: {
-    skill: SKILL_IDS.FISHING,
-    category: JOB_CATEGORY.EXPLORATION,
-    maxXp: 3,
-    completionEvents: [
       {
         type: COMPLETION_TYPE.EXPLORE_AREA,
-        value: EXPLORE_GROUP_IDS.POND,
-        exploreAmount: 4,
+        value: EXPLORE_GROUP_IDS.CAVE,
+        exploreAmount: 1,
       },
     ],
   },
-  [JOB_IDS.CATCH_FISH]: {
-    skill: SKILL_IDS.FISHING,
+  [JOB_IDS.LEAVE_CAVE]: {
+    name: 'Leave Cave',
+    skill: SKILL_IDS.ATHLETICS,
+    category: JOB_CATEGORY.EXPLORATION,
+    maxXp: 5,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.LOCK_JOB,
+      },
+      {
+        type: COMPLETION_TYPE.LOCK_JOB,
+        value: JOB_IDS.CAVE_EXPLORE,
+      },
+      {
+        type: COMPLETION_TYPE.LOCK_JOB,
+        value: JOB_IDS.CAVE_EXPLORE_2,
+      },
+    ],
+  },
+  [JOB_IDS.CAVE_FIGHT_1]: {
+    name: 'Fight Cave Rat',
+    skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.ACTION,
     maxXp: 1,
     completionEvents: [
       {
         type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.FISH,
+        item: ITEM_IDS.RAT_BONE,
         amount: 1,
       },
-    ],
-  },
-  [JOB_IDS.FIGHT_FISH]: {
-    skill: SKILL_IDS.COMBAT,
-    category: JOB_CATEGORY.ACTION,
-    maxXp: 10,
-    completionEvents: [
       {
         type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.FISH,
+        item: ITEM_IDS.RAT_MEAT,
         amount: 1,
       },
     ],
     statDecay: {
-      [STAT_IDS.HEALTH]: 5,
+      [STAT_IDS.HEALTH]: 10,
+    },
+  },
+  [JOB_IDS.CAVE_FIGHT_BOSS_1]: {
+    name: 'Fight Rat King',
+    skill: SKILL_IDS.COMBAT,
+    category: JOB_CATEGORY.ACTION,
+    maxXp: 1,
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.UNLOCK_JOB,
+        value: JOB_IDS.LEAVE_CAVE,
+      },
+    ],
+    statDecay: {
+      [STAT_IDS.HEALTH]: 25,
     },
   },
 };

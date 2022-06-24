@@ -1,23 +1,16 @@
 import { EXPLORE_GROUP_IDS } from './exploreGroup';
 
 const WORLD_RESOURCE_IDS = {
-  TREE: 'Tr',
+  CAVE_MOSS: 'CAVE_MOSS',
   FISH: 'Fs',
 };
 
 const WORLD_RESOURCE_BASES = {
-  [WORLD_RESOURCE_IDS.TREE]: {
-    name: 'Tree',
-    potencyPerUnlock: 5, // how much potency is required per unlock, determines resource availability
+  [WORLD_RESOURCE_IDS.CAVE_MOSS]: {
+    name: 'Cave Moss',
+    potencyPerUnlock: 2.5, // how much potency is required per unlock, determines resource availability
     exploreGroupPotency: {
-      [EXPLORE_GROUP_IDS.POND]: 2, // how much potency an explore contributes to current potency
-    },
-  },
-  [WORLD_RESOURCE_IDS.FISH]: {
-    name: 'Fish',
-    potencyPerUnlock: 10,
-    exploreGroupPotency: {
-      [EXPLORE_GROUP_IDS.POND]: 2,
+      [EXPLORE_GROUP_IDS.CAVE]: 1, // how much potency an explore contributes to current potency
     },
   },
 };

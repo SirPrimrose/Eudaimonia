@@ -723,7 +723,7 @@ const startNewLife = (state) => {
     [JOB_CATEGORY.ACTION]: [],
     [JOB_CATEGORY.CRAFT]: [],
     [JOB_CATEGORY.EXPLORATION]: [],
-    [JOB_CATEGORY.PROGRESSION]: [JOB_IDS.SEARCH_CLEARING],
+    [JOB_CATEGORY.PROGRESSION]: [JOB_IDS.CAVE_STORY_1],
   };
 
   resetjobQueue(state);

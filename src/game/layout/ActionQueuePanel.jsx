@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import {
   actions as gameActions,
+  getJobById,
   getJobQueue,
   isGamePaused,
 } from '../../slice/gameSlice';
@@ -23,28 +24,41 @@ class ActionQueuePanel extends React.PureComponent {
     removeJobFromQueueByQueueId(jobId);
   };
 
-  // TODO: Add more "helper" buttons; shift up and shift down in queue
-  getJobLayout = (jobs) => (
-    <div className="panelGrid">
-      <Grid container overflow="hidden">
-        {jobs.map((job, index) => (
-          <Grid container item xs={12} key={job.queueId} alignItems="center">
-            <Grid item xs={1.5}>
-              <Typography>{`${index + 1}.`}</Typography>
-            </Grid>
-            <Grid item xs>
-              <Typography>{`${job.jobId}`}</Typography>
-            </Grid>
-            <Grid item xs="auto">
-              <IconButton onClick={this.handleCancelJob(job.queueId)}>
-                <FontAwesomeIcon icon={faXmarkCircle} />
-              </IconButton>
-            </Grid>
-          </Grid>
-        ))}
-      </Grid>
-    </div>
-  );
+  // TODO: Add more "helper" buttons; shift up and shift down in queue; add padding to sides; add tooltip info on hover
+  getJobLayout = (jobs) => {
+    const { getJobData } = this.props;
+
+    return (
+      <div className="panelGrid">
+        <Grid container overflow="hidden">
+          {jobs.map((job, index) => {
+            const jobData = getJobData(job.jobId);
+            return (
+              <Grid
+                container
+                item
+                xs={12}
+                key={job.queueId}
+                alignItems="center"
+              >
+                <Grid item xs={1.5}>
+                  <Typography>{`${index + 1}.`}</Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography>{`${jobData.name}`}</Typography>
+                </Grid>
+                <Grid item xs="auto">
+                  <IconButton onClick={this.handleCancelJob(job.queueId)}>
+                    <FontAwesomeIcon icon={faXmarkCircle} />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </div>
+    );
+  };
 
   render() {
     const { jobs, isPaused } = this.props;
@@ -70,11 +84,14 @@ ActionQueuePanel.propTypes = {
     })
   ).isRequired,
   isPaused: PropTypes.bool.isRequired,
+
+  getJobData: PropTypes.func.isRequired,
   togglePaused: PropTypes.func.isRequired,
   removeJobFromQueueByQueueId: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
+  getJobData: getJobById(state),
   jobs: getJobQueue(state),
   isPaused: isGamePaused(state),
 });

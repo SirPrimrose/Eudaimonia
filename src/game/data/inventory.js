@@ -1,33 +1,74 @@
 import { STAT_IDS } from './stats';
 
 const ITEM_IDS = {
-  WOOD: 'w',
-  FISH: 'Fish',
-  ASH: 'Ash',
+  // Materials
+  PEBBLE: 'Pebble',
+  WAX: 'Wax',
+  CANDLE: 'Candle',
+  RAT_BONE: 'Rat Bone',
+
+  // Food
+  CAVE_BUG: 'Cave Bug',
+  CAVE_MOSS: 'Cave Moss',
+  RAT_MEAT: 'Rat Meat',
 };
 
 const ITEM_BASES = {
-  [ITEM_IDS.WOOD]: {
-    name: 'Wood',
+  [ITEM_IDS.PEBBLE]: {
+    name: 'Pebble',
     currentAmount: 0,
     maxAmount: 10,
     healType: STAT_IDS.NONE,
     healAmount: 0,
-    description: 'Basic Wood',
+    description: "Tiny stones, not more than a finger's width",
   },
-  [ITEM_IDS.FISH]: {
+  [ITEM_IDS.WAX]: {
+    name: 'Wax',
+    currentAmount: 0,
+    maxAmount: 10,
+    healType: STAT_IDS.NONE,
+    healAmount: 0,
+    description: 'Sticky, but flammable',
+  },
+  [ITEM_IDS.CANDLE]: {
+    name: 'Candle',
+    currentAmount: 0,
+    maxAmount: 10,
+    healType: STAT_IDS.NONE,
+    healAmount: 0,
+    description: 'Not very bright, but offers better vision than darkness',
+  },
+  [ITEM_IDS.RAT_BONE]: {
+    name: 'Rat Bone',
+    currentAmount: 0,
+    maxAmount: 10,
+    healType: STAT_IDS.NONE,
+    healAmount: 0,
+    description: 'You have the sudden urge to bury them',
+  },
+  [ITEM_IDS.CAVE_BUG]: {
+    name: 'Cave Bug',
     currentAmount: 0,
     maxAmount: 10,
     healType: STAT_IDS.WANDER_TIME,
-    healAmount: 25,
-    description: 'Smelly',
+    healAmount: 5,
+    description: 'Full of protein',
   },
-  [ITEM_IDS.ASH]: {
+  [ITEM_IDS.CAVE_MOSS]: {
+    name: 'Cave Moss',
     currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_IDS.NONE,
-    healAmount: 0,
-    description: 'Previous home for woodland creatures',
+    healType: STAT_IDS.WANDER_TIME,
+    healAmount: 8,
+    description: 'Strangely full of flavor',
+  },
+  [ITEM_IDS.RAT_MEAT]: {
+    name: 'Rat Meat',
+    currentAmount: 0,
+    maxAmount: 10,
+    healType: STAT_IDS.WANDER_TIME,
+    healAmount: 15,
+    description: 'So dry and tough, almost like jerky',
   },
 };
 

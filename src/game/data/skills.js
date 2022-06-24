@@ -9,11 +9,21 @@ const xpMultiplierForCurrentLevel = (level) => 1.05 ** level;
 const xpMultiplierForPermLevel = (level) => 1.01 ** level;
 
 const SKILL_IDS = {
-  AGILITY: 'Ag',
-  FARMING: 'Fm',
   COMBAT: 'Cb',
+  MINING: 'Mn',
   WOODCUTTING: 'Wc',
+  FARMING: 'Fm',
   FISHING: 'Fs',
+  SMITHING: 'Sm',
+  CRAFTING: 'Cf',
+  COOKING: 'Ck',
+  BREWING: 'Bw',
+  ARTIFICE: 'Ar',
+  ATHLETICS: 'Ah',
+  CONSTRUCTION: 'Cn',
+  RITUAL: 'Rt',
+  ORDER: 'Od',
+  CHAOS: 'Ca',
 };
 
 const XP_SCALING_FACTORS = {
@@ -24,15 +34,51 @@ const XP_SCALING_FACTORS = {
 
 // Add unique fields to each skill
 const SKILL_BASES = {
-  [SKILL_IDS.AGILITY]: {
-    name: 'Agility',
+  [SKILL_IDS.COMBAT]: {
+    name: 'Combat',
+  },
+  [SKILL_IDS.MINING]: {
+    name: 'Mining',
+  },
+  [SKILL_IDS.WOODCUTTING]: {
+    name: 'Woodcutting',
   },
   [SKILL_IDS.FARMING]: {
     name: 'Farming',
   },
-  [SKILL_IDS.COMBAT]: {},
-  [SKILL_IDS.WOODCUTTING]: {},
-  [SKILL_IDS.FISHING]: {},
+  [SKILL_IDS.FISHING]: {
+    name: 'Fishing',
+  },
+  [SKILL_IDS.SMITHING]: {
+    name: 'Smithing',
+  },
+  [SKILL_IDS.CRAFTING]: {
+    name: 'Crafting',
+  },
+  [SKILL_IDS.COOKING]: {
+    name: 'Cooking',
+  },
+  [SKILL_IDS.BREWING]: {
+    name: 'Brewing',
+  },
+  [SKILL_IDS.ARTIFICE]: {
+    name: 'Artifice',
+  },
+  [SKILL_IDS.ATHLETICS]: {
+    name: 'Athletics',
+  },
+  [SKILL_IDS.CONSTRUCTION]: {
+    name: 'Construction',
+  },
+  [SKILL_IDS.RITUAL]: {
+    name: 'Ritual',
+  },
+  [SKILL_IDS.ORDER]: {
+    name: 'Order',
+  },
+  [SKILL_IDS.CHAOS]: {
+    name: 'Chaos',
+  },
 };
 
 const SKILL_DATA = Object.entries(SKILL_BASES).reduce(
