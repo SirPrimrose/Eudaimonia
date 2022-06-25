@@ -36,6 +36,9 @@ export const gameSlice = createSlice({
     addJobToQueue: (state, action) => {
       state.queue.push(action.payload);
     },
+    unshiftJobToQueue: (state, action) => {
+      state.queue.unshift(action.payload);
+    },
     clearJobsInQueue: (state) => {
       state.queue = initialState.queue;
     },

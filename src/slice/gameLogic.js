@@ -79,17 +79,7 @@ const resetjobQueue = (state) => {
 const shouldTickJobQueue = (state) =>
   state.tickRemaining > 0 && state.queue.length > 0;
 
-const getFirstJobInQueue = (state) => {
-  const firstJobRaw = state.queue.find(() => true);
-  if (firstJobRaw) {
-    const firstJobData = state.jobs[firstJobRaw.jobId];
-    return {
-      ...firstJobRaw,
-      ...firstJobData,
-    };
-  }
-  return null;
-};
+const getFirstQueueEntry = (state) => state.queue.find(() => true);
 
 // INVENTORY
 const addItem = (state, itemId, amount) => {
@@ -606,14 +596,17 @@ const updateDecayRate = (state, statId) => {
     -1,
     stat.decayModifier ** (state.gameTime / 60000)
   );
-  const currentJob = getFirstJobInQueue(state);
-  if (currentJob && currentJob.statDecay[stat.id]) {
-    calculatedValue.addModifier(
-      `${DECAY_SCALING_FACTOR.JOB}: ${currentJob.name}`,
-      CalculatedValue.MODIFIER_TYPE.ADDITIVE,
-      -1,
-      currentJob.statDecay[stat.id]
-    );
+  const queueEntry = getFirstQueueEntry(state);
+  if (queueEntry) {
+    const currentJob = state.jobs[queueEntry.jobId];
+    if (currentJob.statDecay[stat.id]) {
+      calculatedValue.addModifier(
+        `${DECAY_SCALING_FACTOR.JOB}: ${currentJob.name}`,
+        CalculatedValue.MODIFIER_TYPE.ADDITIVE,
+        -1,
+        currentJob.statDecay[stat.id]
+      );
+    }
   }
 
   stat.currentDecayRate = calculatedValue.toObj;
@@ -720,14 +713,15 @@ const tickJobQueue = (state) => {
   resetQueueTick(state);
 
   while (shouldTickJobQueue(state)) {
-    const currentJob = getFirstJobInQueue(state);
+    const queueEntry = getFirstQueueEntry(state);
 
-    if (currentJob) {
+    if (queueEntry) {
+      const currentJob = state.jobs[queueEntry.jobId];
       const blocker = blockerForJob(state, currentJob.id);
       if (blocker) {
         // TODO: Display dialog for reason why it was removed (requires toast dialog system)
-        removeJobFromQueueByQueueId(state, currentJob.queueId);
-        addMessage(state, `Canceled ${currentJob.id}: ${blocker}`);
+        removeJobFromQueueByQueueId(state, queueEntry.queueId);
+        addMessage(state, `Canceled ${currentJob.name}: ${blocker}`);
       } else {
         const xpForTick = getXpForTick(state, currentJob.skill);
         const xpRemaining = state.tickRemaining * xpForTick;
@@ -755,6 +749,12 @@ const tickJobQueue = (state) => {
           resetJobUsedItems(state, currentJob.id);
           resetJobXp(state, currentJob.id);
           incrementJobCompletion(state, currentJob.id);
+          if (queueEntry.iterations > 0) {
+            queueEntry.iterations--;
+            if (queueEntry.iterations <= 0) {
+              removeJobFromQueueByQueueId(state, queueEntry.queueId);
+            }
+          }
         }
       }
     }
