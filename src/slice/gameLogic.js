@@ -440,12 +440,15 @@ const performJobCompletionEvent = (state, job, event) => {
     case COMPLETION_TYPE.ITEM:
       addItem(state, event.item, event.amount);
       break;
+    case COMPLETION_TYPE.CONSUME_ITEM:
+      // Completion type is handled by useItemsForJob
+      break;
     case COMPLETION_TYPE.WORLD_RESOURCE:
       processWorldResource(state, event.value, event.item);
       break;
     default:
       // eslint-disable-next-line no-console
-      console.error('No default case for event');
+      console.error(`No default case for event ${event.type}`);
       break;
   }
 };
@@ -647,7 +650,7 @@ function checkCriteria(
     }
     default:
       // eslint-disable-next-line no-console
-      console.error('No default case for event');
+      console.error(`No default case for criteria ${criteria.type}`);
       return true;
   }
 }
