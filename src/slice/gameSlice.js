@@ -80,7 +80,6 @@ export const isGameTicking = (store) => store.game.isTicking;
 export const getGamePhase = (store) => store.game.phase;
 export const getGameTime = (store) => store.game.gameTime;
 export const getSoulpowerValue = (store) => store.game.soulpower.resource.value;
-export const getCurrentJobs = (store) => store.game.currentJobs;
 
 // INVENTORY
 export const getInventory = (store) => Object.values(store.game.items);
@@ -88,8 +87,10 @@ export const getActiveInventory = (store) =>
   getInventory(store).filter((i) => i.isActive);
 
 // WORLD
-export const getExploreGroups = (store) => store.game.exploreGroups;
-export const getWorldResources = (store) => store.game.worldResources;
+export const getExploreGroups = (store) =>
+  Object.values(store.game.exploreGroups);
+export const getWorldResources = (store) =>
+  Object.values(store.game.worldResources);
 
 // JOBS
 export const getJobProgress = (store) => (jobId) =>
@@ -97,7 +98,10 @@ export const getJobProgress = (store) => (jobId) =>
     store.game.jobs[jobId].currentXp,
     store.game.jobs[jobId].maxXp
   );
+export const getJobs = (store) => Object.values(store.game.jobs);
 export const getJobById = (store) => (jobId) => store.game.jobs[jobId];
+
+// QUEUE
 export const getJobQueue = (store) => store.game.queue;
 
 // SKILLS

@@ -2,9 +2,9 @@ import { EXPLORE_GROUP_IDS } from './exploreGroup';
 
 const WORLD_RESOURCE_IDS = {
   CAVE_MOSS: 'CAVE_MOSS',
-  FISH: 'Fs',
 };
 
+// TODO: Add unlockCriteria to show as active
 const WORLD_RESOURCE_BASES = {
   [WORLD_RESOURCE_IDS.CAVE_MOSS]: {
     name: 'Cave Moss',
@@ -22,6 +22,7 @@ const WORLD_RESOURCE_DATA = Object.entries(WORLD_RESOURCE_BASES).reduce(
       name: key,
       ...value,
       id: key,
+      isActive: false,
       usedResource: 0, // current resource available in current life
       unlockedResource: 0, // how much max resource is available
       maxPotency: 0, // total "checks" until max resources, calculated from explore group potency

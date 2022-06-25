@@ -1,15 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
 import { DECAY_SCALING_FACTOR, STAT_DATA, STAT_IDS } from '../game/data/stats';
-import { COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA } from '../game/data/jobs';
+import { COMPLETION_TYPE, JOB_DATA, UNLOCK_CRITERIA } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
 import { ITEM_DATA } from '../game/data/inventory';
 import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
-import {
-  EXPLORE_DATA,
-  EXPLORE_GROUP_UNLOCK_TYPE,
-} from '../game/data/exploreGroup';
+import { EXPLORE_DATA } from '../game/data/exploreGroup';
 import {
   SKILL_DATA,
   xpMultiplierForCurrentLevel,
@@ -20,7 +17,6 @@ import {
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
 import { calculateSoulpower } from '../game/data/soulpower';
-import { JOB_IDS } from '../game/data/job_consts';
 
 const initialState = {
   // GAME
@@ -38,7 +34,6 @@ const initialState = {
   isStarted: false,
   // JOB QUEUE
   tickRemaining: 1,
-  currentJobs: {}, // Key is category and value is the array of jobs in them
   queue: [],
   // INVENTORY
   items: ITEM_DATA,
@@ -63,20 +58,6 @@ const addGameTime = (state, time) => {
   state.gameTime += time;
 };
 
-const addToCurrentJobs = (state, jobId) => {
-  const job = state.jobs[jobId];
-  if (!state.currentJobs[job.category]) state.currentJobs[job.category] = [];
-  if (!state.currentJobs[job.category].includes(jobId))
-    state.currentJobs[job.category].push(jobId);
-};
-
-const removeFromCurrentJobs = (state, jobId) => {
-  const job = state.jobs[jobId];
-  state.currentJobs[job.category] = state.currentJobs[job.category].filter(
-    (j) => j !== jobId
-  );
-};
-
 // JOB QUEUE
 const resetQueueTick = (state) => {
   state.tickRemaining = 1;
@@ -89,11 +70,6 @@ const removeJobFromQueueByQueueId = (state, queueId) => {
 const removeJobFromQueueByJobId = (state, jobId) => {
   state.queue = state.queue.filter((j) => j.id !== jobId);
 };
-
-const isJobAvailable = (state, jobId) =>
-  Object.values(state.currentJobs).some((jobsInCategory) =>
-    jobsInCategory.includes(jobId)
-  );
 
 const resetjobQueue = (state) => {
   state.queue = initialState.queue;
@@ -190,34 +166,31 @@ const recalculateAllWorldResources = (state) => {
   Object.values(state.worldResources).forEach((worldResource) => {
     worldResource.maxPotency = Object.entries(
       worldResource.exploreGroupPotency
-    ).reduce(
-      (partialPotency, [exploreGroupId, potency]) =>
-        partialPotency +
-        Math.floor(state.exploreGroups[exploreGroupId].currentExploration) *
-          potency,
-      0
-    );
+    ).reduce((partialPotency, [exploreGroupId, potency]) => {
+      const exploreGroup = state.exploreGroups[exploreGroupId];
+      return exploreGroup.isActive
+        ? partialPotency +
+            Math.floor(state.exploreGroups[exploreGroupId].currentExploration) *
+              potency
+        : partialPotency;
+    }, 0);
+    worldResource.isActive = worldResource.maxPotency > 0;
   });
 };
 
-const handleExploreGroupUnlock = (state, unlockType, unlockValue) => {
+/* const handleExploreGroupUnlock = (state, unlockType, unlockValue) => {
   switch (unlockType) {
-    case EXPLORE_GROUP_UNLOCK_TYPE.JOB:
-      addToCurrentJobs(state, unlockValue);
-      break;
     case EXPLORE_GROUP_UNLOCK_TYPE.ITEM:
       addItem(state, unlockValue.item, unlockValue.amount);
-      break;
-    case EXPLORE_GROUP_UNLOCK_TYPE.SKILL_BONUS:
-      addToCurrentJobs(state, unlockValue);
       break;
     default:
       // eslint-disable-next-line no-console
       console.error('No default case for event');
       break;
   }
-};
+}; */
 
+/* Shelve this feature in favor of job criteria, re-open when setting up lore messages
 const checkExploreGroupUnlocks = (state, exploreGroupId) => {
   const exploreGroup = state.exploreGroups[exploreGroupId];
 
@@ -241,6 +214,13 @@ const checkExploreGroupUnlocks = (state, exploreGroupId) => {
       }
     }
   );
+}; */
+
+const setExploreGroupActive = (state, exploreGroupId, isActive) => {
+  const exploreGroup = state.exploreGroups[exploreGroupId];
+  exploreGroup.isActive = isActive;
+
+  recalculateAllWorldResources(state);
 };
 
 const addProgressToExploreGroup = (state, exploreGroupId, exploreAmount) => {
@@ -252,7 +232,7 @@ const addProgressToExploreGroup = (state, exploreGroupId, exploreAmount) => {
   );
   exploreGroup.permExploration += exploreAmount;
   recalculateScaledExploration(state, exploreGroupId);
-  checkExploreGroupUnlocks(state, exploreGroupId);
+  // checkExploreGroupUnlocks(state, exploreGroupId);
 
   recalculateAllWorldResources(state);
 };
@@ -393,6 +373,17 @@ const resetJobXp = (state, jobId) => {
   job.currentXp = 0;
 };
 
+const incrementJobCompletion = (state, jobId) => {
+  const job = state.jobs[jobId];
+  job.completions++;
+};
+
+const resetJobActive = (state, jobId) => {
+  const job = state.jobs[jobId];
+  job.isActive = false;
+  job.completions = 0;
+};
+
 const isJobItemsFull = (state, job) => {
   const jobsThatGiveItems = job.completionEvents.filter(
     (e) =>
@@ -411,6 +402,11 @@ const isJobResourceUnavailable = (state, job) =>
       e.type === COMPLETION_TYPE.WORLD_RESOURCE &&
       !isWorldResourceAvailable(state, e.value)
   );
+
+const isJobAvailable = (state, jobId) => {
+  const job = state.jobs[jobId];
+  return job.isActive;
+};
 
 /**
  * Checks for the items required for the given job is available (does not use items)
@@ -457,6 +453,54 @@ const blockerForJob = (state, jobId) => {
   return null;
 };
 
+/**
+ * Checks the critera for a job and sets the "isActive" flag
+ */
+const checkJobCriteria = (state, jobId) => {
+  const job = state.jobs[jobId];
+
+  job.isActive = job.unlockCriteria.every((criteria) => {
+    switch (criteria.type) {
+      case UNLOCK_CRITERIA.LIMIT_COMPLETIONS: {
+        return job.completions < (criteria.value || 1);
+      }
+      case UNLOCK_CRITERIA.JOB: {
+        const jobToCheck = state.jobs[criteria.value.jobId];
+        if (criteria.value.amount && criteria.value.amount < 0) {
+          return jobToCheck.completions <= Math.abs(criteria.value.amount);
+        }
+        return jobToCheck.completions >= (criteria.value.amount || 1);
+      }
+      case UNLOCK_CRITERIA.ITEM: {
+        if (job.isActive) return true; // Item unlocks always remain unlocked
+        const itemToCheck = state.items[criteria.value.itemId];
+        return itemToCheck.currentAmount >= (criteria.value.amount || 1);
+      }
+      case UNLOCK_CRITERIA.EXPLORE_GROUP: {
+        const exploreGroupToCheck =
+          state.exploreGroups[criteria.value.exploreGroupId];
+        const explorationPercent =
+          exploreGroupToCheck.currentExploration /
+          exploreGroupToCheck.maxExploration;
+        return (
+          exploreGroupToCheck.isActive &&
+          explorationPercent >= criteria.value.exploration
+        );
+      }
+      case UNLOCK_CRITERIA.STAT: {
+        if (job.isActive) return true; // Stat unlocks always remain unlocked
+        const statToCheck = state.stats[criteria.value.statId];
+        const statPercent = statToCheck.currentValue / statToCheck.maxValue;
+        return statPercent <= criteria.value.threshold;
+      }
+      default:
+        // eslint-disable-next-line no-console
+        console.error('No default case for event');
+        return true;
+    }
+  });
+};
+
 // SKILLS
 const recalculateSkillXpReq = (state, skillId) => {
   const skill = state.skills[skillId];
@@ -484,12 +528,12 @@ const recalculateSkillXpScaling = (state, skillId) => {
   );
 
   // GLOBAL XP MODIFIERS
-  if (state.generationCount <= 4) {
+  if (state.generationCount <= 3) {
     calculatedValue.addModifier(
       XP_SCALING_FACTORS.NEW_GAME,
       CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
       -1,
-      state.generationCount * 0.2 + 0.1
+      state.generationCount * 0.2 + 0.2
     );
   }
 
@@ -602,18 +646,18 @@ const addMessage = (state, message) => {
 };
 
 // MAIN
+const checkAllJobCritera = (state) => {
+  Object.keys(state.jobs).forEach((jobId) => checkJobCriteria(state, jobId));
+};
+
 const performJobCompletionEvent = (state, job, event) => {
   switch (event.type) {
-    case COMPLETION_TYPE.UNLOCK_JOB:
-      addToCurrentJobs(state, event.value);
-      break;
-    case COMPLETION_TYPE.LOCK_JOB:
-      removeFromCurrentJobs(state, event.value);
-      removeJobFromQueueByJobId(state, event.value);
-      break;
-    case COMPLETION_TYPE.HIDE_SELF:
-      removeFromCurrentJobs(state, job.id);
-      removeJobFromQueueByJobId(state, job.id);
+    case COMPLETION_TYPE.EXPLORE_GROUP_ACTIVE:
+      setExploreGroupActive(
+        state,
+        event.value.exploreGroupId,
+        event.value.isActive
+      );
       break;
     case COMPLETION_TYPE.EXPLORE_AREA:
       addProgressToExploreGroup(state, event.value, event.exploreAmount);
@@ -661,12 +705,12 @@ const tickJobQueue = (state) => {
         state.tickRemaining -= xpAdded / xpForTick;
         addXpToSkill(state, currentJob.skill, xpAdded);
 
-        addMessage(
+        /* addMessage(
           state,
           `${currentJob.name} gained ${xpAdded} xp and now has ${
             state.jobs[currentJob.id].currentXp
           } xp`
-        );
+        ); */
 
         // If job is complete, perform "completionEvents" according to job
         if (isJobComplete(state, currentJob.id)) {
@@ -675,6 +719,7 @@ const tickJobQueue = (state) => {
           });
           resetJobUsedItems(state, currentJob.id);
           resetJobXp(state, currentJob.id);
+          incrementJobCompletion(state, currentJob.id);
         }
       }
     }
@@ -707,10 +752,12 @@ const startupGame = (state) => {
 
   Object.keys(state.exploreGroups).forEach((exploreGroupId) => {
     recalculateScaledExploration(state, exploreGroupId);
-    checkExploreGroupUnlocks(state, exploreGroupId);
+    // checkExploreGroupUnlocks(state, exploreGroupId);
   });
 
   recalculateAllWorldResources(state);
+
+  checkAllJobCritera(state);
 
   state.isStarted = true;
 };
@@ -719,18 +766,12 @@ const startupGame = (state) => {
  * Restarts the player to the beginning of their next life
  */
 const startNewLife = (state) => {
-  state.currentJobs = {
-    [JOB_CATEGORY.ACTION]: [],
-    [JOB_CATEGORY.CRAFT]: [],
-    [JOB_CATEGORY.EXPLORATION]: [],
-    [JOB_CATEGORY.PROGRESSION]: [JOB_IDS.CAVE_STORY_1],
-  };
-
   resetjobQueue(state);
 
   Object.keys(state.jobs).forEach((jobId) => {
     resetJobUsedItems(state, jobId);
     resetJobXp(state, jobId);
+    resetJobActive(state, jobId);
   });
 
   Object.keys(state.stats).forEach((statId) => {
@@ -751,7 +792,6 @@ const startNewLife = (state) => {
 
   Object.keys(state.exploreGroups).forEach((exploreGroupId) => {
     resetExploreGroup(state, exploreGroupId);
-    checkExploreGroupUnlocks(state, exploreGroupId);
   });
 
   state.phase = PHASES.WANDER;
@@ -797,6 +837,9 @@ const tickGame = (state) => {
         Object.keys(state.stats).forEach((statId) => {
           decayStat(state, statId, jobTime);
         });
+
+        // do job unlocking
+        checkAllJobCritera(state);
 
         addGameTime(state, jobTime);
 

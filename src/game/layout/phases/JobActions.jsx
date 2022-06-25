@@ -2,12 +2,9 @@ import { Button, LinearProgress, Stack } from '@mui/material';
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  actions as gameActions,
-  getJobById,
-  getJobProgress,
-} from '../../../slice/gameSlice';
+import { actions as gameActions } from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
+import { getProgressValue } from '../../../shared/util';
 
 class JobActions extends React.PureComponent {
   handleClickJob = (jobName) => () => {
@@ -18,34 +15,30 @@ class JobActions extends React.PureComponent {
   };
 
   renderAvailableJobs = () => {
-    const { availableJobs, getProgress, getJob } = this.props;
+    const { availableJobs } = this.props;
 
     // TODO: Render a job in its own component, pass job data to component
-    return availableJobs.map((jobId) => {
-      const jobData = getJob(jobId);
-
-      return (
-        <Stack
-          key={jobId}
-          style={{
-            position: 'relative',
+    return availableJobs.map((job) => (
+      <Stack
+        key={job.id}
+        style={{
+          position: 'relative',
+        }}
+      >
+        <Button onClick={this.handleClickJob(job.id)} sx={{ zIndex: 1 }}>
+          {job.name}
+        </Button>
+        <LinearProgress
+          variant="determinate"
+          value={getProgressValue(job.currentXp, job.maxXp)}
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            bottom: 0,
           }}
-        >
-          <Button onClick={this.handleClickJob(jobId)} sx={{ zIndex: 1 }}>
-            {jobData.name}
-          </Button>
-          <LinearProgress
-            variant="determinate"
-            value={getProgress(jobId)}
-            sx={{
-              position: 'absolute',
-              width: '100%',
-              bottom: 0,
-            }}
-          />
-        </Stack>
-      );
-    });
+        />
+      </Stack>
+    ));
   };
 
   render() {
@@ -54,23 +47,23 @@ class JobActions extends React.PureComponent {
 }
 
 JobActions.propTypes = {
-  availableJobs: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  availableJobs: PropTypes.arrayOf(
+    PropTypes.shape({
+      isActive: PropTypes.bool.isRequired,
+      name: PropTypes.string.isRequired,
+      currentXp: PropTypes.number.isRequired,
+      maxXp: PropTypes.number.isRequired,
+    })
+  ).isRequired,
 
   // Dispatch functions
-  getProgress: PropTypes.func.isRequired,
-  getJob: PropTypes.func.isRequired,
   addJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  getProgress: getJobProgress(state),
-  getJob: getJobById(state),
-});
 
 const mapDispatchToProps = {
   addJobToQueue: gameActions.addJobToQueue,
   setPaused: gameActions.setPaused,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(JobActions);
+export default connect(null, mapDispatchToProps)(JobActions);
