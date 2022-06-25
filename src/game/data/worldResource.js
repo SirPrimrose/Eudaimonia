@@ -1,13 +1,20 @@
 import { EXPLORE_GROUP_IDS } from './exploreGroup';
+import { JOB_IDS } from './job_consts';
+import { UNLOCK_CRITERIA } from './unlockCriteria';
 
 const WORLD_RESOURCE_IDS = {
   CAVE_MOSS: 'CAVE_MOSS',
 };
 
-// TODO: Add unlockCriteria to show as active
 const WORLD_RESOURCE_BASES = {
   [WORLD_RESOURCE_IDS.CAVE_MOSS]: {
     name: 'Cave Moss',
+    unlockCriteria: [
+      {
+        type: UNLOCK_CRITERIA.JOB,
+        value: { jobId: JOB_IDS.UNLOCK_CAVE_MOSS },
+      },
+    ],
     potencyPerUnlock: 2.5, // how much potency is required per unlock, determines resource availability
     exploreGroupPotency: {
       [EXPLORE_GROUP_IDS.CAVE]: 1, // how much potency an explore contributes to current potency
