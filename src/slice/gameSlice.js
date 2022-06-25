@@ -3,7 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
 import { getProgressValue } from '../shared/util';
 import { xpReqForCurrentLevel } from '../game/data/skills';
-import { initialState, runGameLogicLoop, reviveCharacter } from './gameLogic';
+import { runGameLogicLoop, reviveCharacter } from './gameLogic';
+import { initialState } from './initialGameState';
+import {
+  pushJobToQueue,
+  removeJobFromQueueByQueueId,
+  unshiftJobToQueue,
+} from './jobQueueLogic';
 
 export const gameSlice = createSlice({
   name: 'game',
@@ -31,16 +37,13 @@ export const gameSlice = createSlice({
     // WORLD
     // JOBS
     removeJobFromQueueByQueueId: (state, { payload: queueId }) => {
-      state.queue = state.queue.filter((j) => j.queueId !== queueId);
+      removeJobFromQueueByQueueId(state, queueId);
     },
-    addJobToQueue: (state, action) => {
-      state.queue.push(action.payload);
+    addJobToQueue: (state, { payload: queueEntry }) => {
+      pushJobToQueue(state, queueEntry);
     },
-    unshiftJobToQueue: (state, action) => {
-      state.queue.unshift(action.payload);
-    },
-    clearJobsInQueue: (state) => {
-      state.queue = initialState.queue;
+    unshiftJobToQueue: (state, { payload: queueEntry }) => {
+      unshiftJobToQueue(state, queueEntry);
     },
     // SKILLS
     resetSkillCurrentLevels: (state) => {

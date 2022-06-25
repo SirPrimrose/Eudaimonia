@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -25,30 +25,36 @@ class ActionQueuePanel extends React.PureComponent {
   };
 
   // TODO: Add more "helper" buttons; shift up and shift down in queue; add padding to sides; add tooltip info on hover
-  getJobLayout = (jobs) => {
+  getJobLayout = (queueEntries) => {
     const { getJobData } = this.props;
 
     return (
-      <div className="panelGrid">
+      <Box px={1} className="panelGrid">
         <Grid container overflow="hidden">
-          {jobs.map((job, index) => {
-            const jobData = getJobData(job.jobId);
+          {queueEntries.map((queueEntry, index) => {
+            const jobData = getJobData(queueEntry.jobId);
+            const jobMessage =
+              queueEntry.iterations > 0
+                ? `${jobData.name} (x${queueEntry.iterations})`
+                : `${jobData.name}`;
             return (
               <Grid
                 container
                 item
                 xs={12}
-                key={job.queueId}
+                key={queueEntry.queueId}
                 alignItems="center"
               >
                 <Grid item xs={1.5}>
                   <Typography>{`${index + 1}.`}</Typography>
                 </Grid>
                 <Grid item xs>
-                  <Typography>{`${jobData.name}`}</Typography>
+                  <Typography>{jobMessage}</Typography>
                 </Grid>
                 <Grid item xs="auto">
-                  <IconButton onClick={this.handleCancelJob(job.queueId)}>
+                  <IconButton
+                    onClick={this.handleCancelJob(queueEntry.queueId)}
+                  >
                     <FontAwesomeIcon icon={faXmarkCircle} />
                   </IconButton>
                 </Grid>
@@ -56,18 +62,18 @@ class ActionQueuePanel extends React.PureComponent {
             );
           })}
         </Grid>
-      </div>
+      </Box>
     );
   };
 
   render() {
-    const { jobs, isPaused } = this.props;
+    const { queueEntries, isPaused } = this.props;
     return (
       <div className="panelOutline">
         <Typography variant="h6" align="center" className="title">
           Action Queue
         </Typography>
-        {this.getJobLayout(jobs)}
+        {this.getJobLayout(queueEntries)}
         <Button onClick={this.handlePause}>
           {isPaused ? 'Play' : 'Pause'}
         </Button>
@@ -77,10 +83,11 @@ class ActionQueuePanel extends React.PureComponent {
 }
 
 ActionQueuePanel.propTypes = {
-  jobs: PropTypes.arrayOf(
+  queueEntries: PropTypes.arrayOf(
     PropTypes.shape({
       queueId: PropTypes.string.isRequired,
       jobId: PropTypes.string.isRequired,
+      iterations: PropTypes.number.isRequired,
     })
   ).isRequired,
   isPaused: PropTypes.bool.isRequired,
@@ -92,7 +99,7 @@ ActionQueuePanel.propTypes = {
 
 const mapStateToProps = (state) => ({
   getJobData: getJobById(state),
-  jobs: getJobQueue(state),
+  queueEntries: getJobQueue(state),
   isPaused: isGamePaused(state),
 });
 
