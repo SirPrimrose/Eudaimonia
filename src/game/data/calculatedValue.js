@@ -41,6 +41,11 @@ export default class CalculatedValue {
     };
   }
 
+  /**
+   * name, level - For display
+   * type - additive or multiplicative (order does matter)
+   * multiplier - value to add/multiply by
+   */
   addModifier(name, type, level, multiplier) {
     this.modifiers.push({
       name,

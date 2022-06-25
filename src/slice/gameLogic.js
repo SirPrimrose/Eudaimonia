@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
 import { DECAY_SCALING_FACTOR, STAT_DATA, STAT_IDS } from '../game/data/stats';
-import { COMPLETION_TYPE, JOB_DATA, UNLOCK_CRITERIA } from '../game/data/jobs';
+import { COMPLETION_TYPE, JOB_DATA } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
 import { ITEM_DATA } from '../game/data/inventory';
@@ -17,6 +17,7 @@ import {
 } from '../game/data/skills';
 import CalculatedValue from '../game/data/calculatedValue';
 import { calculateSoulpower } from '../game/data/soulpower';
+import { UNLOCK_CRITERIA } from '../game/data/unlockCriteria';
 
 const initialState = {
   // GAME
@@ -158,6 +159,22 @@ const useItemHeal = (state, itemId) => {
 };
 
 // WORLD
+const checkWorldResourceCritera = (state, worldResourceId) => {
+  const worldResource = state.worldResources[worldResourceId];
+
+  worldResource.isActive =
+    worldResource.maxPotency > 0 &&
+    worldResource.unlockCriteria.every((criteria) =>
+      checkCriteria(state, criteria, worldResource.isActive)
+    );
+};
+
+const checkAllWorldResourceCritera = (state) => {
+  Object.keys(state.worldResources).forEach((worldResourceId) =>
+    checkWorldResourceCritera(state, worldResourceId)
+  );
+};
+
 /**
  * Updates world resource potency to appropriate amounts based on the related explore group progress.
  */
@@ -174,7 +191,6 @@ const recalculateAllWorldResources = (state) => {
               potency
         : partialPotency;
     }, 0);
-    worldResource.isActive = worldResource.maxPotency > 0;
   });
 };
 
@@ -254,6 +270,8 @@ function resetExploreGroup(state, exploreGroupId) {
   const exploreGroup = state.exploreGroups[exploreGroupId];
 
   exploreGroup.currentExploration = exploreGroup.permExplorationScaled;
+
+  setExploreGroupActive(state, exploreGroupId, false);
 
   recalculateAllWorldResources(state);
 }
@@ -459,46 +477,38 @@ const blockerForJob = (state, jobId) => {
 const checkJobCriteria = (state, jobId) => {
   const job = state.jobs[jobId];
 
-  job.isActive = job.unlockCriteria.every((criteria) => {
-    switch (criteria.type) {
-      case UNLOCK_CRITERIA.LIMIT_COMPLETIONS: {
-        return job.completions < (criteria.value || 1);
-      }
-      case UNLOCK_CRITERIA.JOB: {
-        const jobToCheck = state.jobs[criteria.value.jobId];
-        if (criteria.value.amount && criteria.value.amount < 0) {
-          return jobToCheck.completions <= Math.abs(criteria.value.amount);
-        }
-        return jobToCheck.completions >= (criteria.value.amount || 1);
-      }
-      case UNLOCK_CRITERIA.ITEM: {
-        if (job.isActive) return true; // Item unlocks always remain unlocked
-        const itemToCheck = state.items[criteria.value.itemId];
-        return itemToCheck.currentAmount >= (criteria.value.amount || 1);
-      }
-      case UNLOCK_CRITERIA.EXPLORE_GROUP: {
-        const exploreGroupToCheck =
-          state.exploreGroups[criteria.value.exploreGroupId];
-        const explorationPercent =
-          exploreGroupToCheck.currentExploration /
-          exploreGroupToCheck.maxExploration;
-        return (
-          exploreGroupToCheck.isActive &&
-          explorationPercent >= criteria.value.exploration
-        );
-      }
-      case UNLOCK_CRITERIA.STAT: {
-        if (job.isActive) return true; // Stat unlocks always remain unlocked
-        const statToCheck = state.stats[criteria.value.statId];
-        const statPercent = statToCheck.currentValue / statToCheck.maxValue;
-        return statPercent <= criteria.value.threshold;
-      }
-      default:
-        // eslint-disable-next-line no-console
-        console.error('No default case for event');
-        return true;
-    }
-  });
+  job.isActive = job.unlockCriteria.every((criteria) =>
+    checkCriteria(state, criteria, job.isActive, job.completions)
+  );
+};
+
+const checkAllJobCritera = (state) => {
+  Object.keys(state.jobs).forEach((jobId) => checkJobCriteria(state, jobId));
+};
+
+const performJobCompletionEvent = (state, job, event) => {
+  switch (event.type) {
+    case COMPLETION_TYPE.EXPLORE_GROUP_ACTIVE:
+      setExploreGroupActive(
+        state,
+        event.value.exploreGroupId,
+        event.value.isActive
+      );
+      break;
+    case COMPLETION_TYPE.EXPLORE_AREA:
+      addProgressToExploreGroup(state, event.value, event.exploreAmount);
+      break;
+    case COMPLETION_TYPE.ITEM:
+      addItem(state, event.item, event.amount);
+      break;
+    case COMPLETION_TYPE.WORLD_RESOURCE:
+      processWorldResource(state, event.value, event.item);
+      break;
+    default:
+      // eslint-disable-next-line no-console
+      console.error('No default case for event');
+      break;
+  }
 };
 
 // SKILLS
@@ -599,7 +609,7 @@ const updateDecayRate = (state, statId) => {
   const currentJob = getFirstJobInQueue(state);
   if (currentJob && currentJob.statDecay[stat.id]) {
     calculatedValue.addModifier(
-      DECAY_SCALING_FACTOR.JOB,
+      `${DECAY_SCALING_FACTOR.JOB}: ${currentJob.name}`,
       CalculatedValue.MODIFIER_TYPE.ADDITIVE,
       -1,
       currentJob.statDecay[stat.id]
@@ -646,34 +656,59 @@ const addMessage = (state, message) => {
 };
 
 // MAIN
-const checkAllJobCritera = (state) => {
-  Object.keys(state.jobs).forEach((jobId) => checkJobCriteria(state, jobId));
-};
-
-const performJobCompletionEvent = (state, job, event) => {
-  switch (event.type) {
-    case COMPLETION_TYPE.EXPLORE_GROUP_ACTIVE:
-      setExploreGroupActive(
-        state,
-        event.value.exploreGroupId,
-        event.value.isActive
+/**
+ * Checks state against given criteria. Some params only apply to certain data types.
+ * @param {*} state Current state
+ * @param {*} criteria Criteria object
+ * @param {*} alreadyActive If data is already active (default false)
+ * @param {*} completions Only applies to jobs. Current job completions (default 0)
+ * @returns True if the criteria passes
+ */
+function checkCriteria(
+  state,
+  criteria,
+  alreadyActive = false,
+  completions = 0
+) {
+  switch (criteria.type) {
+    case UNLOCK_CRITERIA.LIMIT_COMPLETIONS: {
+      return completions < (criteria.value || 1);
+    }
+    case UNLOCK_CRITERIA.JOB: {
+      const jobToCheck = state.jobs[criteria.value.jobId];
+      if (criteria.value.amount && criteria.value.amount < 0) {
+        return jobToCheck.completions <= Math.abs(criteria.value.amount);
+      }
+      return jobToCheck.completions >= (criteria.value.amount || 1);
+    }
+    case UNLOCK_CRITERIA.ITEM: {
+      if (alreadyActive) return true; // Item unlocks always remain unlocked
+      const itemToCheck = state.items[criteria.value.itemId];
+      return itemToCheck.currentAmount >= (criteria.value.amount || 1);
+    }
+    case UNLOCK_CRITERIA.EXPLORE_GROUP: {
+      const exploreGroupToCheck =
+        state.exploreGroups[criteria.value.exploreGroupId];
+      const explorationPercent =
+        exploreGroupToCheck.currentExploration /
+        exploreGroupToCheck.maxExploration;
+      return (
+        exploreGroupToCheck.isActive &&
+        explorationPercent >= criteria.value.exploration
       );
-      break;
-    case COMPLETION_TYPE.EXPLORE_AREA:
-      addProgressToExploreGroup(state, event.value, event.exploreAmount);
-      break;
-    case COMPLETION_TYPE.ITEM:
-      addItem(state, event.item, event.amount);
-      break;
-    case COMPLETION_TYPE.WORLD_RESOURCE:
-      processWorldResource(state, event.value, event.item);
-      break;
+    }
+    case UNLOCK_CRITERIA.STAT: {
+      if (alreadyActive) return true; // Stat unlocks always remain unlocked
+      const statToCheck = state.stats[criteria.value.statId];
+      const statPercent = statToCheck.currentValue / statToCheck.maxValue;
+      return statPercent <= criteria.value.threshold;
+    }
     default:
       // eslint-disable-next-line no-console
       console.error('No default case for event');
-      break;
+      return true;
   }
-};
+}
 
 const getXpForTick = (state, skillId) => {
   const baseXpPerTick = GAME_TICK_TIME / 1000;
@@ -758,6 +793,7 @@ const startupGame = (state) => {
   recalculateAllWorldResources(state);
 
   checkAllJobCritera(state);
+  checkAllWorldResourceCritera(state);
 
   state.isStarted = true;
 };
@@ -838,10 +874,11 @@ const tickGame = (state) => {
           decayStat(state, statId, jobTime);
         });
 
+        addGameTime(state, jobTime);
+
         // do job unlocking
         checkAllJobCritera(state);
-
-        addGameTime(state, jobTime);
+        checkAllWorldResourceCritera(state);
 
         // Check for eating food
         tickFood(state, jobTime);

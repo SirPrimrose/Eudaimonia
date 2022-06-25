@@ -11,6 +11,7 @@ const STAT_IDS = {
 const DECAY_SCALING_FACTOR = {
   TIME: 'Time',
   JOB: 'Job',
+  ITEM: 'Item',
 };
 
 // Add unique fields to each stat

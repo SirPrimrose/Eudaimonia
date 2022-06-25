@@ -3,6 +3,7 @@ import { ITEM_IDS } from './inventory';
 import { JOB_IDS } from './job_consts';
 import { SKILL_IDS } from './skills';
 import { STAT_IDS } from './stats';
+import { UNLOCK_CRITERIA } from './unlockCriteria';
 import { WORLD_RESOURCE_IDS } from './worldResource';
 
 const JOB_CATEGORY = {
@@ -10,14 +11,6 @@ const JOB_CATEGORY = {
   CRAFT: 'Crafting',
   EXPLORATION: 'Explore',
   PROGRESSION: 'Progress',
-};
-
-const UNLOCK_CRITERIA = {
-  LIMIT_COMPLETIONS: 'Limit_Completions', // # of completions allowed (default 1)
-  JOB: 'Job', // {jobId: job id, amount: completion times (default 1)}
-  EXPLORE_GROUP: 'Explore_Group', // {exploreGroupId: group id, exploration: % values (0-1)}
-  ITEM: 'Item', // {itemId: item id, amount: item amount (default 1)}
-  STAT: 'Stat', // {statId: stat id, threshold: % value (0-1)}
 };
 
 const COMPLETION_TYPE = {
@@ -382,4 +375,4 @@ const JOB_DATA = Object.entries(JOB_BASES).reduce(
   {}
 );
 
-export { UNLOCK_CRITERIA, COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA };
+export { COMPLETION_TYPE, JOB_CATEGORY, JOB_DATA };
