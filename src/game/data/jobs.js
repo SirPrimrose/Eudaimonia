@@ -70,7 +70,7 @@ const JOB_BASES = {
     name: 'Prospect Cave',
     skill: SKILL_IDS.MINING,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 5,
+    maxXp: 4,
     unlockCriteria: [
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
@@ -84,7 +84,7 @@ const JOB_BASES = {
     name: 'Check Indentation',
     skill: SKILL_IDS.MINING,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 5,
+    maxXp: 4,
     unlockCriteria: [
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
@@ -98,7 +98,7 @@ const JOB_BASES = {
     name: 'Follow Moisture',
     skill: SKILL_IDS.FARMING,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 5,
+    maxXp: 10,
     unlockCriteria: [
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
@@ -112,7 +112,7 @@ const JOB_BASES = {
     name: 'Fight Rat King',
     skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 1,
+    maxXp: 10,
     unlockCriteria: [
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
@@ -129,7 +129,7 @@ const JOB_BASES = {
     name: 'Leave Cave',
     skill: SKILL_IDS.ATHLETICS,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 5,
+    maxXp: 50,
     unlockCriteria: [
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
@@ -148,7 +148,7 @@ const JOB_BASES = {
     name: 'Collect Pebbles',
     skill: SKILL_IDS.MINING,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 3,
+    maxXp: 2,
     unlockCriteria: [
       {
         type: UNLOCK_CRITERIA.JOB,
@@ -167,7 +167,7 @@ const JOB_BASES = {
     name: 'Catch Critter',
     skill: SKILL_IDS.ATHLETICS,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 0.5,
+    maxXp: 1,
     unlockCriteria: [
       {
         type: UNLOCK_CRITERIA.JOB,
@@ -190,7 +190,7 @@ const JOB_BASES = {
     name: 'Harvest Wax',
     skill: SKILL_IDS.MINING,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 3,
+    maxXp: 2,
     unlockCriteria: [
       {
         type: UNLOCK_CRITERIA.JOB,
@@ -209,7 +209,7 @@ const JOB_BASES = {
     name: 'Collect Moss',
     skill: SKILL_IDS.FARMING,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 5,
+    maxXp: 3,
     unlockCriteria: [
       {
         type: UNLOCK_CRITERIA.JOB,
