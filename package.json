@@ -2,6 +2,10 @@
   "name": "eudaimonia",
   "version": "0.1.1",
   "private": true,
+  "author": "Joshua Primm",
+  "description": "My fantastic incremental game",
+  "homepage": "./",
+  "main": "./public/electron.js",
   "dependencies": {
     "@antimatter-dimensions/notations": "^3.0.3",
     "@emotion/react": "^11.8.2",
@@ -39,7 +43,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "npx eslint src/*",
-    "lint-fix": "npx eslint src/* --fix"
+    "lint-fix": "npx eslint src/* --fix",
+    "electron:start": "concurrently -k \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electronmon .\"",
+    "electron:package:mac": "npm run build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:win": "npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js",
+    "electron:package:all": "npm run build && electron-builder -mwl -c.extraMetadata.main=build/electron.js"
   },
   "eslintConfig": {
     "extends": [
@@ -49,18 +58,19 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "last 1 electron version"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 electron version"
     ]
   },
   "devDependencies": {
     "@welldone-software/why-did-you-render": "^7.0.1",
+    "concurrently": "^7.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^19.0.6",
+    "electron-builder": "^23.1.0",
+    "electronmon": "^2.0.2",
     "eslint": "^8.2.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-node": "^4.1.0",
@@ -71,6 +81,27 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "prettier": "^2.6.1"
+    "prettier": "^2.6.1",
+    "wait-on": "^6.0.1"
+  },
+  "build": {
+    "appId": "com.electron.eudaimonia",
+    "productName": "Eudaimonia",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "deb"
+    }
   }
 }
