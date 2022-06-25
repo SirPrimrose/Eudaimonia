@@ -7,7 +7,7 @@ import PlayerSkill from './components/PlayerSkill';
 
 class SkillPanel extends React.PureComponent {
   getSkillLayout = (skills) => {
-    const numOfColumns = (Math.floor(skills.length / 6) + 1) * 4;
+    const numOfColumns = (Math.floor((skills.length - 1) / 6) + 1) * 4;
 
     return (
       <div className="panelGrid">

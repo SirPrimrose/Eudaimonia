@@ -12,13 +12,11 @@ import {
   faGem,
   faChevronDown,
   faCircle,
-  faCheck,
   faScaleBalanced,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { STAT_IDS } from '../../data/stats';
 import { SKILL_IDS } from '../../data/skills';
-import { Box } from '@mui/material';
 
 const getIconForSkillType = (skillId) => {
   switch (skillId) {

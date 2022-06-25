@@ -1,8 +1,6 @@
 import { Stack } from '@mui/material';
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { actions as gameActions } from '../../../slice/gameSlice';
 import Job from '../components/Job';
 
 class JobActions extends React.PureComponent {
@@ -30,9 +28,4 @@ JobActions.propTypes = {
   ).isRequired,
 };
 
-const mapDispatchToProps = {
-  addJobToQueue: gameActions.addJobToQueue,
-  setPaused: gameActions.setPaused,
-};
-
-export default connect(null, mapDispatchToProps)(JobActions);
+export default JobActions;

@@ -1,43 +1,90 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, LinearProgress, Stack } from '@mui/material';
+import {
+  Button,
+  IconButton,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { connect } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { getProgressValue } from '../../../shared/util';
 import { actions as gameActions } from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
+import { getIconForSkillType } from './Icons';
 
 class Job extends React.PureComponent {
-  handleClickJob = (jobId) => () => {
-    const { addJobToQueue, setPaused } = this.props;
+  handlePushJob = (jobId) => () => {
+    const { unshiftJobToQueue, setPaused } = this.props;
 
-    addJobToQueue(createJobQueueEntry(jobId));
+    unshiftJobToQueue(createJobQueueEntry(jobId));
     setPaused(false);
   };
 
-  handleContextMenu = (jobId) => (event) => {
-    const { addJobToQueue, setPaused } = this.props;
-
+  handlePushSingleJob = (jobId) => (event) => {
+    const { unshiftJobToQueue, setPaused } = this.props;
     event.preventDefault();
 
-    addJobToQueue(createJobQueueEntry(jobId, 1));
+    unshiftJobToQueue(createJobQueueEntry(jobId, 1));
+    setPaused(false);
+  };
+
+  handleQueueJob = (jobId) => () => {
+    const { pushJobToQueue, setPaused } = this.props;
+
+    pushJobToQueue(createJobQueueEntry(jobId));
+    setPaused(false);
+  };
+
+  handleQueueSingleJob = (jobId) => (event) => {
+    const { pushJobToQueue, setPaused } = this.props;
+    event.preventDefault();
+
+    pushJobToQueue(createJobQueueEntry(jobId, 1));
     setPaused(false);
   };
 
   render() {
     const {
-      job: { id, name, currentXp, maxXp },
+      job: { id, name, currentXp, maxXp, skill },
     } = this.props;
 
     return (
       <Stack
-        onContextMenu={this.handleContextMenu(id)}
-        style={{
-          position: 'relative',
-        }}
+        direction="row"
+        alignItems="stretch"
+        justifyContent="flex-start"
+        position="relative"
       >
-        <Button onClick={this.handleClickJob(id)} sx={{ zIndex: 1 }}>
-          {name}
+        <Button
+          onClick={this.handlePushJob(id)}
+          onContextMenu={this.handlePushSingleJob(id)}
+          sx={{ width: '100%', zIndex: 1 }}
+        >
+          <Stack
+            direction="row"
+            alignItems="center"
+            position="relative"
+            width="100%"
+            spacing={1}
+          >
+            {getIconForSkillType(skill)}
+            <Typography>{name}</Typography>
+          </Stack>
         </Button>
+        <IconButton
+          onClick={this.handleQueueJob(id)}
+          onContextMenu={this.handleQueueSingleJob(id)}
+          color="primary"
+          sx={{
+            borderRadius: '0%',
+            zIndex: 1,
+          }}
+        >
+          <FontAwesomeIcon icon={faListCheck} />
+        </IconButton>
         <LinearProgress
           variant="determinate"
           value={getProgressValue(currentXp, maxXp)}
@@ -56,19 +103,20 @@ Job.propTypes = {
   job: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    skill: PropTypes.string.isRequired,
     isActive: PropTypes.bool.isRequired,
     currentXp: PropTypes.number.isRequired,
     maxXp: PropTypes.number.isRequired,
   }).isRequired,
 
   // Dispatch functions
-  addJobToQueue: PropTypes.func.isRequired,
+  pushJobToQueue: PropTypes.func.isRequired,
   unshiftJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
-  addJobToQueue: gameActions.addJobToQueue,
+  pushJobToQueue: gameActions.pushJobToQueue,
   unshiftJobToQueue: gameActions.unshiftJobToQueue,
   setPaused: gameActions.setPaused,
 };

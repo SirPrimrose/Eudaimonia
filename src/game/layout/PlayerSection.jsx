@@ -13,10 +13,10 @@ class PlayerSection extends React.PureComponent {
           container
           direction={{ xs: 'row', md: 'column' }}
         >
-          <Grid item xs={6} md={4} sx={{ height: '100%', overflow: 'hidden' }}>
+          <Grid item xs={6} md={5} sx={{ height: '100%', overflow: 'hidden' }}>
             <SkillPanel />
           </Grid>
-          <Grid item xs={6} md={8} sx={{ height: '100%', overflow: 'hidden' }}>
+          <Grid item xs={6} md={7} sx={{ height: '100%', overflow: 'hidden' }}>
             <PlayerInventoryPanel />
           </Grid>
         </Grid>
