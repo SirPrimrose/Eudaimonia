@@ -16,39 +16,26 @@ const ITEM_IDS = {
 const ITEM_BASES = {
   [ITEM_IDS.PEBBLE]: {
     name: 'Pebble',
-    currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_IDS.NONE,
-    healAmount: 0,
     description: "Tiny stones, not more than a finger's width",
   },
   [ITEM_IDS.WAX]: {
     name: 'Wax',
-    currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_IDS.NONE,
-    healAmount: 0,
     description: 'Sticky, but flammable',
   },
   [ITEM_IDS.CANDLE]: {
     name: 'Candle',
-    currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_IDS.NONE,
-    healAmount: 0,
     description: 'Not very bright, but offers better vision than darkness',
   },
   [ITEM_IDS.RAT_BONE]: {
     name: 'Rat Bone',
-    currentAmount: 0,
     maxAmount: 10,
-    healType: STAT_IDS.NONE,
-    healAmount: 0,
     description: 'You have the sudden urge to bury them',
   },
   [ITEM_IDS.CAVE_BUG]: {
     name: 'Cave Bug',
-    currentAmount: 0,
     maxAmount: 10,
     healType: STAT_IDS.WANDER_TIME,
     healAmount: 5,
@@ -56,7 +43,6 @@ const ITEM_BASES = {
   },
   [ITEM_IDS.CAVE_MOSS]: {
     name: 'Cave Moss',
-    currentAmount: 0,
     maxAmount: 10,
     healType: STAT_IDS.WANDER_TIME,
     healAmount: 8,
@@ -64,7 +50,6 @@ const ITEM_BASES = {
   },
   [ITEM_IDS.RAT_MEAT]: {
     name: 'Rat Meat',
-    currentAmount: 0,
     maxAmount: 10,
     healType: STAT_IDS.WANDER_TIME,
     healAmount: 15,
@@ -76,9 +61,12 @@ const ITEM_DATA = Object.entries(ITEM_BASES).reduce(
   (result, [key, value]) => ({
     ...result,
     [key]: {
+      healType: STAT_IDS.NONE,
+      healAmount: 0,
       name: key,
       ...value,
       id: key,
+      currentAmount: 0,
       currentCooldown: 0,
       maxCooldown: 5000, // time between eating in ms
       isActive: false,

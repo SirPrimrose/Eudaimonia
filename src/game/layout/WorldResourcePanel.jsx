@@ -14,34 +14,32 @@ class WorldResourcePanel extends React.PureComponent {
         justifyContent="space-between"
         rowSpacing={1}
       >
-        {Object.entries(worldResources).map(
-          ([worldResourceName, worldResource]) => (
-            <WorldResource
-              key={worldResourceName}
-              worldResource={worldResource}
-            />
-          )
-        )}
+        {worldResources.map((worldResource) => (
+          <WorldResource key={worldResource.id} worldResource={worldResource} />
+        ))}
       </Grid>
     </div>
   );
 
   render() {
     const { worldResources } = this.props;
+    const activeWorldResources = worldResources.filter((wr) => wr.isActive);
 
     return (
-      <div className="panelOutline">
-        <Typography variant="h6" align="center" className="title">
-          World
-        </Typography>
-        {this.getWorldResourceLayout(worldResources)}
-      </div>
+      activeWorldResources.length > 0 && (
+        <div className="panelOutline">
+          <Typography variant="h6" align="center" className="title">
+            World
+          </Typography>
+          {this.getWorldResourceLayout(activeWorldResources)}
+        </div>
+      )
     );
   }
 }
 
 WorldResourcePanel.propTypes = {
-  worldResources: PropTypes.objectOf(
+  worldResources: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,

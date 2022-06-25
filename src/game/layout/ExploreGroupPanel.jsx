@@ -64,20 +64,23 @@ class ExploreGroupPanel extends React.PureComponent {
 
   render() {
     const { exploreGroups } = this.props;
+    const activeExploreGroups = exploreGroups.filter((eg) => eg.isActive);
 
     return (
-      <div className="panelOutline">
-        <Typography variant="h6" align="center" className="title">
-          Discovery
-        </Typography>
-        {this.getExploreGroupLayout(exploreGroups)}
-      </div>
+      activeExploreGroups.length > 0 && (
+        <div className="panelOutline">
+          <Typography variant="h6" align="center" className="title">
+            Discovery
+          </Typography>
+          {this.getExploreGroupLayout(activeExploreGroups)}
+        </div>
+      )
     );
   }
 }
 
 ExploreGroupPanel.propTypes = {
-  exploreGroups: PropTypes.objectOf(
+  exploreGroups: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       currentExploration: PropTypes.number.isRequired,

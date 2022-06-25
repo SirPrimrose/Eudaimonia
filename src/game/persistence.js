@@ -26,7 +26,6 @@ const exportSaveData = (gameState) => {
     generationCount: gameState.generationCount,
     phase: gameState.phase,
     isPaused: gameState.isPaused,
-    currentJobs: gameState.currentJobs,
     tickRemaining: gameState.tickRemaining,
     queue: gameState.queue,
     messages: gameState.messages,
@@ -42,7 +41,10 @@ const exportSaveData = (gameState) => {
       ['currentExploration', 'permExploration', 'isActive', 'completedUnlocks'],
       gameState.exploreGroups
     ),
-    jobs: savePropsFromObjectMap(['currentXp', 'usedItems'], gameState.jobs),
+    jobs: savePropsFromObjectMap(
+      ['currentXp', 'usedItems', 'isActive', 'completions'],
+      gameState.jobs
+    ),
     skills: savePropsFromObjectMap(
       ['currentXp', 'permXp', 'currentLevel', 'permLevel'],
       gameState.skills

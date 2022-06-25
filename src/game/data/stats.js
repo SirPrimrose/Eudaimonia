@@ -26,7 +26,7 @@ const STAT_BASES = {
     shortName: 'NRG',
     baseDecayRate: 1,
     decayModifier: 1.5,
-    maxValue: 100,
+    maxValue: 50,
     isActive: true,
   },
   [STAT_IDS.HEALTH]: {
