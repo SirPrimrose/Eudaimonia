@@ -1,14 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
-import { DECAY_SCALING_FACTOR, STAT_DATA, STAT_IDS } from '../game/data/stats';
-import { COMPLETION_TYPE, JOB_DATA } from '../game/data/jobs';
+import { DECAY_SCALING_FACTOR, STAT_IDS } from '../game/data/stats';
+import { COMPLETION_TYPE } from '../game/data/jobs';
 import { getExponentialDecayValue } from '../shared/util';
 import { GAME_TICK_TIME, JOB_REJECT_REASONS, PHASES } from '../game/consts';
-import { ITEM_DATA } from '../game/data/inventory';
-import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
-import { EXPLORE_DATA } from '../game/data/exploreGroup';
 import {
-  SKILL_DATA,
   xpMultiplierForCurrentLevel,
   xpMultiplierForPermLevel,
   xpReqForCurrentLevel,
@@ -18,38 +14,13 @@ import {
 import CalculatedValue from '../game/data/calculatedValue';
 import { calculateSoulpower } from '../game/data/soulpower';
 import { UNLOCK_CRITERIA } from '../game/data/unlockCriteria';
-
-const initialState = {
-  // GAME
-  gameTime: 0,
-  // Move soulpower into some sort of "resources" section (perhaps treat it as an item or stat)
-  soulpower: {
-    resource: CalculatedValue.baseObject(),
-    // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation (these should probably just go into the "upgrades" prop, no?)
-  },
-  upgrades: [], // TODO: Implement upgrades; Array of all active modifiers to values, filter by type
-  generationCount: 0,
-  phase: PHASES.NEW_GAME,
-  isTicking: false,
-  isPaused: false,
-  isStarted: false,
-  // JOB QUEUE
-  tickRemaining: 1,
-  queue: [],
-  // INVENTORY
-  items: ITEM_DATA,
-  // WORLD
-  worldResources: WORLD_RESOURCE_DATA,
-  exploreGroups: EXPLORE_DATA,
-  // JOBS
-  jobs: JOB_DATA,
-  // SKILLS
-  skills: SKILL_DATA,
-  // STATS
-  stats: STAT_DATA,
-  // TEXT
-  messages: [],
-};
+import {
+  getFirstQueueEntry,
+  removeJobFromQueueByQueueId,
+  resetjobQueue,
+  resetQueueTick,
+  shouldTickJobQueue,
+} from './jobQueueLogic';
 
 let currentTime = new Date();
 let gameTicksRem = 0;
@@ -58,28 +29,6 @@ let gameTicksRem = 0;
 const addGameTime = (state, time) => {
   state.gameTime += time;
 };
-
-// JOB QUEUE
-const resetQueueTick = (state) => {
-  state.tickRemaining = 1;
-};
-
-const removeJobFromQueueByQueueId = (state, queueId) => {
-  state.queue = state.queue.filter((j) => j.queueId !== queueId);
-};
-
-const removeJobFromQueueByJobId = (state, jobId) => {
-  state.queue = state.queue.filter((j) => j.id !== jobId);
-};
-
-const resetjobQueue = (state) => {
-  state.queue = initialState.queue;
-};
-
-const shouldTickJobQueue = (state) =>
-  state.tickRemaining > 0 && state.queue.length > 0;
-
-const getFirstQueueEntry = (state) => state.queue.find(() => true);
 
 // INVENTORY
 const addItem = (state, itemId, amount) => {
@@ -912,4 +861,4 @@ const runGameLogicLoop = (state, tickMult) => {
   }
 };
 
-export { initialState, runGameLogicLoop, reviveCharacter };
+export { runGameLogicLoop, reviveCharacter };

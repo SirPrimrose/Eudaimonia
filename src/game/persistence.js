@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
-import { initialState } from '../slice/gameLogic';
+import { initialState } from '../slice/initialGameState';
 
 const SAVE_DATA_KEY = 'saveData';
 
