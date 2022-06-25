@@ -21,6 +21,7 @@ const initialState = {
   isTicking: false,
   isPaused: false,
   isStarted: false,
+  exception: null,
   // JOB QUEUE
   tickRemaining: 1,
   queue: [],

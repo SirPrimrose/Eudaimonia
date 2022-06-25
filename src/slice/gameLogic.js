@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 /* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid';
 import { DECAY_SCALING_FACTOR, STAT_IDS } from '../game/data/stats';
@@ -844,23 +845,31 @@ const tickGame = (state) => {
   }
 };
 
+const flagGameAsErrored = (state, exception) => {
+  state.exception = { message: exception.message, stack: exception.stack };
+};
+
 const runGameLogicLoop = (state, tickMult) => {
-  if (state.phase === PHASES.NEW_GAME) {
-    startNewGame(state);
-  }
+  try {
+    if (state.phase === PHASES.NEW_GAME) {
+      startNewGame(state);
+    }
 
-  if (!state.isStarted) {
-    startupGame(state);
-  }
+    if (!state.isStarted) {
+      startupGame(state);
+    }
 
-  // Calc ticks to process
-  const newTime = Date.now();
-  gameTicksRem += newTime - currentTime;
-  currentTime = newTime;
-  const currentTickDuration = GAME_TICK_TIME / tickMult;
-  while (gameTicksRem >= currentTickDuration) {
-    tickGame(state);
-    gameTicksRem -= currentTickDuration;
+    // Calc ticks to process
+    const newTime = Date.now();
+    gameTicksRem += newTime - currentTime;
+    currentTime = newTime;
+    const currentTickDuration = GAME_TICK_TIME / tickMult;
+    while (gameTicksRem >= currentTickDuration) {
+      tickGame(state);
+      gameTicksRem -= currentTickDuration;
+    }
+  } catch (e) {
+    flagGameAsErrored(state, e);
   }
 };
 
