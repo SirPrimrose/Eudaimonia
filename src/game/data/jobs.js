@@ -112,7 +112,7 @@ const JOB_BASES = {
     name: 'Fight Rat King',
     skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.PROGRESSION,
-    maxXp: 10,
+    maxXp: 15,
     unlockCriteria: [
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
@@ -122,7 +122,7 @@ const JOB_BASES = {
     ],
     completionEvents: [],
     statDecay: {
-      [STAT_IDS.HEALTH]: 25,
+      [STAT_IDS.HEALTH]: 10,
     },
   },
   [JOB_IDS.LEAVE_CAVE]: {
@@ -333,7 +333,7 @@ const JOB_BASES = {
     name: 'Fight Cave Rat',
     skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.ACTION,
-    maxXp: 1,
+    maxXp: 10,
     unlockCriteria: [
       {
         type: UNLOCK_CRITERIA.EXPLORE_GROUP,
@@ -353,7 +353,7 @@ const JOB_BASES = {
       },
     ],
     statDecay: {
-      [STAT_IDS.HEALTH]: 10,
+      [STAT_IDS.HEALTH]: 1,
     },
   },
 };

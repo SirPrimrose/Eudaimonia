@@ -39,7 +39,7 @@ export const gameSlice = createSlice({
     removeJobFromQueueByQueueId: (state, { payload: queueId }) => {
       removeJobFromQueueByQueueId(state, queueId);
     },
-    addJobToQueue: (state, { payload: queueEntry }) => {
+    pushJobToQueue: (state, { payload: queueEntry }) => {
       pushJobToQueue(state, queueEntry);
     },
     unshiftJobToQueue: (state, { payload: queueEntry }) => {
