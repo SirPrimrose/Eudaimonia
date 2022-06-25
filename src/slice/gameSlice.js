@@ -83,6 +83,7 @@ export const gameSlice = createSlice({
 // GAME
 export const isGamePaused = (store) => store.game.isPaused;
 export const isGameTicking = (store) => store.game.isTicking;
+export const getGameException = (store) => store.game.exception;
 export const getGamePhase = (store) => store.game.phase;
 export const getGameTime = (store) => store.game.gameTime;
 export const getSoulpowerValue = (store) => store.game.soulpower.resource.value;
