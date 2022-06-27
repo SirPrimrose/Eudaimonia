@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
+  Divider,
   IconButton,
   LinearProgress,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { connect } from 'react-redux';
@@ -46,6 +48,22 @@ class Job extends React.PureComponent {
     setPaused(false);
   };
 
+  getQueueTooltip = () => (
+    <Stack
+      direction="row"
+      alignItems="center"
+      divider={<Divider orientation="vertical" flexItem />}
+      spacing={1}
+    >
+      <Typography variant="body2" fontSize={12}>
+        Add to Queue
+      </Typography>
+      <Typography variant="body2" fontSize={12}>
+        Right Click for 1x
+      </Typography>
+    </Stack>
+  );
+
   render() {
     const {
       job: { id, name, currentXp, maxXp, skill },
@@ -74,17 +92,19 @@ class Job extends React.PureComponent {
             <Typography>{name}</Typography>
           </Stack>
         </Button>
-        <IconButton
-          onClick={this.handleQueueJob(id)}
-          onContextMenu={this.handleQueueSingleJob(id)}
-          color="primary"
-          sx={{
-            borderRadius: '0%',
-            zIndex: 1,
-          }}
-        >
-          <FontAwesomeIcon icon={faListCheck} />
-        </IconButton>
+        <Tooltip title={this.getQueueTooltip()} disableInteractive>
+          <IconButton
+            onClick={this.handleQueueJob(id)}
+            onContextMenu={this.handleQueueSingleJob(id)}
+            color="primary"
+            sx={{
+              borderRadius: '0%',
+              zIndex: 1,
+            }}
+          >
+            <FontAwesomeIcon icon={faListCheck} />
+          </IconButton>
+        </Tooltip>
         <LinearProgress
           variant="determinate"
           value={getProgressValue(currentXp, maxXp)}

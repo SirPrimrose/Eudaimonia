@@ -37,7 +37,6 @@ class CampfireTab extends React.PureComponent {
 
 CampfireTab.propTypes = {
   soulpowerValue: PropTypes.number.isRequired,
-  addMessage: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({

@@ -35,7 +35,7 @@ const XP_SCALING_FACTORS = {
 // Add unique fields to each skill
 const SKILL_BASES = {
   [SKILL_IDS.COMBAT]: {
-    name: 'Combat',
+    name: 'Resolve',
   },
   [SKILL_IDS.MINING]: {
     name: 'Mining',
