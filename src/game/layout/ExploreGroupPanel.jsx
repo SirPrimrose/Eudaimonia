@@ -24,6 +24,7 @@ class ExploreGroupPanel extends React.PureComponent {
     return (
       <Tooltip
         title={`Explored a total of ${exploreGroup.permExploration}. On death will reset to ${permExplorationProgress}%.`}
+        disableInteractive
       >
         <div>
           <ProgressBarWithOverlay
