@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Divider,
   Grid,
   LinearProgress,
   Stack,
@@ -23,7 +24,8 @@ class PlayerSkill extends React.PureComponent {
     return (
       <Stack alignItems="center">
         <Typography variant="h6">{name}</Typography>
-        <Grid container>
+        <Divider flexItem />
+        <Grid pt={1} container>
           {columns.map((col) => (
             <Grid key={col} item xs={12 / columns.length}>
               <Typography variant="body1" align="right">

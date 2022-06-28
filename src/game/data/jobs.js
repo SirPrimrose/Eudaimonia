@@ -75,7 +75,11 @@ const JOB_BASES = {
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
         type: UNLOCK_CRITERIA.EXPLORE_GROUP,
-        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploration: 0.02 },
+        value: {
+          exploreGroupId: EXPLORE_GROUP_IDS.CAVE,
+          exploration: 0.02,
+          flavor: 'Look around your feet',
+        },
       },
     ],
     completionEvents: [],
@@ -89,7 +93,11 @@ const JOB_BASES = {
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
         type: UNLOCK_CRITERIA.EXPLORE_GROUP,
-        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploration: 0.05 },
+        value: {
+          exploreGroupId: EXPLORE_GROUP_IDS.CAVE,
+          exploration: 0.05,
+          flavor: 'Do a quick loop in the main chasm',
+        },
       },
     ],
     completionEvents: [],
@@ -103,7 +111,11 @@ const JOB_BASES = {
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
         type: UNLOCK_CRITERIA.EXPLORE_GROUP,
-        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploration: 0.25 },
+        value: {
+          exploreGroupId: EXPLORE_GROUP_IDS.CAVE,
+          exploration: 0.25,
+          flavor: 'Follow the path leading up',
+        },
       },
     ],
     completionEvents: [],
@@ -234,7 +246,11 @@ const JOB_BASES = {
       { type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS },
       {
         type: UNLOCK_CRITERIA.EXPLORE_GROUP,
-        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploration: 0.1 },
+        value: {
+          exploreGroupId: EXPLORE_GROUP_IDS.CAVE,
+          exploration: 0.1,
+          flavor: 'Find somewhere to take a rest',
+        },
       },
     ],
     completionEvents: [
