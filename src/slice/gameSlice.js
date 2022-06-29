@@ -106,7 +106,7 @@ export const getJobProgress = (store) => (jobId) =>
     store.game.jobs[jobId].currentXp,
     store.game.jobs[jobId].maxXp
   );
-export const getJobs = (store) => Object.values(store.game.jobs);
+export const getJobs = (store) => store.game.jobs;
 export const getJobById = (store) => (jobId) => store.game.jobs[jobId];
 
 // QUEUE

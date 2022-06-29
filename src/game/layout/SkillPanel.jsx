@@ -52,7 +52,7 @@ class SkillPanel extends React.PureComponent {
 }
 
 SkillPanel.propTypes = {
-  skills: PropTypes.arrayOf(
+  skills: PropTypes.objectOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,

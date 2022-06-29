@@ -116,7 +116,7 @@ class WanderPhase extends React.PureComponent {
 
 WanderPhase.propTypes = {
   gameTime: PropTypes.number.isRequired,
-  stats: PropTypes.arrayOf(
+  stats: PropTypes.objectOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
