@@ -13,9 +13,14 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { getProgressValue } from '../../../shared/util';
-import { actions as gameActions } from '../../../slice/gameSlice';
+import {
+  actions as gameActions,
+  getMsForSkillXp,
+} from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
 import { getIconForSkillType } from './Icons';
+import { toTimeLength } from '../../format';
+import { COMPLETION_TYPE } from '../../data/jobs';
 
 class Job extends React.PureComponent {
   handlePushJob = (jobId) => () => {
@@ -56,13 +61,73 @@ class Job extends React.PureComponent {
       spacing={1}
     >
       <Typography variant="body2" fontSize={12}>
-        Add to Queue
+        Click to queue
       </Typography>
       <Typography variant="body2" fontSize={12}>
         Right Click for 1x
       </Typography>
     </Stack>
   );
+
+  getJobTooltip = () => {
+    const {
+      getMsXp,
+      job: {
+        completionEvents,
+        usedItems,
+        description,
+        skill,
+        currentXp,
+        maxXp,
+      },
+    } = this.props;
+    const maxMs = getMsXp(skill, maxXp);
+    const currentMsLeft = maxMs - getMsXp(skill, currentXp);
+    const itemsRequired = completionEvents
+      .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
+      .reduce((itemObj, e) => {
+        const amountUsed = usedItems[e.value.item] || 0;
+        return { ...itemObj, [e.value.item]: e.value.amount - amountUsed };
+      }, {});
+    console.log(itemsRequired);
+
+    return (
+      <Stack
+        direction="column"
+        alignItems="center"
+        divider={<Divider orientation="horizontal" flexItem light />}
+        spacing={1}
+      >
+        <Typography variant="body1" textAlign="center">
+          {description}
+        </Typography>
+        <Stack
+          direction="row"
+          alignItems="center"
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={1}
+        >
+          <Typography variant="body1">{`${toTimeLength(
+            currentMsLeft
+          )} / ${toTimeLength(maxMs)}`}</Typography>
+          <Typography variant="body1">{`${maxXp} XP`}</Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          alignItems="center"
+          divider={<Divider orientation="vertical" flexItem />}
+          spacing={1}
+        >
+          <Typography variant="body2" fontSize={12}>
+            Click to do now
+          </Typography>
+          <Typography variant="body2" fontSize={12}>
+            Right Click for 1x
+          </Typography>
+        </Stack>
+      </Stack>
+    );
+  };
 
   render() {
     const {
@@ -76,22 +141,24 @@ class Job extends React.PureComponent {
         justifyContent="flex-start"
         position="relative"
       >
-        <Button
-          onClick={this.handlePushJob(id)}
-          onContextMenu={this.handlePushSingleJob(id)}
-          sx={{ width: '100%', zIndex: 1 }}
-        >
-          <Stack
-            direction="row"
-            alignItems="center"
-            position="relative"
-            width="100%"
-            spacing={1}
+        <Tooltip title={this.getJobTooltip()} disableInteractive>
+          <Button
+            onClick={this.handlePushJob(id)}
+            onContextMenu={this.handlePushSingleJob(id)}
+            sx={{ width: '100%', zIndex: 1 }}
           >
-            {getIconForSkillType(skill)}
-            <Typography>{name}</Typography>
-          </Stack>
-        </Button>
+            <Stack
+              direction="row"
+              alignItems="center"
+              position="relative"
+              width="100%"
+              spacing={1}
+            >
+              {getIconForSkillType(skill)}
+              <Typography>{name}</Typography>
+            </Stack>
+          </Button>
+        </Tooltip>
         <Tooltip title={this.getQueueTooltip()} disableInteractive>
           <IconButton
             onClick={this.handleQueueJob(id)}
@@ -123,17 +190,31 @@ Job.propTypes = {
   job: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
     skill: PropTypes.string.isRequired,
     isActive: PropTypes.bool.isRequired,
     currentXp: PropTypes.number.isRequired,
     maxXp: PropTypes.number.isRequired,
+    completionEvents: PropTypes.arrayOf(
+      PropTypes.shape({
+        type: PropTypes.string.isRequired,
+        // eslint-disable-next-line react/forbid-prop-types
+        value: PropTypes.object.isRequired,
+      })
+    ),
+    usedItems: PropTypes.objectOf(PropTypes.string.isRequired).isRequired,
   }).isRequired,
 
   // Dispatch functions
+  getMsXp: PropTypes.func.isRequired,
   pushJobToQueue: PropTypes.func.isRequired,
   unshiftJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  getMsXp: getMsForSkillXp(state),
+});
 
 const mapDispatchToProps = {
   pushJobToQueue: gameActions.pushJobToQueue,
@@ -141,4 +222,4 @@ const mapDispatchToProps = {
   setPaused: gameActions.setPaused,
 };
 
-export default connect(null, mapDispatchToProps)(Job);
+export default connect(mapStateToProps, mapDispatchToProps)(Job);

@@ -63,7 +63,6 @@ class JobsPanel extends React.PureComponent {
 }
 
 JobsPanel.propTypes = {
-  // Key-value mappings of categories and the jobs in them
   jobs: PropTypes.arrayOf(
     PropTypes.shape({
       isActive: PropTypes.bool.isRequired,
