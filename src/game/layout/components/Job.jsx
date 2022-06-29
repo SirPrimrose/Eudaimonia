@@ -6,6 +6,11 @@ import {
   IconButton,
   LinearProgress,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -15,14 +20,53 @@ import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { getProgressValue } from '../../../shared/util';
 import {
   actions as gameActions,
+  getItemById,
   getMsForSkillXp,
 } from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
 import { getIconForSkillType } from './Icons';
-import { toTimeLength } from '../../format';
+import { toGameNumber, toTimeLength } from '../../format';
 import { COMPLETION_TYPE } from '../../data/jobs';
 
 class Job extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    const { getMsXp, job } = this.props;
+
+    const maxMs = getMsXp(job.skill, job.maxXp);
+    const currentMsLeft = maxMs - getMsXp(job.skill, job.currentXp);
+    const itemsRequired = job.completionEvents
+      .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
+      .reduce((itemObj, e) => {
+        const amountUsed = job.usedItems[e.value.item] || 0;
+        return { ...itemObj, [e.value.itemId]: e.value.amount - amountUsed };
+      }, {});
+
+    this.state = {
+      jobTooltip: this.getJobTooltip(maxMs, currentMsLeft, itemsRequired),
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { getMsXp, getItem, job } = this.props;
+    if (job !== prevProps.job) {
+      const maxMs = getMsXp(job.skill, job.maxXp);
+      const currentMsLeft = maxMs - getMsXp(job.skill, job.currentXp);
+      const itemsRequired = job.completionEvents
+        .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
+        .reduce((itemObj, e) => {
+          const item = getItem(e.value.itemId);
+          const amountUsed = job.usedItems[e.value.itemId] || 0;
+          return { ...itemObj, [item.name]: e.value.amount - amountUsed };
+        }, {});
+
+      this.setState(() => ({
+        jobTooltip: this.getJobTooltip(maxMs, currentMsLeft, itemsRequired),
+      }));
+    }
+  }
+
   handlePushJob = (jobId) => () => {
     const { unshiftJobToQueue, setPaused } = this.props;
 
@@ -69,27 +113,10 @@ class Job extends React.PureComponent {
     </Stack>
   );
 
-  getJobTooltip = () => {
+  getJobTooltip = (maxMs, currentMsLeft, itemsRequired) => {
     const {
-      getMsXp,
-      job: {
-        completionEvents,
-        usedItems,
-        description,
-        skill,
-        currentXp,
-        maxXp,
-      },
+      job: { description, maxXp },
     } = this.props;
-    const maxMs = getMsXp(skill, maxXp);
-    const currentMsLeft = maxMs - getMsXp(skill, currentXp);
-    const itemsRequired = completionEvents
-      .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
-      .reduce((itemObj, e) => {
-        const amountUsed = usedItems[e.value.item] || 0;
-        return { ...itemObj, [e.value.item]: e.value.amount - amountUsed };
-      }, {});
-    console.log(itemsRequired);
 
     return (
       <Stack
@@ -112,6 +139,43 @@ class Job extends React.PureComponent {
           )} / ${toTimeLength(maxMs)}`}</Typography>
           <Typography variant="body1">{`${maxXp} XP`}</Typography>
         </Stack>
+        {Object.keys(itemsRequired).length > 0 && (
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell
+                  align="center"
+                  colSpan={2}
+                  sx={{ border: 0, padding: 0 }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="primary.contrastText"
+                    fontWeight="bold"
+                  >
+                    Requirements
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Object.entries(itemsRequired).map(([itemName, amount]) => (
+                <TableRow key={itemName}>
+                  <TableCell sx={{ border: 0, paddingX: 2, paddingY: 0 }}>
+                    <Typography variant="body2" color="primary.contrastText">
+                      {itemName}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ border: 0, padding: 0 }}>
+                    <Typography variant="body2" color="primary.contrastText">
+                      {toGameNumber(amount)}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
         <Stack
           direction="row"
           alignItems="center"
@@ -133,6 +197,7 @@ class Job extends React.PureComponent {
     const {
       job: { id, name, currentXp, maxXp, skill },
     } = this.props;
+    const { jobTooltip } = this.state;
 
     return (
       <Stack
@@ -141,7 +206,7 @@ class Job extends React.PureComponent {
         justifyContent="flex-start"
         position="relative"
       >
-        <Tooltip title={this.getJobTooltip()} disableInteractive>
+        <Tooltip title={jobTooltip} disableInteractive>
           <Button
             onClick={this.handlePushJob(id)}
             onContextMenu={this.handlePushSingleJob(id)}
@@ -202,11 +267,12 @@ Job.propTypes = {
         value: PropTypes.object.isRequired,
       })
     ),
-    usedItems: PropTypes.objectOf(PropTypes.string.isRequired).isRequired,
+    usedItems: PropTypes.objectOf(PropTypes.number.isRequired).isRequired,
   }).isRequired,
 
   // Dispatch functions
   getMsXp: PropTypes.func.isRequired,
+  getItem: PropTypes.func.isRequired,
   pushJobToQueue: PropTypes.func.isRequired,
   unshiftJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
@@ -214,6 +280,7 @@ Job.propTypes = {
 
 const mapStateToProps = (state) => ({
   getMsXp: getMsForSkillXp(state),
+  getItem: getItemById(state),
 });
 
 const mapDispatchToProps = {

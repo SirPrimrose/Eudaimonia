@@ -262,6 +262,8 @@ const JOB_BASES = {
   },
   [JOB_IDS.CRAFT_CANDLE]: {
     name: 'Make Candle',
+    description:
+      'You had an idea to form the wax into a candle, but where does the flame come from?',
     skill: SKILL_IDS.CRAFTING,
     category: JOB_CATEGORY.CRAFT,
     maxXp: 5,
