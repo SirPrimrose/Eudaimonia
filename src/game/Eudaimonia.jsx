@@ -98,13 +98,17 @@ Eudaimonia.propTypes = {
   exception: PropTypes.shape({
     message: PropTypes.string.isRequired,
     stack: PropTypes.string.isRequired,
-  }).isRequired,
+  }),
   ticking: PropTypes.bool.isRequired,
 
   togglePaused: PropTypes.func.isRequired,
   runGameLoop: PropTypes.func.isRequired,
   resetGame: PropTypes.func.isRequired,
   toggleTheme: PropTypes.func.isRequired,
+};
+
+Eudaimonia.defaultProps = {
+  exception: null,
 };
 
 const mapStateToProps = (store) => ({

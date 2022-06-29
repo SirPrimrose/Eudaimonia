@@ -1,3 +1,5 @@
+import prettyMilliseconds from 'pretty-ms';
+
 const scientific = new Intl.NumberFormat('en-US', {
   notation: 'scientific',
   maximumSignificantDigits: 3,
@@ -19,6 +21,8 @@ const formats = {
 
 const globalFormat = formats.ENGINEERING;
 
+const toTimeLength = (timeMs) => prettyMilliseconds(timeMs);
+
 const toClockTime = (timeMs) => {
   if (timeMs < 60 * 60 * 1000) {
     return new Date(timeMs).toISOString().slice(14, 19);
@@ -39,4 +43,4 @@ const toGameNumber = (number) => {
   return standard.format(number);
 };
 
-export { toClockTime, toGameNumber };
+export { toTimeLength, toClockTime, toGameNumber };

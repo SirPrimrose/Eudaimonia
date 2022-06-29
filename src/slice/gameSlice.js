@@ -115,6 +115,8 @@ export const getJobQueue = (store) => store.game.queue;
 export const getSkills = (store) => Object.values(store.game.skills);
 export const getSkillsWithLevels = (store) =>
   getSkills(store).filter((skill) => skill.permLevel > 0 || skill.permXp > 0);
+export const getMsForSkillXp = (store) => (skillId, xp) =>
+  (xp / store.game.skills[skillId].xpScaling.value) * 1000;
 
 // STATS
 export const getStats = (store) => Object.values(store.game.stats);

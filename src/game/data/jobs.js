@@ -14,19 +14,21 @@ const JOB_CATEGORY = {
 };
 
 const COMPLETION_TYPE = {
-  ITEM: 'Item', // {item: item id, amount: #}
-  WORLD_RESOURCE: 'World_Resource', // {value: resource id, item: item id, numResourceChecked: #}
+  WORLD_RESOURCE: 'World_Resource', // {value: resource id, item: item id}
   // UNLOCK_JOB: 'Unlock_Job', // {jobId: job id}
   // LOCK_JOB: 'Lock_Job', // {jobId: job id}
   // HIDE_SELF: 'Hide_Self', // no params
   EXPLORE_AREA: 'Explore_Area', // {exploreGroupId: group id, amount: #}
   EXPLORE_GROUP_ACTIVE: 'Explore_Group_Active', // {exploreGroupId: group id, isActive: bool}
   CONSUME_ITEM: 'Consume_Item', // {item: item id, amount: #}
+  GIVE_ITEM: 'Give_Item', // {item: item id, amount: #}
 };
 
 const JOB_BASES = {
   [JOB_IDS.CAVE_STORY_1]: {
     name: 'Muster Strength',
+    description:
+      '**You are not done yet**. Lift yourself off of the cold floor.',
     skill: SKILL_IDS.COMBAT,
     category: JOB_CATEGORY.PROGRESSION,
     maxXp: 1,
@@ -169,9 +171,8 @@ const JOB_BASES = {
     ],
     completionEvents: [
       {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.PEBBLE,
-        amount: 1,
+        type: COMPLETION_TYPE.GIVE_ITEM,
+        value: { itemId: ITEM_IDS.PEBBLE, amount: 1 },
       },
     ],
   },
@@ -192,9 +193,8 @@ const JOB_BASES = {
     ],
     completionEvents: [
       {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.CAVE_BUG,
-        amount: 1,
+        type: COMPLETION_TYPE.GIVE_ITEM,
+        value: { itemId: ITEM_IDS.CAVE_BUG, amount: 1 },
       },
     ],
   },
@@ -211,9 +211,8 @@ const JOB_BASES = {
     ],
     completionEvents: [
       {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.WAX,
-        amount: 1,
+        type: COMPLETION_TYPE.GIVE_ITEM,
+        value: { itemId: ITEM_IDS.WAX, amount: 1 },
       },
     ],
   },
@@ -231,9 +230,10 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.WORLD_RESOURCE,
-        value: WORLD_RESOURCE_IDS.CAVE_MOSS,
-        item: ITEM_IDS.CAVE_MOSS,
-        numResourceChecked: 1,
+        value: {
+          worldResourceId: WORLD_RESOURCE_IDS.CAVE_MOSS,
+          itemId: ITEM_IDS.CAVE_MOSS,
+        },
       },
     ],
   },
@@ -256,8 +256,7 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.EXPLORE_AREA,
-        value: EXPLORE_GROUP_IDS.CAVE,
-        exploreAmount: 1,
+        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploreAmount: 1 },
       },
     ],
   },
@@ -279,23 +278,21 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.CONSUME_ITEM,
-        item: ITEM_IDS.WAX,
-        amount: 2,
+        value: { itemId: ITEM_IDS.WAX, amount: 2 },
       },
       {
         type: COMPLETION_TYPE.CONSUME_ITEM,
-        item: ITEM_IDS.PEBBLE,
-        amount: 2,
+        value: { itemId: ITEM_IDS.PEBBLE, amount: 2 },
       },
       {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.CANDLE,
-        amount: 1,
+        type: COMPLETION_TYPE.GIVE_ITEM,
+        value: { itemId: ITEM_IDS.CANDLE, amount: 1 },
       },
     ],
   },
   [JOB_IDS.CAVE_EXPLORE]: {
     name: 'Explore In Darkness',
+    description: 'Maybe your eyes will adjust as you feel around.',
     skill: SKILL_IDS.ATHLETICS,
     category: JOB_CATEGORY.EXPLORATION,
     maxXp: 5,
@@ -312,8 +309,7 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.EXPLORE_AREA,
-        value: EXPLORE_GROUP_IDS.CAVE,
-        exploreAmount: 1,
+        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploreAmount: 1 },
       },
     ],
   },
@@ -335,13 +331,11 @@ const JOB_BASES = {
     completionEvents: [
       {
         type: COMPLETION_TYPE.CONSUME_ITEM,
-        item: ITEM_IDS.CANDLE,
-        amount: 1,
+        value: { itemId: ITEM_IDS.CANDLE, amount: 1 },
       },
       {
         type: COMPLETION_TYPE.EXPLORE_AREA,
-        value: EXPLORE_GROUP_IDS.CAVE,
-        exploreAmount: 10,
+        value: { exploreGroupId: EXPLORE_GROUP_IDS.CAVE, exploreAmount: 10 },
       },
     ],
   },
@@ -358,14 +352,12 @@ const JOB_BASES = {
     ],
     completionEvents: [
       {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.RAT_BONE,
-        amount: 1,
+        type: COMPLETION_TYPE.GIVE_ITEM,
+        value: { itemId: ITEM_IDS.RAT_BONE, amount: 1 },
       },
       {
-        type: COMPLETION_TYPE.ITEM,
-        item: ITEM_IDS.RAT_MEAT,
-        amount: 1,
+        type: COMPLETION_TYPE.GIVE_ITEM,
+        value: { itemId: ITEM_IDS.RAT_MEAT, amount: 1 },
       },
     ],
     statDecay: {
@@ -380,6 +372,7 @@ const JOB_DATA = Object.entries(JOB_BASES).reduce(
     [key]: {
       statDecay: {}, // stat id is key and decay/s is value
       name: key,
+      description: 'Placeholder desc',
       ...value,
       id: key,
       isActive: false,

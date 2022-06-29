@@ -288,10 +288,11 @@ const useItemsForJob = (state, tickXp, jobId) => {
       ...job.completionEvents
         .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
         .map((e) => {
-          const itemsAlreadyUsed = job.usedItems[e.item] || 0;
-          const currentItemAmount = state.items[e.item].currentAmount;
+          const { itemId, amount } = e.value;
+          const itemsAlreadyUsed = job.usedItems[itemId] || 0;
+          const currentItemAmount = state.items[itemId].currentAmount;
           const possibleItemUsage = itemsAlreadyUsed + currentItemAmount;
-          return (possibleItemUsage / e.amount) * job.maxXp;
+          return (possibleItemUsage / amount) * job.maxXp;
         }),
       job.maxXp
     ) - job.currentXp;
@@ -301,14 +302,15 @@ const useItemsForJob = (state, tickXp, jobId) => {
     job.completionEvents
       .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
       .forEach((e) => {
-        const itemsAlreadyUsed = job.usedItems[e.item] || 0;
+        const { itemId, amount } = e.value;
+        const itemsAlreadyUsed = job.usedItems[itemId] || 0;
 
         const endXp = job.currentXp + limitedTickXp;
-        const endItemNeeded = itemReqForXp(endXp, job.maxXp, e.amount);
+        const endItemNeeded = itemReqForXp(endXp, job.maxXp, amount);
         const numItemUsed = endItemNeeded - itemsAlreadyUsed;
 
-        const actualUsed = removeItem(state, e.item, numItemUsed);
-        job.usedItems[e.item] = itemsAlreadyUsed + actualUsed;
+        const actualUsed = removeItem(state, itemId, numItemUsed);
+        job.usedItems[itemId] = itemsAlreadyUsed + actualUsed;
       });
     return limitedTickXp;
   }
@@ -345,12 +347,12 @@ const resetJobActive = (state, jobId) => {
 const isJobItemsFull = (state, job) => {
   const jobsThatGiveItems = job.completionEvents.filter(
     (e) =>
-      e.type === COMPLETION_TYPE.ITEM ||
+      e.type === COMPLETION_TYPE.GIVE_ITEM ||
       e.type === COMPLETION_TYPE.WORLD_RESOURCE
   );
   return (
     jobsThatGiveItems.length > 0 &&
-    jobsThatGiveItems.every((e) => isItemFull(state, e.item))
+    jobsThatGiveItems.every((e) => isItemFull(state, e.value.itemId))
   );
 };
 
@@ -358,7 +360,7 @@ const isJobResourceUnavailable = (state, job) =>
   job.completionEvents.some(
     (e) =>
       e.type === COMPLETION_TYPE.WORLD_RESOURCE &&
-      !isWorldResourceAvailable(state, e.value)
+      !isWorldResourceAvailable(state, e.value.worldResourceId)
   );
 
 const isJobAvailable = (state, jobId) => {
@@ -375,13 +377,10 @@ const checkJobCraftingRequirements = (state, jobId) => {
   return job.completionEvents
     .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
     .every((e) => {
-      const itemsAlreadyUsed = job.usedItems[e.item] || 0;
-      const currentNeededItem = itemReqForXp(
-        job.currentXp,
-        job.maxXp,
-        e.amount
-      );
-      const currentItemAmount = state.items[e.item].currentAmount;
+      const { itemId, amount } = e.value;
+      const itemsAlreadyUsed = job.usedItems[itemId] || 0;
+      const currentNeededItem = itemReqForXp(job.currentXp, job.maxXp, amount);
+      const currentItemAmount = state.items[itemId].currentAmount;
       return currentItemAmount >= currentNeededItem - itemsAlreadyUsed;
     });
 };
@@ -436,16 +435,24 @@ const performJobCompletionEvent = (state, job, event) => {
       );
       break;
     case COMPLETION_TYPE.EXPLORE_AREA:
-      addProgressToExploreGroup(state, event.value, event.exploreAmount);
+      addProgressToExploreGroup(
+        state,
+        event.value.exploreGroupId,
+        event.value.exploreAmount
+      );
       break;
-    case COMPLETION_TYPE.ITEM:
-      addItem(state, event.item, event.amount);
+    case COMPLETION_TYPE.GIVE_ITEM:
+      addItem(state, event.value.itemId, event.value.amount);
       break;
     case COMPLETION_TYPE.CONSUME_ITEM:
       // Completion type is handled by useItemsForJob
       break;
     case COMPLETION_TYPE.WORLD_RESOURCE:
-      processWorldResource(state, event.value, event.item);
+      processWorldResource(
+        state,
+        event.value.worldResourceId,
+        event.value.itemId
+      );
       break;
     default:
       // eslint-disable-next-line no-console
@@ -656,10 +663,15 @@ function checkCriteria(
   }
 }
 
-const getXpForTick = (state, skillId) => {
-  const baseXpPerTick = GAME_TICK_TIME / 1000;
+const getXpPerSecond = (state, skillId) => {
   const skillObj = state.skills[skillId];
-  return baseXpPerTick * skillObj.xpScaling.value;
+  return skillObj.xpScaling.value;
+};
+
+const getXpForTick = (state, skillId) => {
+  const xpPerSecond = getXpPerSecond(state, skillId);
+  const tickLengthInSeconds = GAME_TICK_TIME / 1000;
+  return xpPerSecond * tickLengthInSeconds;
 };
 
 const tickJobQueue = (state) => {
