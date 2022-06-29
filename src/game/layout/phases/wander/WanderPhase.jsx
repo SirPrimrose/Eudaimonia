@@ -6,13 +6,29 @@ import PlayerSection from '../../PlayerSection';
 import GameSection from '../../GameSection';
 import InfoSection from '../../InfoSection';
 
-import { getActiveStats, getGameTime } from '../../../../slice/gameSlice';
+import { getGameTime, getStats } from '../../../../slice/gameSlice';
 import ProgressBarWithOverlay from '../../../../shared/ProgressBarWithOverlay';
 import { getIconForStatType } from '../../components/Icons';
 import { getProgressValue } from '../../../../shared/util';
 import { toClockTime, toGameNumber } from '../../../format';
 
 class WanderPhase extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      activeStats: [],
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { stats } = this.props;
+    if (stats !== prevProps.stats) {
+      const activeStats = Object.values(stats).filter((stat) => stat.isActive);
+      this.setState(() => ({ activeStats }));
+    }
+  }
+
   renderHeader = (gameTime) => (
     <Typography align="center">{toClockTime(gameTime)}</Typography>
   );
@@ -48,7 +64,8 @@ class WanderPhase extends React.PureComponent {
   );
 
   render() {
-    const { gameTime, activeStats } = this.props;
+    const { gameTime } = this.props;
+    const { activeStats } = this.state;
 
     return (
       <Stack overflow="hidden" flex="1">
@@ -99,7 +116,7 @@ class WanderPhase extends React.PureComponent {
 
 WanderPhase.propTypes = {
   gameTime: PropTypes.number.isRequired,
-  activeStats: PropTypes.arrayOf(
+  stats: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
@@ -123,7 +140,7 @@ WanderPhase.propTypes = {
 
 const mapStateToProps = (store) => ({
   gameTime: getGameTime(store),
-  activeStats: getActiveStats(store),
+  stats: getStats(store),
 });
 
 export default connect(mapStateToProps)(WanderPhase);

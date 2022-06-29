@@ -2,10 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Typography } from '@mui/material';
-import { getSkillsWithLevels } from '../../slice/gameSlice';
+import { getSkills } from '../../slice/gameSlice';
 import PlayerSkill from './components/PlayerSkill';
 
 class SkillPanel extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      activeSkills: [],
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { skills } = this.props;
+    if (skills !== prevProps.skills) {
+      const activeSkills = Object.values(skills).filter(
+        (skill) => skill.permLevel > 0 || skill.permXp > 0
+      );
+      this.setState(() => ({ activeSkills }));
+    }
+  }
+
   getSkillLayout = (skills) => {
     const numOfColumns = (Math.floor((skills.length - 1) / 6) + 1) * 4;
 
@@ -21,13 +39,13 @@ class SkillPanel extends React.PureComponent {
   };
 
   render() {
-    const { skills } = this.props;
+    const { activeSkills } = this.state;
     return (
       <div className="panelOutline">
         <Typography variant="h6" align="center" className="title">
           Skills
         </Typography>
-        {this.getSkillLayout(skills)}
+        {this.getSkillLayout(activeSkills)}
       </div>
     );
   }
@@ -59,7 +77,7 @@ SkillPanel.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  skills: getSkillsWithLevels(state),
+  skills: getSkills(state),
 });
 
 export default connect(mapStateToProps)(SkillPanel);

@@ -22,6 +22,9 @@ import { GAME_TICK_TIME } from './consts';
 
 const pauseKey = KEY_P;
 
+const errorDialogStyle = { fontStyle: 'italic' };
+const errorContentStyle = { fontFamily: 'Monospace' };
+
 class Eudaimonia extends React.PureComponent {
   componentDidMount() {
     this.intervalID = setInterval(() => this.gameTick(), GAME_TICK_TIME);
@@ -57,7 +60,7 @@ class Eudaimonia extends React.PureComponent {
       <Dialog open onClose={this.handleClose}>
         <DialogTitle>Something happened!</DialogTitle>
         <DialogContent>
-          <DialogContentText variant="subtitle2" sx={{ fontStyle: 'italic' }}>
+          <DialogContentText variant="subtitle2" sx={errorDialogStyle}>
             All I know is that it was not my fault. And that this is probably
             what caused it:
           </DialogContentText>
@@ -65,7 +68,7 @@ class Eudaimonia extends React.PureComponent {
             variant="h5"
             sx={{ fontWeight: 'bold' }}
           >{`${exception.message}`}</DialogContentText>
-          <DialogContentText variant="body" sx={{ fontFamily: 'Monospace' }}>
+          <DialogContentText variant="body" sx={errorContentStyle}>
             {`${exception.stack}`}
           </DialogContentText>
         </DialogContent>
