@@ -101,7 +101,7 @@ class ExploreGroupPanel extends React.PureComponent {
 }
 
 ExploreGroupPanel.propTypes = {
-  exploreGroups: PropTypes.arrayOf(
+  exploreGroups: PropTypes.objectOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       currentExploration: PropTypes.number.isRequired,

@@ -20,7 +20,7 @@ import { faListCheck } from '@fortawesome/free-solid-svg-icons';
 import { getProgressValue } from '../../../shared/util';
 import {
   actions as gameActions,
-  getItemById,
+  getInventory,
   getMsForSkillXp,
 } from '../../../slice/gameSlice';
 import { createJobQueueEntry } from '../../data/jobConstructor';
@@ -47,13 +47,13 @@ class Job extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { maxXpMs, currentXpMs, getItem, job } = this.props;
+    const { maxXpMs, currentXpMs, job, inventory } = this.props;
     if (job !== prevProps.job) {
       const currentMsLeft = maxXpMs - currentXpMs;
       const itemsRequired = job.completionEvents
         .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
         .reduce((itemObj, e) => {
-          const item = getItem(e.value.itemId);
+          const item = inventory[e.value.itemId];
           const amountUsed = job.usedItems[e.value.itemId] || 0;
           return { ...itemObj, [item.name]: e.value.amount - amountUsed };
         }, {});
@@ -249,6 +249,20 @@ class Job extends React.PureComponent {
 }
 
 Job.propTypes = {
+  // TODO: Iterative change to remove function from mapStateToProps; replace with individual component to not require keeping reference to all items
+  inventory: PropTypes.objectOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      currentAmount: PropTypes.number.isRequired,
+      maxAmount: PropTypes.number.isRequired,
+      description: PropTypes.string.isRequired,
+      healType: PropTypes.string.isRequired,
+      healAmount: PropTypes.number.isRequired,
+      currentCooldown: PropTypes.number.isRequired,
+      maxCooldown: PropTypes.number.isRequired,
+    })
+  ).isRequired,
   job: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -272,7 +286,6 @@ Job.propTypes = {
   currentXpMs: PropTypes.number.isRequired,
 
   // Dispatch functions
-  getItem: PropTypes.func.isRequired,
   pushJobToQueue: PropTypes.func.isRequired,
   unshiftJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
@@ -284,7 +297,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     maxXpMs: getMsForSkillXp(state, job.skill, job.maxXp),
     currentXpMs: getMsForSkillXp(state, job.skill, job.currentXp),
-    getItem: getItemById(state),
+    inventory: getInventory(state),
   };
 };
 

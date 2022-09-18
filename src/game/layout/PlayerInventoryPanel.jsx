@@ -51,7 +51,7 @@ class PlayerInventoryPanel extends React.PureComponent {
 }
 
 PlayerInventoryPanel.propTypes = {
-  inventory: PropTypes.arrayOf(
+  inventory: PropTypes.objectOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       currentAmount: PropTypes.number.isRequired,

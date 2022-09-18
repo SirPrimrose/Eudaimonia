@@ -59,7 +59,7 @@ class WorldResourcePanel extends React.PureComponent {
 }
 
 WorldResourcePanel.propTypes = {
-  worldResources: PropTypes.arrayOf(
+  worldResources: PropTypes.objectOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,

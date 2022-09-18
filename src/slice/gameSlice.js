@@ -89,7 +89,7 @@ export const getSoulpowerValue = (store) => store.game.soulpower.resource.value;
 
 // INVENTORY
 export const getInventory = (store) => store.game.items;
-export const getItemById = (store) => (itemId) => store.game.items[itemId];
+export const getItemById = (store, itemId) => store.game.items[itemId];
 
 // WORLD
 export const getExploreGroups = (store) => store.game.exploreGroups;
