@@ -22,12 +22,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `npm run build`
+## Electron
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `electron:start`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Run the application as an Electron application. Runs similarly to `npm start`, though within a standalone window.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `electron:package:all`
+
+Runs the Electron packager. Can also run the alternatives for OS specific versions. Packages the app as an Electron bundle for distribution.
