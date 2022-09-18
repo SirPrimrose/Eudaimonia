@@ -17,6 +17,7 @@ import {
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faListCheck } from '@fortawesome/free-solid-svg-icons';
+import _ from 'lodash';
 import { getProgressValue } from '../../../shared/util';
 import {
   actions as gameActions,
@@ -31,25 +32,38 @@ import { COMPLETION_TYPE } from '../../data/jobs';
 class Job extends React.PureComponent {
   constructor(props) {
     super(props);
-    const { maxXpMs, currentXpMs, job } = this.props;
+    const { maxXpMs, currentXpMs, job, inventory } = this.props;
 
     const currentMsLeft = maxXpMs - currentXpMs;
     const itemsRequired = job.completionEvents
       .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
       .reduce((itemObj, e) => {
-        const amountUsed = job.usedItems[e.value.item] || 0;
-        return { ...itemObj, [e.value.itemId]: e.value.amount - amountUsed };
+        const item = inventory[e.value.itemId];
+        const amountUsed = job.usedItems[e.value.itemId] || 0;
+        return { ...itemObj, [item.name]: e.value.amount - amountUsed };
       }, {});
 
     this.state = {
-      jobTooltip: this.getJobTooltip(maxXpMs, currentMsLeft, itemsRequired),
+      currentMsLeft,
+      itemsRequired,
     };
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { maxXpMs, currentXpMs, job, inventory } = this.props;
-    if (job !== prevProps.job) {
+
+    if (
+      maxXpMs !== prevProps.maxXpMs ||
+      currentXpMs !== prevProps.currentXpMs
+    ) {
       const currentMsLeft = maxXpMs - currentXpMs;
+
+      this.setState(() => ({
+        currentMsLeft,
+      }));
+    }
+
+    if (job !== prevProps.job || inventory !== prevProps.inventory) {
       const itemsRequired = job.completionEvents
         .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
         .reduce((itemObj, e) => {
@@ -58,9 +72,13 @@ class Job extends React.PureComponent {
           return { ...itemObj, [item.name]: e.value.amount - amountUsed };
         }, {});
 
-      this.setState(() => ({
-        jobTooltip: this.getJobTooltip(maxXpMs, currentMsLeft, itemsRequired),
-      }));
+      // TODO: Optimize? Perhaps a better check earlier to avoid calculations on full inventory/jobs
+      // Check item required deep equality to avoid re-rendering
+      if (!_.isEqual(itemsRequired, prevState.itemsRequired)) {
+        this.setState(() => ({
+          itemsRequired,
+        }));
+      }
     }
   }
 
@@ -110,91 +128,100 @@ class Job extends React.PureComponent {
     </Stack>
   );
 
-  getJobTooltip = (maxMs, currentMsLeft, itemsRequired) => {
-    const {
-      job: { description, maxXp },
-    } = this.props;
-
-    return (
+  getJobTooltip = (
+    jobDescription,
+    jobMaxXp,
+    maxXpMs,
+    currentMsLeft,
+    itemsRequired
+  ) => (
+    <Stack
+      direction="column"
+      alignItems="center"
+      divider={<Divider orientation="horizontal" flexItem light />}
+      spacing={1}
+    >
+      <Typography variant="body1" textAlign="center">
+        {jobDescription}
+      </Typography>
       <Stack
-        direction="column"
+        direction="row"
         alignItems="center"
-        divider={<Divider orientation="horizontal" flexItem light />}
+        divider={<Divider orientation="vertical" flexItem />}
         spacing={1}
       >
-        <Typography variant="body1" textAlign="center">
-          {description}
-        </Typography>
-        <Stack
-          direction="row"
-          alignItems="center"
-          divider={<Divider orientation="vertical" flexItem />}
-          spacing={1}
-        >
-          <Typography variant="body1">{`${toTimeLength(
-            currentMsLeft
-          )} / ${toTimeLength(maxMs)}`}</Typography>
-          <Typography variant="body1">{`${maxXp} XP`}</Typography>
-        </Stack>
-        {Object.keys(itemsRequired).length > 0 && (
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  align="center"
-                  colSpan={2}
-                  sx={{ border: 0, padding: 0 }}
+        <Typography variant="body1">{`${toTimeLength(
+          currentMsLeft
+        )} / ${toTimeLength(maxXpMs)}`}</Typography>
+        <Typography variant="body1">{`${jobMaxXp} XP`}</Typography>
+      </Stack>
+      {Object.keys(itemsRequired).length > 0 && (
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell
+                align="center"
+                colSpan={2}
+                sx={{ border: 0, padding: 0 }}
+              >
+                <Typography
+                  variant="body2"
+                  color="primary.contrastText"
+                  fontWeight="bold"
                 >
-                  <Typography
-                    variant="body2"
-                    color="primary.contrastText"
-                    fontWeight="bold"
-                  >
-                    Requirements
+                  Requirements
+                </Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Object.entries(itemsRequired).map(([itemName, amount]) => (
+              <TableRow key={itemName}>
+                <TableCell sx={{ border: 0, paddingX: 2, paddingY: 0 }}>
+                  <Typography variant="body2" color="primary.contrastText">
+                    {itemName}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ border: 0, padding: 0 }}>
+                  <Typography variant="body2" color="primary.contrastText">
+                    {toGameNumber(amount)}
                   </Typography>
                 </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {Object.entries(itemsRequired).map(([itemName, amount]) => (
-                <TableRow key={itemName}>
-                  <TableCell sx={{ border: 0, paddingX: 2, paddingY: 0 }}>
-                    <Typography variant="body2" color="primary.contrastText">
-                      {itemName}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ border: 0, padding: 0 }}>
-                    <Typography variant="body2" color="primary.contrastText">
-                      {toGameNumber(amount)}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-        <Stack
-          direction="row"
-          alignItems="center"
-          divider={<Divider orientation="vertical" flexItem />}
-          spacing={1}
-        >
-          <Typography variant="body2" fontSize={12}>
-            Click to do now
-          </Typography>
-          <Typography variant="body2" fontSize={12}>
-            Right Click for 1x
-          </Typography>
-        </Stack>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+      <Stack
+        direction="row"
+        alignItems="center"
+        divider={<Divider orientation="vertical" flexItem />}
+        spacing={1}
+      >
+        <Typography variant="body2" fontSize={12}>
+          Click to do now
+        </Typography>
+        <Typography variant="body2" fontSize={12}>
+          Right Click for 1x
+        </Typography>
       </Stack>
-    );
-  };
+    </Stack>
+  );
 
   render() {
     const {
-      job: { id, name, currentXp, maxXp, skill },
+      job: { description, id, name, currentXp, maxXp, skill },
+      maxXpMs,
     } = this.props;
-    const { jobTooltip } = this.state;
+    const { currentMsLeft, itemsRequired } = this.state;
+
+    const jobTooltip = this.getJobTooltip(
+      description,
+      maxXp,
+      maxXpMs,
+      currentMsLeft,
+      itemsRequired
+    );
 
     return (
       <Stack
