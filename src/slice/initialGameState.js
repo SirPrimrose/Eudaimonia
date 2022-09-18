@@ -3,6 +3,7 @@ import CalculatedValue from '../game/data/calculatedValue';
 import { EXPLORE_DATA } from '../game/data/exploreGroup';
 import { ITEM_DATA } from '../game/data/inventory';
 import { JOB_DATA } from '../game/data/jobs';
+import { PREP_TAB_STATE_DATA } from '../game/data/prepTabs';
 import { SKILL_DATA } from '../game/data/skills';
 import { STAT_DATA } from '../game/data/stats';
 import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
@@ -15,6 +16,7 @@ const initialState = {
     resource: CalculatedValue.baseObject(),
     // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation (these should probably just go into the "upgrades" prop, no?)
   },
+  prepTabs: PREP_TAB_STATE_DATA,
   upgrades: [], // TODO: Implement upgrades; Array of all active modifiers to values, filter by type
   generationCount: 0,
   phase: PHASES.NEW_GAME,
