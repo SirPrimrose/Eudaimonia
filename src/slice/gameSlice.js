@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuid } from 'uuid';
-import { getProgressValue } from '../shared/util';
 import { xpReqForCurrentLevel } from '../game/data/skills';
 import { runGameLogicLoop, reviveCharacter } from './gameLogic';
 import { initialState } from './initialGameState';
@@ -93,25 +92,19 @@ export const getInventory = (store) => store.game.items;
 export const getItemById = (store) => (itemId) => store.game.items[itemId];
 
 // WORLD
-export const getExploreGroups = (store) =>
-  Object.values(store.game.exploreGroups);
+export const getExploreGroups = (store) => store.game.exploreGroups;
 export const getWorldResources = (store) => store.game.worldResources;
 
 // JOBS
-export const getJobProgress = (store) => (jobId) =>
-  getProgressValue(
-    store.game.jobs[jobId].currentXp,
-    store.game.jobs[jobId].maxXp
-  );
 export const getJobs = (store) => store.game.jobs;
-export const getJobById = (store) => (jobId) => store.game.jobs[jobId];
+export const getJobById = (store, jobId) => store.game.jobs[jobId];
 
 // QUEUE
 export const getJobQueue = (store) => store.game.queue;
 
 // SKILLS
 export const getSkills = (store) => store.game.skills;
-export const getMsForSkillXp = (store) => (skillId, xp) =>
+export const getMsForSkillXp = (store, skillId, xp) =>
   (xp / store.game.skills[skillId].xpScaling.value) * 1000;
 
 // STATS
