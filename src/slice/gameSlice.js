@@ -89,9 +89,7 @@ export const getGameTime = (store) => store.game.gameTime;
 export const getSoulpowerValue = (store) => store.game.soulpower.resource.value;
 
 // INVENTORY
-export const getInventory = (store) => Object.values(store.game.items);
-export const getActiveInventory = (store) =>
-  getInventory(store).filter((i) => i.isActive);
+export const getInventory = (store) => store.game.items;
 export const getItemById = (store) => (itemId) => store.game.items[itemId];
 
 // WORLD

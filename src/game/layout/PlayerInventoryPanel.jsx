@@ -2,10 +2,31 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Stack, Typography } from '@mui/material';
-import { getActiveInventory } from '../../slice/gameSlice';
 import PlayerItem from './components/PlayerItem';
+import { getInventory } from '../../slice/gameSlice';
 
 class PlayerInventoryPanel extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    const { inventory } = this.props;
+
+    this.state = {
+      activeInventory: this.getActiveInventory(inventory),
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { inventory } = this.props;
+    if (inventory !== prevProps.inventory) {
+      this.setState(() => ({
+        activeInventory: this.getActiveInventory(inventory),
+      }));
+    }
+  }
+
+  getActiveInventory = (inventory) =>
+    Object.values(inventory).filter((i) => i.isActive);
+
   getInventoryLayout = (inventory) => (
     <div className="panelGrid">
       <Stack mx={1}>
@@ -17,13 +38,13 @@ class PlayerInventoryPanel extends React.PureComponent {
   );
 
   render() {
-    const { inventory } = this.props;
+    const { activeInventory } = this.state;
     return (
       <div className="panelOutline">
         <Typography variant="h6" align="center" className="title">
           Inventory
         </Typography>
-        {this.getInventoryLayout(inventory)}
+        {this.getInventoryLayout(activeInventory)}
       </div>
     );
   }
@@ -45,7 +66,7 @@ PlayerInventoryPanel.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  inventory: getActiveInventory(state),
+  inventory: getInventory(state),
 });
 
 export default connect(mapStateToProps)(PlayerInventoryPanel);
