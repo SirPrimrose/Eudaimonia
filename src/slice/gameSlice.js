@@ -95,8 +95,7 @@ export const getItemById = (store) => (itemId) => store.game.items[itemId];
 // WORLD
 export const getExploreGroups = (store) =>
   Object.values(store.game.exploreGroups);
-export const getWorldResources = (store) =>
-  Object.values(store.game.worldResources);
+export const getWorldResources = (store) => store.game.worldResources;
 
 // JOBS
 export const getJobProgress = (store) => (jobId) =>
