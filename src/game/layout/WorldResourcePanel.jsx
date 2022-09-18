@@ -6,6 +6,27 @@ import { getWorldResources } from '../../slice/gameSlice';
 import WorldResource from './components/WorldResource';
 
 class WorldResourcePanel extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    const { worldResources } = this.props;
+
+    this.state = {
+      activeWorldResources: this.getActiveWorldResources(worldResources),
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { worldResources } = this.props;
+    if (worldResources !== prevProps.worldResources) {
+      this.setState(() => ({
+        activeWorldResources: this.getActiveWorldResources(worldResources),
+      }));
+    }
+  }
+
+  getActiveWorldResources = (worldResources) =>
+    Object.values(worldResources).filter((wr) => wr.isActive);
+
   getWorldResourceLayout = (worldResources) => (
     <div className="panelGrid">
       <Grid
@@ -22,8 +43,7 @@ class WorldResourcePanel extends React.PureComponent {
   );
 
   render() {
-    const { worldResources } = this.props;
-    const activeWorldResources = worldResources.filter((wr) => wr.isActive);
+    const { activeWorldResources } = this.state;
 
     return (
       activeWorldResources.length > 0 && (
