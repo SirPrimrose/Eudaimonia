@@ -28,6 +28,7 @@ class ActionQueuePanel extends React.PureComponent {
       <Grid container overflow="hidden">
         {queueEntries.map((queueEntry, index) => (
           <ActionQueueJobEntry
+            key={queueEntry.queueId}
             handleCancelJob={this.handleCancelJob}
             queueEntryIndex={index}
             queueEntry={queueEntry}
