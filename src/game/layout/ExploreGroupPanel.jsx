@@ -8,6 +8,27 @@ import { getExploreGroups } from '../../slice/gameSlice';
 import { toGameNumber } from '../format';
 
 class ExploreGroupPanel extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    const { exploreGroups } = this.props;
+
+    this.state = {
+      activeExploreGroups: this.getActiveExploreGroups(exploreGroups),
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { exploreGroups } = this.props;
+    if (exploreGroups !== prevProps.exploreGroups) {
+      this.setState(() => ({
+        activeExploreGroups: this.getActiveExploreGroups(exploreGroups),
+      }));
+    }
+  }
+
+  getActiveExploreGroups = (exploreGroups) =>
+    Object.values(exploreGroups).filter((eg) => eg.isActive);
+
   renderGridItemContent = (exploreGroup) => {
     const currentExplorationProgress = toGameNumber(
       getProgressValue(
@@ -64,8 +85,7 @@ class ExploreGroupPanel extends React.PureComponent {
   );
 
   render() {
-    const { exploreGroups } = this.props;
-    const activeExploreGroups = exploreGroups.filter((eg) => eg.isActive);
+    const { activeExploreGroups } = this.state;
 
     return (
       activeExploreGroups.length > 0 && (

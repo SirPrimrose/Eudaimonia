@@ -31,11 +31,9 @@ import { COMPLETION_TYPE } from '../../data/jobs';
 class Job extends React.PureComponent {
   constructor(props) {
     super(props);
+    const { maxXpMs, currentXpMs, job } = this.props;
 
-    const { getMsXp, job } = this.props;
-
-    const maxMs = getMsXp(job.skill, job.maxXp);
-    const currentMsLeft = maxMs - getMsXp(job.skill, job.currentXp);
+    const currentMsLeft = maxXpMs - currentXpMs;
     const itemsRequired = job.completionEvents
       .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
       .reduce((itemObj, e) => {
@@ -44,15 +42,14 @@ class Job extends React.PureComponent {
       }, {});
 
     this.state = {
-      jobTooltip: this.getJobTooltip(maxMs, currentMsLeft, itemsRequired),
+      jobTooltip: this.getJobTooltip(maxXpMs, currentMsLeft, itemsRequired),
     };
   }
 
   componentDidUpdate(prevProps) {
-    const { getMsXp, getItem, job } = this.props;
+    const { maxXpMs, currentXpMs, getItem, job } = this.props;
     if (job !== prevProps.job) {
-      const maxMs = getMsXp(job.skill, job.maxXp);
-      const currentMsLeft = maxMs - getMsXp(job.skill, job.currentXp);
+      const currentMsLeft = maxXpMs - currentXpMs;
       const itemsRequired = job.completionEvents
         .filter((e) => e.type === COMPLETION_TYPE.CONSUME_ITEM)
         .reduce((itemObj, e) => {
@@ -62,7 +59,7 @@ class Job extends React.PureComponent {
         }, {});
 
       this.setState(() => ({
-        jobTooltip: this.getJobTooltip(maxMs, currentMsLeft, itemsRequired),
+        jobTooltip: this.getJobTooltip(maxXpMs, currentMsLeft, itemsRequired),
       }));
     }
   }
@@ -269,19 +266,27 @@ Job.propTypes = {
     ),
     usedItems: PropTypes.objectOf(PropTypes.number.isRequired).isRequired,
   }).isRequired,
+  // Time already spent doing job, scaled to current xp rate
+  maxXpMs: PropTypes.number.isRequired,
+  // Time to complete job, scaled to current xp rate
+  currentXpMs: PropTypes.number.isRequired,
 
   // Dispatch functions
-  getMsXp: PropTypes.func.isRequired,
   getItem: PropTypes.func.isRequired,
   pushJobToQueue: PropTypes.func.isRequired,
   unshiftJobToQueue: PropTypes.func.isRequired,
   setPaused: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  getMsXp: getMsForSkillXp(state),
-  getItem: getItemById(state),
-});
+const mapStateToProps = (state, ownProps) => {
+  const { job } = ownProps;
+
+  return {
+    maxXpMs: getMsForSkillXp(state, job.skill, job.maxXp),
+    currentXpMs: getMsForSkillXp(state, job.skill, job.currentXp),
+    getItem: getItemById(state),
+  };
+};
 
 const mapDispatchToProps = {
   pushJobToQueue: gameActions.pushJobToQueue,
