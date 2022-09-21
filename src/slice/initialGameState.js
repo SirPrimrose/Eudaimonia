@@ -11,13 +11,17 @@ import { WORLD_RESOURCE_DATA } from '../game/data/worldResource';
 const initialState = {
   // GAME
   gameTime: 0,
-  // Move soulpower into some sort of "resources" section (perhaps treat it as an item or stat)
+  // TODO: Move soulpower into some sort of "resources" section (perhaps treat it as an item or stat); "resources" have a flag that changes whether the reset on death or not
+  // TODO: Implement life modifiers; Array of all active modifiers to values (soulpower, xp gain, etc.); these are saved in state, reset on death, and dynamically added during life
+  // You could have two of the same modifier that exists (i.e. 2x soul power from "Story Objective" and 2x soul power from another "Story Objective"), add "source" prop to determine root
+  // TODO: Implement soul upgrades; Structured data more like items/jobs with defined minimums/maximums/cost/cost scaling/etc.; These keep track of their level and effects on the game
+  // Props include level, min, max, cost, effects
+  // TODO: "Effects" is an array of effects on the game. Two upgrades can have the same "effects", though possibly at differing costs or magnitudes
+  lifeModifiers: [],
   soulpower: {
     resource: CalculatedValue.baseObject(),
-    // currentLifeMultipliers: [], TODO: Create way to add (times N) multipliers to soulpower caluclation (these should probably just go into the "upgrades" prop, no?)
   },
   prepTabs: PREP_TAB_STATE_DATA,
-  upgrades: [], // TODO: Implement upgrades; Array of all active modifiers to values, filter by type
   generationCount: 0,
   phase: PHASES.NEW_GAME,
   isTicking: false,

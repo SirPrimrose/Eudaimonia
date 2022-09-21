@@ -30,6 +30,7 @@ const XP_SCALING_FACTORS = {
   CURRENT_LEVEL: 'Life',
   PERM_LEVEL: 'Soul',
   NEW_GAME: 'Awakening',
+  TOOL_TIER_1: 'Bone Tool',
 };
 
 // Add unique fields to each skill

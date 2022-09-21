@@ -22,6 +22,7 @@ import {
   resetQueueTick,
   shouldTickJobQueue,
 } from './jobQueueLogic';
+import { MOD_TYPE, createSkillXpScalingMod } from '../game/data/modifierHelper';
 
 let currentTime = new Date();
 let gameTicksRem = 0;
@@ -29,6 +30,25 @@ let gameTicksRem = 0;
 // GAME
 const addGameTime = (state, time) => {
   state.gameTime += time;
+};
+
+const handleAddLifeModifier = (state, modifierValue) => {
+  switch (modifierValue.modifierType) {
+    case MOD_TYPE.SKILL_XP_SCALING:
+      state.lifeModifiers.push(
+        createSkillXpScalingMod(
+          modifierValue.skillId,
+          modifierValue.scalingFactor,
+          modifierValue.multiplier
+        )
+      );
+      recalculateSkillXpScaling(state, modifierValue.skillId);
+      break;
+    default:
+      // eslint-disable-next-line no-console
+      console.error(`No default case for type ${modifierValue.modifierType}`);
+      break;
+  }
 };
 
 // INVENTORY
@@ -454,6 +474,9 @@ const performJobCompletionEvent = (state, job, event) => {
         event.value.itemId
       );
       break;
+    case COMPLETION_TYPE.LIFE_MODIFIER:
+      handleAddLifeModifier(state, event.value);
+      break;
     default:
       // eslint-disable-next-line no-console
       console.error(`No default case for event ${event.type}`);
@@ -469,7 +492,7 @@ const recalculateSkillXpReq = (state, skillId) => {
   skill.permLevelXpReq = xpReqForPermLevel(skill.permLevel);
 };
 
-const recalculateSkillXpScaling = (state, skillId) => {
+function recalculateSkillXpScaling(state, skillId) {
   const skill = state.skills[skillId];
 
   const calculatedValue = new CalculatedValue(skill.xpScaling.baseValue);
@@ -487,6 +510,21 @@ const recalculateSkillXpScaling = (state, skillId) => {
     xpMultiplierForPermLevel(skill.permLevel)
   );
 
+  // LIFE MODIFIERS
+  const lifeMods = state.lifeModifiers.filter(
+    (mod) => mod.id === MOD_TYPE.SKILL_XP_SCALING && mod.skillId === skillId
+  );
+  lifeMods.forEach((lifeMod) => {
+    calculatedValue.addModifier(
+      lifeMod.scalingFactor,
+      CalculatedValue.MODIFIER_TYPE.MULTIPLICATIVE,
+      -1,
+      lifeMod.multiplier
+    );
+  });
+
+  // TODO: SOUL UPGRADES
+
   // GLOBAL XP MODIFIERS
   if (state.generationCount <= 3) {
     calculatedValue.addModifier(
@@ -498,7 +536,7 @@ const recalculateSkillXpScaling = (state, skillId) => {
   }
 
   skill.xpScaling = calculatedValue.toObj;
-};
+}
 
 const addXpToSkill = (state, skillId, xp) => {
   const skill = state.skills[skillId];
@@ -796,6 +834,7 @@ const startNewLife = (state) => {
   });
 
   state.phase = PHASES.WANDER;
+  state.lifeModifiers = [];
 };
 
 /**
@@ -862,26 +901,28 @@ const flagGameAsErrored = (state, exception) => {
 };
 
 const runGameLogicLoop = (state, tickMult) => {
-  try {
-    if (state.phase === PHASES.NEW_GAME) {
-      startNewGame(state);
-    }
+  if (!state.exception) {
+    try {
+      if (state.phase === PHASES.NEW_GAME) {
+        startNewGame(state);
+      }
 
-    if (!state.isStarted) {
-      startupGame(state);
-    }
+      if (!state.isStarted) {
+        startupGame(state);
+      }
 
-    // Calc ticks to process
-    const newTime = Date.now();
-    gameTicksRem += newTime - currentTime;
-    currentTime = newTime;
-    const currentTickDuration = GAME_TICK_TIME / tickMult;
-    while (gameTicksRem >= currentTickDuration) {
-      tickGame(state);
-      gameTicksRem -= currentTickDuration;
+      // Calc ticks to process
+      const newTime = Date.now();
+      gameTicksRem += newTime - currentTime;
+      currentTime = newTime;
+      const currentTickDuration = GAME_TICK_TIME / tickMult;
+      while (gameTicksRem >= currentTickDuration) {
+        tickGame(state);
+        gameTicksRem -= currentTickDuration;
+      }
+    } catch (e) {
+      flagGameAsErrored(state, e);
     }
-  } catch (e) {
-    flagGameAsErrored(state, e);
   }
 };
 

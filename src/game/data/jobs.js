@@ -1,7 +1,8 @@
 import { EXPLORE_GROUP_IDS } from './exploreGroup';
 import { ITEM_IDS } from './inventory';
 import { JOB_IDS } from './job_consts';
-import { SKILL_IDS } from './skills';
+import { MOD_TYPE } from './modifierHelper';
+import { SKILL_IDS, XP_SCALING_FACTORS } from './skills';
 import { STAT_IDS } from './stats';
 import { UNLOCK_CRITERIA } from './unlockCriteria';
 import { WORLD_RESOURCE_IDS } from './worldResource';
@@ -22,6 +23,7 @@ const COMPLETION_TYPE = {
   EXPLORE_GROUP_ACTIVE: 'Explore_Group_Active', // {exploreGroupId: group id, isActive: bool}
   CONSUME_ITEM: 'Consume_Item', // {item: item id, amount: #}
   GIVE_ITEM: 'Give_Item', // {item: item id, amount: #}
+  LIFE_MODIFIER: 'Life_Modifier', // {modifierType: MOD_TYPE enum, skillId: skill id, scalingFactor: which XP_SCALING_FACTORS enum, multiplier: multiplicative value}
 };
 
 const JOB_BASES = {
@@ -33,7 +35,17 @@ const JOB_BASES = {
     category: JOB_CATEGORY.PROGRESSION,
     maxXp: 1,
     unlockCriteria: [{ type: UNLOCK_CRITERIA.LIMIT_COMPLETIONS }],
-    completionEvents: [],
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.LIFE_MODIFIER,
+        value: {
+          modifierType: MOD_TYPE.SKILL_XP_SCALING,
+          skillId: SKILL_IDS.COMBAT,
+          scalingFactor: XP_SCALING_FACTORS.TOOL_TIER_1,
+          multiplier: 1.25,
+        },
+      },
+    ],
   },
   [JOB_IDS.CAVE_STORY_2]: {
     name: 'Collect Thoughts',
@@ -289,6 +301,43 @@ const JOB_BASES = {
       {
         type: COMPLETION_TYPE.GIVE_ITEM,
         value: { itemId: ITEM_IDS.CANDLE, amount: 1 },
+      },
+    ],
+  },
+  [JOB_IDS.CRAFT_BONE_PICK]: {
+    name: 'Craft Bone Tool',
+    description:
+      'These bones are small, but perhaps you can fashion them into a digging tool.',
+    skill: SKILL_IDS.CRAFTING,
+    category: JOB_CATEGORY.CRAFT,
+    maxXp: 10,
+    unlockCriteria: [
+      {
+        type: UNLOCK_CRITERIA.ITEM,
+        value: { itemId: ITEM_IDS.RAT_BONE },
+      },
+      {
+        type: UNLOCK_CRITERIA.ITEM,
+        value: { itemId: ITEM_IDS.PEBBLE },
+      },
+    ],
+    completionEvents: [
+      {
+        type: COMPLETION_TYPE.CONSUME_ITEM,
+        value: { itemId: ITEM_IDS.RAT_BONE, amount: 5 },
+      },
+      {
+        type: COMPLETION_TYPE.CONSUME_ITEM,
+        value: { itemId: ITEM_IDS.PEBBLE, amount: 5 },
+      },
+      {
+        type: COMPLETION_TYPE.LIFE_MODIFIER,
+        value: {
+          modifierType: MOD_TYPE.SKILL_XP_SCALING,
+          skillId: SKILL_IDS.MINING,
+          scalingFactor: XP_SCALING_FACTORS.TOOL_TIER_1,
+          multiplier: 1.25,
+        },
       },
     ],
   },
